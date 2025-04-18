@@ -1,0 +1,510 @@
+{
+  "app": {
+    "name": "可视",
+    "login": "登录",
+    "logout": "退出登录",
+    "switch_theme": "切换主题",
+    "switch_language": "切换语言",
+    "notifications": "通知设置",
+    "check_updates": "检查更新...",
+    "exit_fullscreen": "退出全屏",
+    "enter_fullscreen": "进入全屏",
+    "pwa_install": "安装应用",
+    "pwa_prompt": "有新内容可用，请点击刷新按钮更新。"
+  },
+  "nav": {
+    "dashboard": {
+      "title": "首页"
+    },
+    "websearch": {
+      "title": "搜索",
+      "global": "全局搜索",
+      "favorites": "我的收藏",
+      "indexers": "索引器"
+    },
+    "medialibs": {
+      "title": "媒体库"
+    },
+    "downloads": {
+      "title": "下载",
+      "downloading": "正在下载{0}",
+      "completed": "已完成{0}",
+      "speed": {
+        "title": "实时速率",
+        "up": "{0}/s",
+        "dl": "{0}/s"
+      }
+    },
+    "workflows": {
+      "title": "工作流",
+      "templates": "流程模板",
+      "graphs": "流程定义",
+      "instances": "流程实例"
+    },
+    "settings": {
+      "title": "设置",
+      "personal": {
+        "title": "个人设置",
+        "account": "账号设置",
+        "sessions": "在线设备",
+        "preferences": "偏好设置"
+      },
+      "system": {
+        "title": "系统设置",
+        "users": "用户管理",
+        "medialibs": "媒体库管理",
+        "downloader": "下载器设置"
+      },
+      "help": {
+        "title": "帮助",
+        "doc": "使用文档",
+        "issue": "报告问题..."
+      }
+    }
+  },
+  "enum": {
+    "all": "全部",
+    "none": "无",
+    "view_mode": {
+      "table": "列表视图",
+      "grid": "网格视图"
+    },
+    "user_role": {
+      "user": "普通用户",
+      "admin": "管理员"
+    },
+    "lib_type": {
+      "movie": "电影",
+      "tv_show": "电视剧",
+      "music": "音乐"
+    },
+    "graph_category": {
+      "indexer": "索引器",
+      "download": "下载事件",
+      "ingest": "入库事件",
+      "manual": "手动触发",
+      "schedule": "定时任务"
+    },
+    "graph_state": {
+      "drafting": "草稿",
+      "modified": "有更新",
+      "published": "已发布"
+    },
+    "download_state": {
+      "downloading": "下载中",
+      "paused": "已暂停",
+      "completed": "已完成",
+      "error": "异常"
+    }
+  },
+  "data": {
+    "nodata": "暂无数据",
+    "paginator": {
+      "total": "共 {0} 条",
+      "previous": "上一页",
+      "next": "下一页"
+    }
+  },
+  "model": {
+    "log": "日志",
+    "logs": "日志",
+    "user": "用户",
+    "users": "用户",
+    "task": "任务",
+    "tasks": "任务",
+    "graph": "流程",
+    "graphs": "流程",
+    "source": "数据源",
+    "sources": "数据源",
+    "template": "模板",
+    "templates": "模板",
+    "favorite": "收藏",
+    "favorites": "收藏",
+    "download": "下载任务",
+    "downloads": "下载任务",
+    "media_lib": "媒体库",
+    "media_libs": "媒体库",
+    "field": {
+      "dir": "目录",
+      "file": "文件",
+      "type": "类型",
+      "name": "名称",
+      "role": "角色",
+      "title": "标题",
+      "state": "状态",
+      "status": "状态",
+      "avatar": "头像",
+      "keyword": "关键字",
+      "language": "语言",
+      "category": "类别",
+      "username": "用户名",
+      "password": "密码",
+      "revision": "版本",
+      "description": "描述",
+      "average_time": "平均耗时",
+      "last_execution": "上次执行",
+      "created": "创建时间",
+      "updated": "更新时间",
+      "actions": "操作"
+    }
+  },
+  "status": {
+    "up": "正常",
+    "down": "异常",
+    "unknown": "未知"
+  },
+  "action": {
+    "add": "新增{0}",
+    "edit": "编辑{0}",
+    "view": "查看{0}",
+    "pause": "暂停{0}",
+    "start": "开始{0}",
+    "append": "添加{0}",
+    "change": "更换{0}",
+    "delete": "删除{0}",
+    "export": "导出{0}",
+    "import": "导入{0}",
+    "search": "搜索{0}",
+    "filter": "筛选{0}",
+    "select": "选择{0}",
+    "retract": "撤回{0}",
+    "execute": "执行{0}",
+    "download": "下载{0}",
+    "favorite": "收藏{0}",
+    "reference": "引用{0}",
+    "copy": "复制{0}",
+    "open": "打开{0}",
+    "close": "关闭{0}",
+    "reload": "刷新{0}",
+    "move_up": "上移{0}",
+    "move_down": "下移{0}",
+    "toggle_on": "打开",
+    "toggle_off": "关闭",
+    "assign_permissions": "分配权限"
+  },
+  "session": {
+    "os": "操作系统",
+    "ip": "IP地址",
+    "duration": "登录时长",
+    "activity": "最后活动",
+    "kill": {
+      "one": "退出该次登录？",
+      "others": "退出其它登录？"
+    }
+  },
+  "duration": {
+    "millisecond": "毫秒",
+    "milliseconds": "毫秒",
+    "second": "秒",
+    "seconds": "秒",
+    "minute": "分钟",
+    "minutes": "分钟",
+    "hour": "小时",
+    "hours": "小时",
+    "day": "天",
+    "days": "天"
+  },
+  "password": {
+    "new": "新密码",
+    "current": "旧密码",
+    "initial": "初始密码",
+    "confirm": "再次确认",
+    "change": "修改密码"
+  },
+  "preference": {
+    "navigation": {
+      "title": "导航设置",
+      "homepage": "主页设置",
+      "vibration": {
+        "title": "震动反馈",
+        "tip": "仅在支持 Vibration API 的设备上生效。"
+      }
+    },
+    "dashboard": {
+      "title": "首页设置",
+      "tip": "设置首页中展示的模块。",
+      "search": "最近搜索",
+      "watch": "最近观看"
+    },
+    "privacy": {
+      "title": "隐私设置",
+      "tip": "设置隐私记录的保留天数。",
+      "search": "搜索记录",
+      "watch": "观看记录",
+      "untrack": "不保存"
+    }
+  },
+  "download": {
+    "downloader": {
+      "title": "下载器",
+      "preset": "预设",
+      "config": "配置",
+      "host": "主机",
+      "port": "端口"
+    },
+    "dir": "目标文件夹",
+    "start": "立即开始",
+    "prompt": "输入 URI 或选择种子文件",
+    "supported": "支持磁力链接和哈希值",
+    "delete_local": "同时删除本地文件"
+  },
+  "media": {
+    "video": {
+      "tab": "视频",
+      "speed": "倍速",
+      "rotate": "旋转",
+      "default": "默认",
+      "definition": "清晰度",
+      "landscape": {
+        "title": "横屏模式",
+        "tip": "仅部分移动设备支持 Web API 方式锁定横屏。",
+        "rotate": "旋转横屏",
+        "web_api": "Web API"
+      }
+    },
+    "danmaku": {
+      "tab": "弹幕",
+      "toggle": "弹幕开关",
+      "block": "屏蔽类型",
+      "scroll": "滚动",
+      "top": "顶部",
+      "bottom": "底部",
+      "color": "彩色",
+      "area": "显示区域",
+      "opacity": "不透明度",
+      "font_size": "弹幕字号",
+      "speed": "弹幕速度"
+    },
+    "xgplayer": {
+      "error_types": {
+        "network": {
+          "code": 1,
+          "msg": "视频下载错误"
+        },
+        "mse": {
+          "code": 2,
+          "msg": "流追加错误"
+        },
+        "parse": {
+          "code": 3,
+          "msg": "解析错误"
+        },
+        "format": {
+          "code": 4,
+          "msg": "格式错误"
+        },
+        "decoder": {
+          "code": 5,
+          "msg": "解码错误"
+        },
+        "runtime": {
+          "code": 6,
+          "msg": "语法错误"
+        },
+        "timeout": {
+          "code": 7,
+          "msg": "播放超时"
+        },
+        "other": {
+          "code": 8,
+          "msg": "其他错误"
+        }
+      },
+      "have_nothing": "没有关于音频/视频是否就绪的信息",
+      "have_metadata": "音频/视频的元数据已就绪",
+      "have_current_data": "关于当前播放位置的数据是可用的，但没有足够的数据来播放下一帧/毫秒",
+      "have_future_data": "当前及至少下一帧的数据是可用的",
+      "have_enough_data": "可用数据足以开始播放",
+      "network_empty": "音频/视频尚未初始化",
+      "network_idle": "音频/视频是活动的且已选取资源，但并未使用网络",
+      "network_loading": "浏览器正在下载数据",
+      "network_no_source": "未找到音频/视频来源",
+      "media_err_aborted": "取回过程被用户中止",
+      "media_err_network": "网络错误",
+      "media_err_decode": "解码错误",
+      "media_err_src_not_supported": "不支持的音频/视频格式",
+      "replay": "重播",
+      "error": "网络连接似乎出现了问题",
+      "play_tips": "播放",
+      "pause_tips": "暂停",
+      "playnext_tips": "下一集",
+      "download_tips": "下载",
+      "rotate_tips": "旋转",
+      "reload_tips": "重新载入",
+      "fullscreen_tips": "进入全屏",
+      "exitfullscreen_tips": "退出全屏",
+      "cssfullscreen_tips": "进入样式全屏",
+      "exitcssfullscreen_tips": "退出样式全屏",
+      "texttrack": "字幕",
+      "pip": "画中画",
+      "screenshot": "截图",
+      "live": "正在直播",
+      "off": "关闭",
+      "open": "开启",
+      "mini_drag": "点击按住可拖动视频",
+      "miniscreen": "小屏幕",
+      "refresh_tips": "请试试",
+      "refresh": "刷新",
+      "forward": "快进中",
+      "live_tip": "直播"
+    }
+  },
+  "code": {
+    "evaluator": "验证工具",
+    "var_name": "变量名称",
+    "raw_doc": "原始文档...",
+    "eval_result": "验证结果..."
+  },
+  "flow": {
+    "node": {
+      "group": {
+        "start": "开始",
+        "general": "通用",
+        "control": "控制",
+        "end": "结束"
+      },
+      "name": {
+        "auth_start": "认证 API",
+        "auth_end": "认证 API",
+        "search_start": "搜索 API",
+        "search_end": "搜索 API",
+        "details_start": "详情 API",
+        "details_end": "详情 API",
+        "board_start": "面板 API",
+        "board_end": "面板 API",
+        "download_start": "开始",
+        "download_end": "结束",
+        "ingest_start": "开始",
+        "movie": "电影",
+        "tv_show": "电视剧",
+        "episode": "剧集",
+        "album": "专辑",
+        "artist": "艺术家",
+        "manual_start": "开始",
+        "manual_end": "结束",
+        "schedule_start": "开始",
+        "schedule_end": "结束",
+        "loop": "循环",
+        "condition": "条件",
+        "http": "HTTP 请求",
+        "text": "保存文本",
+        "script": "脚本"
+      },
+      "handle": {
+        "input": "输入",
+        "output": "输出",
+        "is_true": "条件成立",
+        "is_false": "条件不成立",
+        "loop_start": "循环开始",
+        "loop_continue": "循环继续"
+      },
+      "label": {
+        "http_method": "请求方法：",
+        "http_url": "请求地址：",
+        "http_headers": "请求头：",
+        "http_body": "请求体：",
+        "request": "请求：",
+        "request_example": "请求示例",
+        "response": "响应：",
+        "response_example": "响应示例",
+        "formatter": "格式化：",
+        "config": "配置：",
+        "varname": "变量名：",
+        "expression": "表达式：",
+        "language": "语言：",
+        "code": "代码：",
+        "path": "文件路径：",
+        "text_content": "文本内容：",
+        "text_mode": "写入模式：",
+        "exclusive": "独占",
+        "overwrite": "覆盖",
+        "append": "追加",
+        "force_end": "立即结束："
+      },
+      "tooltip": {
+        "format_response": "格式化响应结果并合并到全局上下文中。",
+        "force_end": "立即结束流程，无需等待其它节点执行完毕。"
+      },
+      "placeholder": {
+        "key": "键",
+        "value": "值"
+      }
+    },
+    "readonly": "只读模式",
+    "sidebar": "侧边栏",
+    "fitview": "适应视图",
+    "interactivity": {
+      "toggle": "开启/关闭交互"
+    },
+    "minimap": {
+      "toggle": "开启/关闭缩略图"
+    },
+    "autosave": {
+      "on": "开启自动保存",
+      "off": "关闭自动保存"
+    },
+    "autosaving": "{0}秒后将会保存",
+    "undo": "撤销",
+    "redo": "重做",
+    "save": "保存",
+    "publish": "发布",
+    "exec": {
+      "bootparams": "启动参数",
+      "node_data": "节点数据",
+      "exc_info": "异常信息",
+      "retval": "返回值"
+    },
+    "tmpl": {
+      "last_sync": "上次同步：{0}",
+      "confirm_repo": "请输入 GitHub 仓库地址：",
+      "confirm_name": "请确认要使用的名称："
+    },
+    "trigger": {
+      "count": "流程数量",
+      "bound": "绑定的工作流",
+      "mode": {
+        "toggle": "切换运行模式"
+      }
+    }
+  },
+  "alert": {
+    "internal_server_error": "服务器内部错误！",
+    "bad_request": "请求参数错误！",
+    "unauthorized": "认证失败！",
+    "not_found": "请求的资源不存在！",
+    "user_not_found": "用户不存在！",
+    "flow_not_found": "流程定义不存在！",
+    "permission_denied": "权限不足！",
+    "login_failed": "登录失败！",
+    "login_expired": "登录已过期！",
+    "name_already_exists": "该名称已存在！",
+    "username_already_exists": "该用户名已存在！",
+    "directory_already_exists": "该文件夹已存在！",
+    "incorrect_password": "密码错误！",
+    "passwords_mismatch": "两次输入的密码不一致！",
+    "password_changed": "密码修改成功！",
+    "invalid_boot_params": "无效的启动参数！",
+    "invalid_yaml_config": "无效的 YAML 配置！",
+    "invalid_repo_url": "无效的 GitHub 仓库地址！",
+    "invalid_flow_graph": "必填字段未填写完整！",
+    "get_downloaders_failed": "获取下载器失败！",
+    "get_info_hash_failed": "获取哈希值失败！",
+    "info_hash_collision": "下载任务已存在！",
+    "http_request_failed": "发送 HTTP 请求失败！",
+    "flow_already_running": "流程任务已在运行！",
+    "import_graphs_failed": "导入流程定义失败！",
+    "select_export_data": "请先选择要导出的数据。"
+  },
+  "message": {
+    "cancel": "取 消",
+    "confirm": "确 定",
+    "default": {
+      "title": "确认操作",
+      "content": "是否确定要继续？"
+    },
+    "leave": {
+      "title": "确定要离开吗？",
+      "content": "您所做的更改可能不会保存。"
+    }
+  }
+}

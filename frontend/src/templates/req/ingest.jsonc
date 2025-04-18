@@ -1,0 +1,15 @@
+{
+  "event_type": "created", // created | moved
+  "lib": {
+    "type": "movie", // movie | tv_show | music
+    "name": "Movies"
+  },
+  "item": {
+    "path": "/../Movie(2020).mp4",
+    "name": "Movie(2020)"
+  },
+  "keyword": "Movie(2020)",
+  "language": "en-US",
+  "page_num": 1,
+  "page_size": 5
+}

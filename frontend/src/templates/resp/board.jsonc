@@ -1,0 +1,18 @@
+[
+  {
+    "title": "Sunday",
+    "list": [
+      {
+        "id": "001",
+        "title": "Title",
+        "cover": "https://.../cover.jpg",
+        "link": "magnet:?xt=urn:btih:...",
+        "size": "1GB",
+        "brief": "Brief",
+        "category": "Category",
+        "uploader": "Admin",
+        "uploaded_at": "10 Hours Ago"
+      }
+    ]
+  }
+]

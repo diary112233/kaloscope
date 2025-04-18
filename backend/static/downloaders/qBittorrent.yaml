@@ -1,0 +1,69 @@
+# https://github.com/qbittorrent/qBittorrent/wiki#WebUI-API
+name: qBittorrent
+
+# URL
+protocol: http
+host: 127.0.0.1
+port: 8080
+path: /api/v2
+
+# Authentication
+auth:
+  username:
+  password:
+
+# API methods
+methods:
+  version:
+    get: /app/version
+  login:
+    post: /auth/login
+    form:
+      username: '{{username}}'
+      password: '{{password}}'
+    response:
+      expected: Ok.
+  add_link:
+    post: /torrents/add
+    form:
+      savepath: '{{dir}}'
+      urls: '{{link}}'
+      stopped: '{{pause}}'
+    response:
+      expected: Ok.
+  add_torrent:
+    post: /torrents/add
+    form:
+      savepath: '{{dir}}'
+      torrents: '{{torrent}}'
+      stopped: '{{pause}}'
+    response:
+      expected: Ok.
+  list:
+    post: /torrents/info
+    form:
+      hashes: '{{hashes|join("|")}}'
+    response:
+      each: $[*]
+      mappings:
+        name: $.name
+        info_hash: $.hash
+        up_speed: $.upspeed
+        dl_speed: $.dlspeed
+        total_size: $.size
+        completed_size: $.completed
+        percentage: $.progress * 100
+        raw_state: $.state
+  pause:
+    post: /torrents/stop
+    form:
+      hashes: '{{hash}}'
+  start:
+    post: /torrents/start
+    form:
+      hashes: '{{hash}}'
+  delete:
+    post: /torrents/delete
+    form:
+      hashes: '{{hash}}'
+      deleteFiles: '{{local}}'

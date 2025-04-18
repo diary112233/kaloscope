@@ -1,0 +1,149 @@
+<script lang="ts">
+  import { enhance } from '$app/forms';
+  import { api } from '$lib/api';
+  import { Modal, alert } from '$lib/components';
+  import { createLoading } from '$lib/helpers';
+  import { _ } from '$lib/i18n';
+  import { icons } from '$lib/icons';
+  import type { Path, PathStats, Resp } from '$lib/types';
+  import { onMount } from 'svelte';
+
+  type FileTreeProps = Partial<{
+    rootPath: string;
+    onlyDirs: boolean;
+    onconfirm: (stats: PathStats) => void;
+  }>;
+  let { rootPath = '', onlyDirs = false, onconfirm }: FileTreeProps = $props();
+  let paths: Path[] = $state([]);
+  let current: string = $state('');
+
+  // the modal dialog instance
+  let modal: Modal;
+  export const showModal = () => modal.show();
+
+  // the loading state
+  const loading = createLoading();
+
+  /**
+   * List the files and directories in the given path.
+   *
+   * @param path - The path to list.
+   */
+  async function list(path: string): Promise<Path[]> {
+    try {
+      const resp = await api
+        .get('filesystem/list', { searchParams: { path: path, only_dirs: onlyDirs } })
+        .json<Resp<Path[]>>();
+      return resp.data;
+    } catch (error) {
+      console.error(error);
+      return [];
+    }
+  }
+
+  /**
+   * Unfold the given path and load its children.
+   *
+   * @param path - The path to unfold.
+   */
+  async function unfold(path: Path) {
+    current = path.path;
+    if (path.children) {
+      return;
+    }
+    path.loading = false;
+    setTimeout(() => {
+      if (path.loading === false) path.loading = true;
+    }, 500);
+    path.children = await list(path.path);
+    path.loading = undefined;
+  }
+
+  /**
+   * Confirm the selected path and close the modal.
+   */
+  function confirm() {
+    loading.start();
+    api
+      .get('filesystem/stats', { searchParams: { path: current } })
+      .json<Resp<PathStats>>()
+      .then((resp) => {
+        if (onlyDirs && !resp.data.writable) {
+          alert({ level: 'error', message: 'permission_denied' });
+          return;
+        }
+        modal.close();
+        onconfirm?.(resp.data);
+      })
+      .finally(() => {
+        loading.end();
+      });
+  }
+
+  onMount(async () => {
+    paths = await list(rootPath);
+  });
+</script>
+
+<Modal
+  icon={icons.rowChild}
+  title={$_('action.select', $_(onlyDirs ? 'model.field.dir' : 'model.field.file'))}
+  maxWidth="36rem"
+  bind:this={modal}
+>
+  <form
+    method="post"
+    use:enhance={({ cancel }) => {
+      cancel();
+      confirm();
+    }}
+  >
+    <fieldset class="fieldset">
+      <ul class="menu max-h-[50vh] w-full flex-nowrap gap-1 overflow-y-auto rounded-box border">
+        {@render tree(paths)}
+      </ul>
+    </fieldset>
+    <div class="modal-action">
+      <button type="button" class="btn" onclick={() => modal.close()}>
+        {$_('message.cancel')}
+      </button>
+      <button type="submit" class="btn btn-submit" disabled={$loading !== null}>
+        {$_('message.confirm')}
+        {#if $loading}
+          <span class="loading loading-xs loading-dots"></span>
+        {/if}
+      </button>
+    </div>
+  </form>
+</Modal>
+
+{#snippet tree(paths?: Path[] | null)}
+  {#if paths}
+    {#each paths as path (path.path)}
+      {@const activeClass = current === path.path ? 'item-active' : ''}
+      <li>
+        {#if path.is_dir && !path.is_empty}
+          <details open={false}>
+            <summary class={activeClass} onclick={() => unfold(path)}>
+              {@render item(path)}
+            </summary>
+            <ul>{@render tree(path.children)}</ul>
+          </details>
+        {:else}
+          <button type="button" class={activeClass} onclick={() => (current = path.path)}>
+            {@render item(path)}
+          </button>
+        {/if}
+      </li>
+    {/each}
+  {/if}
+{/snippet}
+
+{#snippet item(path: Path)}
+  {#if path.loading}
+    <span class="loading loading-xs loading-spinner"></span>
+  {:else}
+    <iconify-icon icon={path.is_dir ? icons.folder : icons.document} width="1rem" class="size-4"></iconify-icon>
+  {/if}
+  {path.name}
+{/snippet}

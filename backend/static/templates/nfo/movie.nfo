@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<movie>
+  <lockdata>{{ lockdata|default(true)|lower }}</lockdata>
+  <title>{{ title }}</title>
+  <originaltitle>{{ originaltitle }}</originaltitle>
+  <tagline>{{ tagline }}</tagline>
+  <plot>{{ plot }}</plot>
+  <year>{{ year }}</year>
+  <premiered>{{ premiered }}</premiered>
+  <rating>{{ rating }}</rating>
+  <country>{{ country }}</country>
+  <mpaa>{{ mpaa }}</mpaa>
+{% for tag in tags %}
+  <tag>{{ tag }}</tag>
+{% endfor %}
+{% for genre in genres %}
+  <genre>{{ genre }}</genre>
+{% endfor %}
+  <art>
+    <poster>{{ poster }}</poster>
+    <fanart>{{ backdrop }}</fanart>
+  </art>
+{% for studio in studios %}
+  <studio>{{ studio }}</studio>
+{% endfor %}
+{% for director in directors %}
+  <director>{{ director }}</director>
+{% endfor %}
+{% for writer in writers %}
+  <writer>{{ writer }}</writer>
+{% endfor %}
+{% for credit in credits %}
+  <credits>{{ credit }}</credits>
+{% endfor %}
+{% for actor in actors %}
+  <actor>
+    <name>{{ actor.name }}</name>
+    <role>{{ actor.role }}</role>
+    <type>{{ actor.type }}</type>
+    <thumb>{{ actor.thumb }}</thumb>
+  </actor>
+{% endfor %}
+</movie>

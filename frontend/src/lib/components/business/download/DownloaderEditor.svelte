@@ -1,0 +1,175 @@
+<script lang="ts" module>
+  import type { Downloader, FlowTrigger, Resp } from '$lib/types';
+
+  type DownloaderEditorProps = Partial<{
+    id: number;
+    preset: string;
+    exists: string[];
+    config: string;
+    triggers: FlowTrigger[];
+    onsave: (result: Downloader) => void;
+  }>;
+
+  /**
+   * The default configuration template.
+   */
+  const CONFIG_TEMPLATE = `
+# Name
+name: downloader
+
+# URL
+protocol: http
+host: 127.0.0.1
+port: 8080
+path: /
+
+# Authentication
+auth:
+  username:
+  password:
+
+# API methods
+methods:
+  version:
+  login:
+  add_link:
+  add_torrent:
+  list:
+  pause:
+  start:
+  delete:
+`.trimStart();
+
+  /**
+   * The download manager presets.
+   */
+  let presets: Record<string, string> | null = $state(null);
+</script>
+
+<script lang="ts">
+  import { enhance } from '$app/forms';
+  import { api } from '$lib/api';
+  import { CodeMirror, FlowTriggers, Label, Modal, confirm } from '$lib/components';
+  import { createLoading } from '$lib/helpers';
+  import { _ } from '$lib/i18n';
+  import { icons } from '$lib/icons';
+  import { yaml } from '@codemirror/lang-yaml';
+  import { onMount } from 'svelte';
+
+  let { id, preset = '', exists = [], config = CONFIG_TEMPLATE, triggers, onsave }: DownloaderEditorProps = $props();
+  let codeMirror: CodeMirror;
+
+  // the modal dialog instance
+  let modal: Modal;
+  export const showModal = () => modal.show();
+
+  // the loading state
+  const loading = createLoading();
+
+  /**
+   * Save or update the download manager.
+   *
+   * @param form - The form element.
+   * @param data - The form data.
+   */
+  function upsert(form: HTMLFormElement, data: FormData) {
+    loading.start();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const jsonData: Record<string, any> = Object.fromEntries(data);
+    jsonData.id = id;
+    jsonData.config = config;
+    jsonData.triggers = triggers;
+    api
+      .post('download/manager/upsert', { json: jsonData })
+      .json<Resp<Downloader>>()
+      .then((resp) => {
+        modal.close();
+        onsave?.(resp.data);
+        setTimeout(() => form.reset(), 200);
+      })
+      .finally(() => {
+        loading.end();
+      });
+  }
+
+  onMount(() => {
+    if (presets === null) {
+      api
+        .get('download/manager/presets')
+        .json<Resp<Record<string, string>>>()
+        .then((resp) => (presets = resp.data));
+    }
+  });
+</script>
+
+<Modal
+  icon={icons.box3dDownload}
+  title={$_(id ? 'action.edit' : 'action.add', $_('download.downloader.config'))}
+  bind:this={modal}
+>
+  <form
+    method="post"
+    use:enhance={({ formElement, formData, cancel }) => {
+      cancel();
+      upsert(formElement, formData);
+    }}
+  >
+    <fieldset class="fieldset">
+      <Label>{$_('download.downloader.preset')}</Label>
+      <select
+        class="select w-full {preset ? '' : 'text-base-content/50'}"
+        value={preset}
+        name="preset"
+        disabled={!!id}
+        onchange={(event) => {
+          const target = event.currentTarget;
+          const onconfirm = () => {
+            preset = target.value;
+            codeMirror.setDocument(presets?.[preset] || CONFIG_TEMPLATE, true);
+          };
+          if (preset === '' && config === CONFIG_TEMPLATE) {
+            // change the preset directly
+            onconfirm();
+          } else {
+            // confirm to change the preset
+            confirm({
+              message: $_('message.leave.content'),
+              oncancel: () => (target.value = preset),
+              onconfirm: onconfirm
+            });
+          }
+        }}
+      >
+        <option value="">{$_('enum.none')}</option>
+        {#if presets}
+          {#each Object.keys(presets).sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase())) as key (key)}
+            <option value={key} disabled={exists.includes(key)}>{key}</option>
+          {/each}
+        {/if}
+      </select>
+      <Label required>{$_('download.downloader.config')}</Label>
+      <CodeMirror
+        darkMode
+        minWidth="100%"
+        maxWidth="100%"
+        maxHeight="18rem"
+        language={yaml()}
+        title={$_('download.downloader.config')}
+        bind:this={codeMirror}
+        bind:document={config}
+      />
+      <FlowTriggers class="mt-4" category="download" {triggers} onchange={(newTriggers) => (triggers = newTriggers)} />
+    </fieldset>
+    <div class="modal-action">
+      <button type="button" class="btn" onclick={() => modal.close()}>
+        {$_('message.cancel')}
+      </button>
+      <button type="submit" class="btn btn-submit" disabled={$loading !== null}>
+        {$_('message.confirm')}
+        {#if $loading}
+          <span class="loading loading-xs loading-dots"></span>
+        {/if}
+      </button>
+    </div>
+  </form>
+</Modal>

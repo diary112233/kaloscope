@@ -1,0 +1,90 @@
+# https://github.com/transmission/transmission/blob/main/docs/rpc-spec.md
+name: Transmission
+
+# URL
+protocol: http
+host: 127.0.0.1
+port: 9091
+path: /transmission/rpc
+
+# CSRF protection
+csrf:
+  header: X-Transmission-Session-Id
+
+# Authentication
+auth:
+  username:
+  password:
+
+# API methods
+response:
+  expected:
+    success: $.result
+methods:
+  version:
+    json:
+      method: session-get
+      arguments:
+        fields:
+          - version
+    response:
+      mappings:
+        version: $.arguments.version
+  add_link:
+    json:
+      method: torrent-add
+      arguments:
+        download-dir: '{{dir}}'
+        filename: '{{link}}'
+        paused: '{{pause}}'
+  add_torrent:
+    json:
+      method: torrent-add
+      arguments:
+        download-dir: '{{dir}}'
+        metainfo: '{{torrent[1]|b64encode}}'
+        paused: '{{pause}}'
+  list:
+    json:
+      method: torrent-get
+      arguments:
+        ids: '{{hashes}}'
+        fields:
+          - name
+          - hashString
+          - rateUpload
+          - rateDownload
+          - leftUntilDone
+          - sizeWhenDone
+          - percentDone
+          - status
+    response:
+      each: $.arguments.torrents[*]
+      mappings:
+        name: $.name
+        info_hash: $.hashString
+        up_speed: $.rateUpload
+        dl_speed: $.rateDownload
+        total_size: $.sizeWhenDone
+        completed_size: $.sizeWhenDone - $.leftUntilDone
+        percentage: $.percentDone * 100
+        raw_state: $.status
+  pause:
+    json:
+      method: torrent-stop
+      arguments:
+        ids:
+          - '{{hash}}'
+  start:
+    json:
+      method: torrent-start
+      arguments:
+        ids:
+          - '{{hash}}'
+  delete:
+    json:
+      method: torrent-remove
+      arguments:
+        ids:
+          - '{{hash}}'
+        delete-local-data: '{{local}}'

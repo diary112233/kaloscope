@@ -1,0 +1,87 @@
+from typing import Any
+
+import httpx
+from sanic import Sanic
+from sanic.log import logger
+
+from app.core.constants import ENCODING
+from app.core.exceptions import ErrorCode, KaloscopeException
+from app.core.flow.context import Context
+from app.core.flow.fields import (
+    CodeField,
+    DividerField,
+    KVPairsField,
+    SelectField,
+    URLField,
+)
+from app.core.flow.nodes.base import Node, general_node
+from app.core.renderer import render
+from app.utils.json import try_loads
+
+
+@general_node(order=1, icon="globe")
+class HTTPNode(Node):
+    method = SelectField(
+        required=True,
+        options={
+            "GET": "GET",
+            "POST": "POST",
+            "PUT": "PUT",
+            "PATCH": "PATCH",
+            "DELETE": "DELETE",
+            "HEAD": "HEAD",
+            "OPTIONS": "OPTIONS",
+        },
+        default="GET",
+    )
+    url = URLField(required=True, maxlength=1024)
+    headers = KVPairsField(placeholder=("key", "value"))
+    body = CodeField(language="jinja2", width="32rem")
+    ___ = DividerField("response")
+    formatter = CodeField(
+        "formatter",
+        tooltip="format_response",
+        language="jinja2",
+        width="32rem",
+        darkmode=True,
+        default='{\n  "response": {{ response.text|tojson }}\n}',
+    )
+
+    @classmethod
+    async def execute(cls, *, node_data: dict[str, Any], context: Context, **kwargs):
+        method = str(cls.method.extract(node_data))
+        url = cls.url.extract(node_data, context=context)
+        # request headers
+        headers = cls.headers.extract(node_data, context=context)
+        headers = httpx.Headers(
+            [
+                (k, v)
+                for h in headers
+                if (k := h["key"].strip()) and (v := h["value"].strip())
+            ]
+        )
+        # request body
+        binary, form, json = None, None, None
+        if body := cls.body.extract(node_data, context=context):
+            if (obj := try_loads(body)) is not None:
+                content_type = headers.get("content-type", "").lower()
+                if "application/x-www-form-urlencoded" in content_type:
+                    if isinstance(obj, dict):
+                        form = obj
+                elif "application/json" in content_type:
+                    json = obj
+            if json is None and form is None:
+                binary = body.encode(ENCODING)
+        # make the request
+        client: httpx.AsyncClient = Sanic.get_app().ctx.httpx
+        try:
+            response = await client.request(
+                method, url, headers=headers, content=binary, data=form, json=json
+            )
+            formatter = cls.formatter.extract(node_data)
+            rendered = render(formatter, {"response": response})
+            if rendered and isinstance((obj := try_loads(rendered)), dict):
+                context.update(obj)
+        except httpx.RequestError as e:
+            logger.error("An error occurred while requesting %s.", url, exc_info=True)
+            raise KaloscopeException(ErrorCode.HTTP_REQUEST_FAILED) from e

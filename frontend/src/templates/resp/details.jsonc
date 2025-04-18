@@ -1,0 +1,33 @@
+{
+  "id": "001",
+  "url": "https://.../video.m3u8",
+  "text": "...",
+  "images": ["https://.../image1.jpg", "https://.../image2.jpg"],
+  "title": "Title",
+  "uploader": "Admin",
+  "uploaded_at": "10 Hours Ago",
+  "media_type": "video", // video | audio | image | text
+  "video_type": "hls", // mp4 | flv | hls
+  "definitions": [
+    {
+      "url": "https://.../1080p.m3u8",
+      "definition": 1080
+    }
+  ],
+  "sections": [
+    {
+      "id": "001-1",
+      "url": "...",
+      "title": "Section 1"
+    }
+  ],
+  "danmakus": [
+    {
+      "text": "...",
+      "mode": "scroll", // scroll | top | bottom
+      "color": "#ffffff",
+      "start": 0, // milliseconds
+      "duration": 5000 // milliseconds
+    }
+  ]
+}

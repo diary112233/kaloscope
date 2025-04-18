@@ -1,0 +1,26 @@
+.xgplayer {
+  .xgplayer-playbackrate {
+    .icon-text {
+      font-size: 16px;
+      font-weight: 800;
+      padding: 0 10px;
+      background-color: hsla(0, 0%, 30%, 0.3);
+    }
+    .xg-options-list {
+      width: 72px;
+      max-height: 60vh;
+      opacity: 1;
+      border-radius: 2px;
+      background-color: hsla(0, 0%, 10%, 0.9);
+      .option-item {
+        margin: 0;
+        padding: 0;
+        height: 32px;
+        line-height: 32px;
+        &:hover {
+          background-color: hsla(0, 0%, 20%, 0.9);
+        }
+      }
+    }
+  }
+}

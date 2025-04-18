@@ -1,0 +1,213 @@
+<script lang="ts" module>
+  import type { Favorite, IndexerConfig, Page, Resource, Resp, ViewMode } from '$lib/types';
+
+  /**
+   * Mark the resources as favorite or not.
+   *
+   * @param indexerId - The indexer ID.
+   * @param rsrcs - The resources to mark.
+   */
+  export async function markFavorites(indexerId: string | number, rsrcs: Resource[]) {
+    const rsrcIds = rsrcs.map((r) => r.id).filter((id) => !!id);
+    if (indexerId && rsrcIds.length > 0) {
+      await api
+        .post('user/favorites', {
+          json: {
+            page_num: 1,
+            page_size: rsrcs.length,
+            indexer_id: indexerId,
+            rsrc_ids: rsrcIds
+          }
+        })
+        .json<Resp<Page<Favorite>>>()
+        .then((resp) => {
+          if (resp.data && resp.data.list) {
+            const favorites = resp.data.list.map((f) => f.rsrc_id);
+            // update the resources with the favorite status
+            rsrcs.forEach((r) => {
+              r.favorite = r.id ? favorites.includes(r.id) : false;
+            });
+          }
+        });
+    }
+    return rsrcs;
+  }
+</script>
+
+<script lang="ts">
+  import { goto } from '$app/navigation';
+  import { api } from '$lib/api';
+  import { Button, Cell, Image, Uploader, downloadPrompt } from '$lib/components';
+  import { _ } from '$lib/i18n';
+  import { icons } from '$lib/icons';
+
+  type SearchHitProps = {
+    indexerId?: string | number;
+    indexerConfig: IndexerConfig;
+    mode: ViewMode;
+    rsrc: Resource;
+    coverRatio?: string | null;
+  };
+  let { indexerId, indexerConfig, mode, rsrc, coverRatio }: SearchHitProps = $props();
+  let detailsConfig = $derived(indexerConfig.details);
+
+  /**
+   * Mark a resource as favorite.
+   *
+   * @param rsrc - The resource to mark.
+   */
+  function favorite(rsrc: Resource) {
+    api.post(`flow/indexer/${indexerId}/favorite`, {
+      json: {
+        rsrc_id: rsrc.id,
+        rsrc: rsrc,
+        url: detailsRoute(rsrc.id)
+      }
+    });
+    rsrc.favorite = true;
+  }
+
+  /**
+   * Unmark a resource as favorite.
+   *
+   * @param rsrc - The resource to unmark.
+   */
+  function unfavorite(rsrc: Resource) {
+    api.post(`flow/indexer/${indexerId}/unfavorite`, {
+      json: { rsrc_id: rsrc.id }
+    });
+    rsrc.favorite = false;
+  }
+
+  /**
+   * Navigate to the details page.
+   *
+   * @param rsrc - The clicked resource.
+   */
+  function gotoDetails(rsrc: Resource) {
+    const url = detailsRoute(rsrc.id);
+    if (url) goto(url);
+  }
+
+  /**
+   * Generates a URL for the details route of an indexer resource.
+   *
+   * @param rsrcId - The resource ID.
+   */
+  function detailsRoute(rsrcId: string | null | undefined): string | null {
+    if (!indexerId || !rsrcId || !detailsConfig) {
+      return null;
+    }
+    // eslint-disable-next-line svelte/prefer-svelte-reactivity
+    const searchParams = new URLSearchParams();
+    if (detailsConfig && detailsConfig.specific) {
+      for (const [key, value] of Object.entries(detailsConfig.specific)) {
+        if (value) {
+          searchParams.set(key, value);
+        }
+      }
+    }
+    const queryString = searchParams.size > 0 ? `?${searchParams.toString()}` : '';
+    return `/websearch/${indexerId}/${rsrcId}${queryString}`;
+  }
+</script>
+
+{#if mode === 'table'}
+  <Cell class="group {detailsConfig ? 'cursor-pointer' : ''}" onclick={() => gotoDetails(rsrc)}>
+    {#if rsrc.cover}
+      <div class="relative">
+        <Image transparent src={rsrc.cover} height="3.5rem" ratio={coverRatio ?? '16/9'} />
+        <div class="absolute inset-0 flex size-full items-end justify-center">
+          <span
+            class="px-0.5 text-white opacity-80 text-stroke"
+            style="font-size: clamp(0.5rem, calc(1rem - 0.05rem * {rsrc.category?.length || 0}), 0.75rem);"
+          >
+            {rsrc.category}
+          </span>
+        </div>
+      </div>
+    {/if}
+    <div class="flex w-full flex-col gap-4">
+      <div class={detailsConfig ? 'transition-colors group-hover:text-primary' : ''}>
+        <span class="text-sm">{rsrc.title}</span>
+        {#if rsrc.brief}
+          <span class="italic-text">[{rsrc.brief}]</span>
+        {/if}
+      </div>
+      <Uploader up={rsrc.uploader} at={rsrc.uploaded_at} extra={rsrc.size} />
+    </div>
+  </Cell>
+  <Cell
+    actions={[
+      {
+        condition: !!detailsConfig && rsrc.favorite !== undefined,
+        icon: rsrc.favorite ? icons.starFilled : icons.star,
+        class: rsrc.favorite ? '[&_iconify-icon]:text-yellow-500' : '',
+        text: $_('action.favorite', ''),
+        onclick: () => (rsrc.favorite ? unfavorite(rsrc) : favorite(rsrc))
+      },
+      {
+        condition: !!rsrc.link,
+        icon: icons.download,
+        text: $_('action.download', ''),
+        onclick: () => downloadPrompt(rsrc.link)
+      }
+    ]}
+  />
+{/if}
+
+{#if mode === 'grid'}
+  {@const pointerClass = detailsConfig ? 'cursor-pointer transition-colors hover:text-primary' : ''}
+  {@const transClass = 'transition-opacity duration-300'}
+  {@const btnClass = 'hover:bg-base-300 hover:text-base-content border-0 bg-black/60 text-white'}
+  <!-- svelte-ignore a11y_click_events_have_key_events -->
+  <div tabindex="0" role="button" class="group relative {pointerClass}" onclick={() => gotoDetails(rsrc)}>
+    <div class="absolute top-0 right-0 z-1 flex gap-2 p-1 opacity-0 group-hover:opacity-100 {transClass}">
+      {#if detailsConfig && rsrc.favorite !== undefined}
+        <Button
+          icon={rsrc.favorite ? icons.starFilled : icons.star}
+          class="{rsrc.favorite ? '[&_iconify-icon]:text-yellow-500' : ''} {btnClass}"
+          onclick={(event) => {
+            event.stopPropagation();
+            rsrc.favorite ? unfavorite(rsrc) : favorite(rsrc);
+          }}
+        />
+      {/if}
+      {#if rsrc.link}
+        <Button
+          icon={icons.download}
+          class={btnClass}
+          onclick={(event) => {
+            event.stopPropagation();
+            downloadPrompt(rsrc.link);
+          }}
+        />
+      {/if}
+    </div>
+    <Image
+      src={rsrc.cover}
+      width="100%"
+      ratio={coverRatio ?? '16/9'}
+      class="group-hover:opacity-80 [&_div]:rounded-b-none {transClass}"
+    />
+    <div class="absolute bottom-0 h-8 w-full bg-linear-to-t from-black/50 to-transparent">
+      <div class="flex h-full items-end justify-between gap-4 px-2 pb-1 text-xs text-white">
+        <span class="whitespace-nowrap">{rsrc.category}</span>
+        <span class="truncate" title={rsrc.brief}>{rsrc.brief}</span>
+      </div>
+    </div>
+  </div>
+  <div class="flex flex-col gap-2 p-2">
+    <!-- svelte-ignore a11y_click_events_have_key_events -->
+    <div
+      tabindex="0"
+      role="button"
+      class="line-clamp-2 h-10 text-sm font-medium {pointerClass}"
+      title={rsrc.title}
+      onclick={() => gotoDetails(rsrc)}
+    >
+      {rsrc.title}
+    </div>
+    <Uploader up={rsrc.uploader} at={rsrc.uploaded_at} extra={rsrc.size} />
+  </div>
+{/if}

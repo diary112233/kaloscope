@@ -1,0 +1,299 @@
+@import 'tailwindcss';
+@plugin '@tailwindcss/typography';
+@plugin 'daisyui' {
+  /* https://v5.daisyui.com/docs/config/ */
+  themes: all;
+  logs: false;
+}
+@plugin 'daisyui/theme' {
+  name: caramellatte;
+  --border: 1px;
+}
+@plugin 'daisyui/theme' {
+  name: cupcake;
+  --border: 1px;
+}
+@plugin 'daisyui/theme' {
+  name: pastel;
+  --border: 1px;
+}
+@plugin 'daisyui/theme' {
+  name: silk;
+  --border: 1px;
+}
+
+/* https://tailwindcss.com/docs/upgrade-guide#hover-styles-on-mobile */
+@custom-variant hover (&:hover);
+
+/* https://developer.chrome.com/docs/web-platform/view-transitions */
+@media (prefers-reduced-motion) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+
+@theme {
+  /* height of the top navigation bar */
+  --ks-navbar-h: 3.25rem;
+  /* height of the bottom navigation bar */
+  --ks-dock-h: clamp(3.25rem, calc(3.25rem + env(safe-area-inset-bottom)), 4.25rem);
+
+  /* viewport height without top navigation bar */
+  --ks-lvh: calc(100dvh - var(--ks-navbar-h));
+  /* viewport height without top and bottom navigation bars */
+  --ks-svh: calc(100dvh - var(--ks-navbar-h) - var(--ks-dock-h));
+
+  /* custom fonts */
+  --sans:
+    ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-sans: 'Noto Sans Variable', 'Noto Sans SC Variable', var(--sans);
+  --font-title: 'Audiowide', 'ZCOOL QingKe HuangYou', var(--sans);
+
+  /* custom colors */
+  --color-active: color-mix(in oklab, var(--color-primary) 30%, var(--color-neutral) 70%);
+  --color-content: color-mix(in oklab, var(--color-primary) 30%, var(--color-base-content) 70%);
+  --color-inactive: color-mix(in oklab, var(--color-neutral) 30%, var(--color-base-content) 40%);
+  --color-base-125: color-mix(in oklab, var(--color-base-100) 75%, var(--color-base-200) 25%);
+  --color-base-150: color-mix(in oklab, var(--color-base-100) 50%, var(--color-base-200) 50%);
+
+  /* custom breakpoints */
+  --breakpoint-w60: 60rem;
+  --breakpoint-w72: 72rem;
+  --breakpoint-w84: 84rem;
+  --breakpoint-w96: 96rem;
+  --breakpoint-w108: 108rem;
+  --breakpoint-w120: 120rem;
+
+  /* custom animations */
+  --animate-emphasis: emphasis 0.5s ease-in-out infinite;
+  @keyframes emphasis {
+    0%,
+    50% {
+      border-color: color-mix(in oklab, var(--color-primary) 80%, transparent);
+    }
+    ,
+    100% {
+      border-color: color-mix(in oklab, var(--color-base-content) 20%, transparent);
+    }
+  }
+  --animate-marquee: marquee 10s linear 1s infinite;
+  @keyframes marquee {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+}
+
+@layer base {
+  html {
+    /* disable pull-to-refresh for safari */
+    overscroll-behavior: none;
+  }
+
+  body {
+    /* disable pull-to-refresh for chrome */
+    /* https://developer.chrome.com/blog/overscroll-behavior#disabling_pull-to-refresh */
+    overscroll-behavior: none;
+
+    /* enable tabular (monospaced) figures */
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@layer components {
+  /* base border color */
+  .border,
+  .border-x,
+  .border-y,
+  .border-s,
+  .border-e,
+  .border-t,
+  .border-r,
+  .border-b,
+  .border-l {
+    @apply !border-base-content/20;
+  }
+
+  /* base focus ring color */
+  .input,
+  .select,
+  .textarea,
+  .file-input {
+    @apply transition-colors;
+    &:focus,
+    &:focus-within {
+      @apply !border-primary/80 !outline-none;
+    }
+  }
+
+  /* base menu active color */
+  .menu {
+    :where(li) {
+      & > *:not(ul, .menu-title, details, .btn):active,
+      & > *:not(ul, .menu-title, details, .btn).menu-active,
+      & > details > summary:active {
+        @apply !bg-active;
+      }
+    }
+  }
+
+  /* modal dialog box */
+  .modal-box {
+    @apply flex !max-h-11/12 flex-col gap-4 !overscroll-none !p-4;
+    > form {
+      @apply flex flex-col gap-4;
+    }
+    .modal-title {
+      @apply mr-6 flex flex-wrap items-center gap-2 text-lg font-semibold;
+    }
+    .modal-corner {
+      @apply absolute top-3.5 right-2;
+      > button {
+        @apply btn btn-circle size-8 btn-subtle font-title text-lg;
+      }
+    }
+    .modal-action {
+      @apply !mt-4;
+      > button {
+        @apply min-w-20;
+      }
+    }
+  }
+}
+
+@utility app-name {
+  @apply font-title text-content/80 uppercase;
+}
+
+@utility nav-shadow {
+  box-shadow: 0 1px 2px 0 color-mix(in oklab, var(--color-inactive) 25%, transparent);
+}
+
+@utility btn-scale {
+  @apply transition-transform duration-200 active:scale-95;
+}
+
+@utility btn-subtle {
+  @apply btn-ghost hover:bg-base-content/10;
+  &:is(:disabled, [disabled], .btn-disabled) {
+    background-color: transparent !important;
+  }
+}
+
+@utility btn-submit {
+  --btn-color: var(--color-active);
+  --btn-fg: var(--color-neutral-content);
+}
+
+@utility item-active {
+  @apply bg-active/80 text-neutral-content;
+  box-shadow:
+    0 0 0 1px oklch(100% 0 0 / var(--glass-border-opacity, 20%)) inset,
+    0 0 0 2px oklch(0% 0 0 / 5%);
+}
+
+@utility text-stroke {
+  text-shadow:
+    1px 0 black,
+    -1px 0 black,
+    0 1px black,
+    0 -1px black,
+    1px 1px black,
+    -1px -1px black,
+    1px -1px black,
+    -1px 1px black;
+}
+
+@utility italic-text {
+  @apply px-1 text-xs italic opacity-40;
+}
+
+@utility marquee-mask {
+  mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
+}
+
+/* grid columns with different widths */
+@utility grid-cols-sparse {
+  @apply md:!grid-cols-2 lg:!grid-cols-3 xl:!grid-cols-4 2xl:!grid-cols-5;
+}
+@utility grid-cols-compact {
+  @apply md:!grid-cols-3 w60:!grid-cols-4 w72:!grid-cols-5 w84:!grid-cols-6 w96:!grid-cols-7 w108:!grid-cols-8;
+}
+
+/* flexbox with center alignment */
+@utility flex-center {
+  @apply flex items-center justify-center;
+}
+@utility flex-col-center {
+  @apply flex flex-col items-center justify-center;
+}
+
+/* specifies the direction of text */
+@utility direction-ltr {
+  direction: ltr;
+  unicode-bidi: bidi-override;
+}
+@utility direction-rtl {
+  direction: rtl;
+  unicode-bidi: bidi-override;
+}
+
+/* alias for the z-index */
+@utility layer-0 {
+  z-index: 10000;
+}
+@utility layer-1 {
+  z-index: 9999;
+}
+@utility layer-2 {
+  z-index: 9998;
+}
+@utility layer-3 {
+  z-index: 9997;
+}
+@utility layer-4 {
+  z-index: 9996;
+}
+@utility layer-5 {
+  z-index: 9995;
+}
+
+/* blur background effect */
+@utility bg-blur-90 {
+  @apply bg-base-125/90 backdrop-blur-sm;
+}
+@utility bg-blur-80 {
+  @apply bg-base-125/80 backdrop-blur-sm;
+}
+@utility bg-blur-70 {
+  @apply bg-base-125/70 backdrop-blur-sm;
+}
+@utility bg-blur-60 {
+  @apply bg-base-125/60 backdrop-blur-sm;
+}
+@utility bg-blur-50 {
+  @apply bg-base-125/50 backdrop-blur-sm;
+}
+
+/* custom Tippy.js themes */
+/* https://atomiks.github.io/tippyjs/v6/themes/#creating-a-theme */
+.tippy-box[data-theme~='handle'] {
+  @apply border-2 border-base-content/20 bg-base-200 text-xs font-semibold text-base-content;
+}
+.tippy-box[data-theme~='neutral'] {
+  @apply mt-1 border-1 glass bg-neutral text-xs text-neutral-content;
+}
+.tippy-box[data-theme~='description'] {
+  @apply mt-4 bg-base-300/90 shadow-xl backdrop-blur-xs;
+  > .tippy-content {
+    @apply prose break-all whitespace-break-spaces text-base-content;
+  }
+  > .tippy-arrow::before {
+    @apply border-b-base-300/90;
+  }
+}

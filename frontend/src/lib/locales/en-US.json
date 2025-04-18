@@ -1,0 +1,510 @@
+{
+  "app": {
+    "name": "Kaloscope",
+    "login": "Login",
+    "logout": "Logout",
+    "switch_theme": "Switch Theme",
+    "switch_language": "Switch Language",
+    "notifications": "Notifications",
+    "check_updates": "Check for Updates...",
+    "exit_fullscreen": "Exit Full Screen",
+    "enter_fullscreen": "Enter Full Screen",
+    "pwa_install": "Install App",
+    "pwa_prompt": "New content available, click on reload button to update."
+  },
+  "nav": {
+    "dashboard": {
+      "title": "Dashboard"
+    },
+    "websearch": {
+      "title": "Search",
+      "global": "Global Search",
+      "favorites": "My Favorites",
+      "indexers": "Indexers"
+    },
+    "medialibs": {
+      "title": "Libraries"
+    },
+    "downloads": {
+      "title": "Downloads",
+      "downloading": "Downloading{0}",
+      "completed": "Completed{0}",
+      "speed": {
+        "title": "Speed",
+        "up": "{0}/s",
+        "dl": "{0}/s"
+      }
+    },
+    "workflows": {
+      "title": "Workflows",
+      "templates": "Templates",
+      "graphs": "Graphs",
+      "instances": "Instances"
+    },
+    "settings": {
+      "title": "Settings",
+      "personal": {
+        "title": "Personal",
+        "account": "Account",
+        "sessions": "Sessions",
+        "preferences": "Preferences"
+      },
+      "system": {
+        "title": "System",
+        "users": "Users",
+        "medialibs": "Libraries",
+        "downloader": "Downloader"
+      },
+      "help": {
+        "title": "Help",
+        "doc": "Documentation",
+        "issue": "Report Issue..."
+      }
+    }
+  },
+  "enum": {
+    "all": "All",
+    "none": "None",
+    "view_mode": {
+      "table": "Table View",
+      "grid": "Grid View"
+    },
+    "user_role": {
+      "user": "User",
+      "admin": "Admin"
+    },
+    "lib_type": {
+      "movie": "Movie",
+      "tv_show": "TV Show",
+      "music": "Music"
+    },
+    "graph_category": {
+      "indexer": "Indexer",
+      "download": "Download",
+      "ingest": "Ingest",
+      "manual": "Manual",
+      "schedule": "Schedule"
+    },
+    "graph_state": {
+      "drafting": "Drafting",
+      "modified": "Modified",
+      "published": "Published"
+    },
+    "download_state": {
+      "downloading": "Downloading",
+      "paused": "Paused",
+      "completed": "Completed",
+      "error": "Error"
+    }
+  },
+  "data": {
+    "nodata": "No Data Found",
+    "paginator": {
+      "total": "{0} entries",
+      "previous": "Previous",
+      "next": "Next"
+    }
+  },
+  "model": {
+    "log": "Log",
+    "logs": "Logs",
+    "user": "User",
+    "users": "Users",
+    "task": "Task",
+    "tasks": "Tasks",
+    "graph": "Graph",
+    "graphs": "Graphs",
+    "source": "Source",
+    "sources": "Sources",
+    "template": "Template",
+    "templates": "Templates",
+    "favorite": "Favorite",
+    "favorites": "Favorites",
+    "download": "Download",
+    "downloads": "Downloads",
+    "media_lib": "Media Library",
+    "media_libs": "Media Libraries",
+    "field": {
+      "dir": "Directory",
+      "file": "File",
+      "type": "Type",
+      "name": "Name",
+      "role": "Role",
+      "title": "Title",
+      "state": "State",
+      "status": "Status",
+      "avatar": "Avatar",
+      "keyword": "Keyword",
+      "language": "Language",
+      "category": "Category",
+      "username": "Username",
+      "password": "Password",
+      "revision": "Revision",
+      "description": "Description",
+      "average_time": "Average Time",
+      "last_execution": "Last Execution",
+      "created": "Created date",
+      "updated": "Updated date",
+      "actions": "Actions"
+    }
+  },
+  "status": {
+    "up": "UP",
+    "down": "DOWN",
+    "unknown": "UNKNOWN"
+  },
+  "action": {
+    "add": "New {0}",
+    "edit": "Edit {0}",
+    "view": "View {0}",
+    "pause": "Pause {0}",
+    "start": "Start {0}",
+    "append": "Append {0}",
+    "change": "Change {0}",
+    "delete": "Delete {0}",
+    "export": "Export {0}",
+    "import": "Import {0}",
+    "search": "Enter {0}",
+    "filter": "Filter {0}",
+    "select": "Select {0}",
+    "retract": "Retract {0}",
+    "execute": "Execute {0}",
+    "download": "Download {0}",
+    "favorite": "Favorite {0}",
+    "reference": "Reference {0}",
+    "copy": "Copy {0}",
+    "open": "Open {0}",
+    "close": "Close {0}",
+    "reload": "Reload {0}",
+    "move_up": "Move Up {0}",
+    "move_down": "Move Down {0}",
+    "toggle_on": "On",
+    "toggle_off": "Off",
+    "assign_permissions": "Permissions"
+  },
+  "session": {
+    "os": "OS",
+    "ip": "IP Address",
+    "duration": "Login Duration",
+    "activity": "Last Activity",
+    "kill": {
+      "one": "Kill this session?",
+      "others": "Kill other sessions?"
+    }
+  },
+  "duration": {
+    "millisecond": "millisecond",
+    "milliseconds": "milliseconds",
+    "second": "second",
+    "seconds": "seconds",
+    "minute": "minute",
+    "minutes": "minutes",
+    "hour": "hour",
+    "hours": "hours",
+    "day": "day",
+    "days": "days"
+  },
+  "password": {
+    "new": "New Password",
+    "current": "Current Password",
+    "initial": "Initial Password",
+    "confirm": "Confirm Password",
+    "change": "Change Password"
+  },
+  "preference": {
+    "navigation": {
+      "title": "Navigation",
+      "homepage": "Homepage",
+      "vibration": {
+        "title": "Vibration",
+        "tip": "Only works on devices that support the Vibration API."
+      }
+    },
+    "dashboard": {
+      "title": "Dashboard",
+      "tip": "Set the modules displayed on the dashboard.",
+      "search": "Recent Searches",
+      "watch": "Recent Watches"
+    },
+    "privacy": {
+      "title": "Privacy",
+      "tip": "Set the number of days to keep privacy records.",
+      "search": "Search Records",
+      "watch": "Watch Records",
+      "untrack": "Not Saving"
+    }
+  },
+  "download": {
+    "downloader": {
+      "title": "Downloader",
+      "preset": "Preset",
+      "config": "Configuration",
+      "host": "Host",
+      "port": "Port"
+    },
+    "dir": "Destination folder",
+    "start": "Start when added",
+    "prompt": "Enter URI or choose a torrent file",
+    "supported": "Magnet link and info-hash are supported",
+    "delete_local": "Also delete the local files"
+  },
+  "media": {
+    "video": {
+      "tab": "Video",
+      "speed": "Speed",
+      "rotate": "Rotate",
+      "default": "Default",
+      "definition": "Definition",
+      "landscape": {
+        "title": "Landscape Mode",
+        "tip": "Only certain mobile devices support locking landscape mode via the Web API.",
+        "rotate": "Rotate 90°",
+        "web_api": "Web API"
+      }
+    },
+    "danmaku": {
+      "tab": "Danmaku",
+      "toggle": "On/Off",
+      "block": "Block",
+      "scroll": "Scroll",
+      "top": "Top",
+      "bottom": "Bottom",
+      "color": "Color",
+      "area": "Area",
+      "opacity": "Opacity",
+      "font_size": "Font Size",
+      "speed": "Speed"
+    },
+    "xgplayer": {
+      "error_types": {
+        "network": {
+          "code": 1,
+          "msg": "video download error"
+        },
+        "mse": {
+          "code": 2,
+          "msg": "stream append error"
+        },
+        "parse": {
+          "code": 3,
+          "msg": "parsing error"
+        },
+        "format": {
+          "code": 4,
+          "msg": "wrong format"
+        },
+        "decoder": {
+          "code": 5,
+          "msg": "decoding error"
+        },
+        "runtime": {
+          "code": 6,
+          "msg": "grammatical errors"
+        },
+        "timeout": {
+          "code": 7,
+          "msg": "play timeout"
+        },
+        "other": {
+          "code": 8,
+          "msg": "other errors"
+        }
+      },
+      "have_nothing": "There is no information on whether audio/video is ready",
+      "have_metadata": "Audio/video metadata is ready ",
+      "have_current_data": "Data about the current play location is available, but there is not enough data to play the next frame/millisecond",
+      "have_future_data": "Current and at least one frame of data is available",
+      "have_enough_data": "The available data is sufficient to start playing",
+      "network_empty": "Audio/video has not been initialized",
+      "network_idle": "Audio/video is active and has been selected for resources, but no network is used",
+      "network_loading": "The browser is downloading the data",
+      "network_no_source": "No audio/video source was found",
+      "media_err_aborted": "The fetch process is aborted by the user",
+      "media_err_network": "An error occurred while downloading",
+      "media_err_decode": "An error occurred while decoding",
+      "media_err_src_not_supported": "Audio/video is not supported",
+      "replay": "Replay",
+      "error": "Network is offline",
+      "play_tips": "Play",
+      "pause_tips": "Pause",
+      "playnext_tips": "Play next",
+      "download_tips": "Download",
+      "rotate_tips": "Rotate",
+      "reload_tips": "Reload",
+      "fullscreen_tips": "Fullscreen",
+      "exitfullscreen_tips": "Exit fullscreen",
+      "cssfullscreen_tips": "Cssfullscreen",
+      "exitcssfullscreen_tips": "Exit cssfullscreen",
+      "texttrack": "Caption",
+      "pip": "PIP",
+      "screenshot": "Screenshot",
+      "live": "LIVE",
+      "off": "Off",
+      "open": "Open",
+      "mini_drag": "Click and hold to drag",
+      "miniscreen": "Miniscreen",
+      "refresh_tips": "Please Try",
+      "refresh": "Refresh",
+      "forward": "Forward",
+      "live_tip": "Live"
+    }
+  },
+  "code": {
+    "evaluator": "Evaluator",
+    "var_name": "Variable Name",
+    "raw_doc": "Raw Document...",
+    "eval_result": "Evaluation Result..."
+  },
+  "flow": {
+    "node": {
+      "group": {
+        "start": "Start",
+        "general": "General",
+        "control": "Control",
+        "end": "End"
+      },
+      "name": {
+        "auth_start": "Auth API",
+        "auth_end": "Auth API",
+        "search_start": "Search API",
+        "search_end": "Search API",
+        "details_start": "Details API",
+        "details_end": "Details API",
+        "board_start": "Board API",
+        "board_end": "Board API",
+        "download_start": "Start",
+        "download_end": "End",
+        "ingest_start": "Start",
+        "movie": "Movie",
+        "tv_show": "TV Show",
+        "episode": "Episode",
+        "album": "Album",
+        "artist": "Artist",
+        "manual_start": "Start",
+        "manual_end": "End",
+        "schedule_start": "Start",
+        "schedule_end": "End",
+        "loop": "Loop",
+        "condition": "Condition",
+        "http": "HTTP Request",
+        "text": "Save Text",
+        "script": "Script"
+      },
+      "handle": {
+        "input": "Input",
+        "output": "Output",
+        "is_true": "True",
+        "is_false": "False",
+        "loop_start": "Loop Start",
+        "loop_continue": "Loop Continue"
+      },
+      "label": {
+        "http_method": "Method:",
+        "http_url": "URL:",
+        "http_headers": "Headers:",
+        "http_body": "Body:",
+        "request": "Request:",
+        "request_example": "Request Example",
+        "response": "Response:",
+        "response_example": "Response Example",
+        "formatter": "Formatter:",
+        "config": "Configuration:",
+        "varname": "Variable Name:",
+        "expression": "Expression:",
+        "language": "Language:",
+        "code": "Code:",
+        "path": "File Path:",
+        "text_content": "Text Content:",
+        "text_mode": "Write Mode:",
+        "exclusive": "Exclusive Create",
+        "overwrite": "Overwrite",
+        "append": "Append",
+        "force_end": "Force End:"
+      },
+      "tooltip": {
+        "format_response": "Format the response and merge it into the global context.",
+        "force_end": "End the workflow immediately without waiting for other nodes to complete."
+      },
+      "placeholder": {
+        "key": "Key",
+        "value": "Value"
+      }
+    },
+    "readonly": "Read-Only Mode",
+    "sidebar": "Sidebar",
+    "fitview": "Fit View",
+    "interactivity": {
+      "toggle": "Toggle Interactivity"
+    },
+    "minimap": {
+      "toggle": "Toggle Minimap"
+    },
+    "autosave": {
+      "on": "Turn on AutoSave",
+      "off": "Turn off AutoSave"
+    },
+    "autosaving": "Saving in {0} seconds",
+    "undo": "Undo",
+    "redo": "Redo",
+    "save": "Save",
+    "publish": "Publish",
+    "exec": {
+      "bootparams": "Boot Parameters",
+      "node_data": "Node Data",
+      "exc_info": "Exception Info",
+      "retval": "Return Value"
+    },
+    "tmpl": {
+      "last_sync": "Last sync: {0}",
+      "confirm_repo": "Please enter the GitHub repository URL:",
+      "confirm_name": "Please confirm the name to use:"
+    },
+    "trigger": {
+      "count": "Workflow Count",
+      "bound": "Bound Workflows",
+      "mode": {
+        "toggle": "Toggle Execution Mode"
+      }
+    }
+  },
+  "alert": {
+    "internal_server_error": "Internal server error!",
+    "bad_request": "Invalid request parameters!",
+    "unauthorized": "Unauthorized!",
+    "not_found": "Requested resource not found!",
+    "user_not_found": "User not found!",
+    "flow_not_found": "Workflow definition not found!",
+    "permission_denied": "Permission denied!",
+    "login_failed": "Login failed!",
+    "login_expired": "Login expired!",
+    "name_already_exists": "Name already exists!",
+    "username_already_exists": "Username already exists!",
+    "directory_already_exists": "Directory already exists!",
+    "incorrect_password": "Incorrect password!",
+    "passwords_mismatch": "Passwords don't match!",
+    "password_changed": "Password changed!",
+    "invalid_boot_params": "Invalid boot parameters!",
+    "invalid_yaml_config": "Invalid YAML configuration!",
+    "invalid_repo_url": "Invalid GitHub repository URL!",
+    "invalid_flow_graph": "Not all required fields are filled!",
+    "get_downloaders_failed": "Failed to get available downloaders!",
+    "get_info_hash_failed": "Failed to get info-hash!",
+    "info_hash_collision": "Download already exists!",
+    "http_request_failed": "HTTP request failed!",
+    "flow_already_running": "Workflow task is already running!",
+    "import_graphs_failed": "Failed to import workflow definitions!",
+    "select_export_data": "Please select at least one item to export."
+  },
+  "message": {
+    "cancel": "Cancel",
+    "confirm": "OK",
+    "default": {
+      "title": "Confirm your action",
+      "content": "Are you sure you want to continue?"
+    },
+    "leave": {
+      "title": "Do you want to leave?",
+      "content": "Changes you made may not be saved."
+    }
+  }
+}

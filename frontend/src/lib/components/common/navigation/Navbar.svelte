@@ -1,0 +1,143 @@
+<script lang="ts" module>
+  import type { Nav } from '$lib/types';
+
+  export type NavbarProps = {
+    /** Navigation items. */
+    navs?: Nav[];
+    /** Whether to show the back button. */
+    back?: boolean;
+    /** Whether to show the shadow effect. */
+    shadow?: boolean;
+    /** Whether to use the app mode. */
+    appMode?: boolean;
+  };
+</script>
+
+<script lang="ts">
+  import { afterNavigate } from '$app/navigation';
+  import { page } from '$app/state';
+  import { tooltip } from '$lib/actions';
+  import { Languages, Logo, PageHeader, Signposts, Themes, UserCenter } from '$lib/components';
+  import { _ } from '$lib/i18n';
+  import { icons } from '$lib/icons';
+  import { historyBack } from '$lib/stores';
+  import { scale } from 'svelte/transition';
+
+  let { navs = [], back = false, shadow = false, appMode = false }: NavbarProps = $props();
+  let themeSwitcher: Themes;
+  let langSwitcher: Languages;
+  let logo: Logo | null = $state(null);
+
+  // the dynamic class names
+  let navbarClass = $derived(appMode ? 'sticky bg-blur-90' : 'bg-base-200');
+  let shadowClass = $derived(shadow ? 'nav-shadow' : '');
+
+  // get the drawer style based on the current page
+  let drawerStyle: string | null | undefined = $state(null);
+  afterNavigate(() => {
+    if (document.querySelector('.drawer') === null) {
+      drawerStyle = null;
+    } else {
+      const pathname = page.url.pathname;
+      drawerStyle = navs.find((nav) => pathname.startsWith(nav.path))?.drawerStyle;
+    }
+  });
+</script>
+
+<div class="navbar top-0 layer-2 h-(--ks-navbar-h) min-h-(--ks-navbar-h) {navbarClass} {shadowClass}">
+  <!-- left part -->
+  <div class="mr-auto flex-center shrink-0 overflow-hidden">
+    {#if appMode}
+      {@const btnClass = 'btn h-10 min-h-10 btn-subtle'}
+      {#if back}
+        <!-- back button -->
+        <button class="btn-square w-10 opacity-90 {btnClass}" aria-label="Back" onclick={historyBack}>
+          <iconify-icon icon={icons.backSolid} width="1.25rem"></iconify-icon>
+        </button>
+      {:else}
+        <!-- drawer button -->
+        {#if drawerStyle}
+          <label for="drawer" class="btn-square w-10 text-content opacity-90 sm:hidden {btnClass}">
+            {#if drawerStyle === 'menu'}
+              <iconify-icon icon={icons.menuFoldSolid} width="1.75rem"></iconify-icon>
+            {:else if drawerStyle === 'app'}
+              <iconify-icon icon={icons.moreApp} width="1.5rem"></iconify-icon>
+            {/if}
+          </label>
+        {/if}
+        <!-- logo button -->
+        <button class="border-0 bg-transparent px-3 max-sm:hidden {btnClass}" onclick={() => logo && logo.spin()}>
+          <Logo size="2rem" bind:this={logo} />
+          <span class="app-name text-2xl text-shadow-sm max-lg:hidden">
+            {$_('app.name', { locale: 'en-US' })}
+          </span>
+        </button>
+        <!-- reload button -->
+        {#if !drawerStyle}
+          <button
+            class="border-0 bg-transparent px-2 app-name text-xl sm:hidden {btnClass}"
+            onclick={() => location.reload()}
+          >
+            {$_('app.name', { locale: 'en-US' })}
+          </button>
+        {/if}
+      {/if}
+      <Signposts class="sm:hidden" />
+    {/if}
+  </div>
+  <!-- center part -->
+  <div class="mx-auto flex-center overflow-hidden">
+    <PageHeader>
+      {#snippet fallback()}
+        <ul class="menu menu-horizontal gap-2 p-0 max-sm:hidden">
+          {#each navs as nav (nav.path)}
+            {@const active = page.url.pathname.startsWith(nav.path)}
+            <li>
+              <a
+                href={nav.path}
+                class="flex-center size-10 {active ? 'item-active' : ''}"
+                onclick={(event) => active && event.preventDefault()}
+                use:tooltip={{
+                  zIndex: 9999,
+                  content: $_(nav.title),
+                  followCursor: true,
+                  delay: [800, 0]
+                }}
+              >
+                {#if active}
+                  <iconify-icon icon={nav.iconFilled} width="1.5rem" in:scale={{ duration: 500 }}></iconify-icon>
+                {:else}
+                  <iconify-icon icon={nav.icon} width="1.5rem"></iconify-icon>
+                {/if}
+              </a>
+            </li>
+          {/each}
+        </ul>
+      {/snippet}
+    </PageHeader>
+  </div>
+  <!-- right part -->
+  <div class="ml-auto flex-center shrink-0 gap-1">
+    <Languages
+      class="dropdown-end {appMode ? 'max-sm:hidden' : ''}"
+      triggerClass="h-(--ks-navbar-h)"
+      contentClass="mt-1"
+      bind:this={langSwitcher}
+    />
+    <Themes
+      class="dropdown-end {appMode ? 'max-sm:hidden' : ''}"
+      triggerClass="h-(--ks-navbar-h)"
+      contentClass="mt-1"
+      pwaThemeColor={appMode ? '--color-base-125' : '--color-base-200'}
+      bind:this={themeSwitcher}
+    />
+    <UserCenter
+      {navs}
+      switchTheme={() => themeSwitcher.showModal()}
+      switchLanguage={() => langSwitcher.showModal()}
+      class="dropdown-end {appMode ? '' : 'hidden'}"
+      triggerClass="h-(--ks-navbar-h)"
+      contentClass="mt-1"
+    />
+  </div>
+</div>

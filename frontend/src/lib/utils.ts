@@ -1,0 +1,241 @@
+import { UAParser } from 'ua-parser-js';
+
+/**
+ * Debounce function.
+ *
+ * @param func - The function to debounce.
+ * @param timeout - The debounce timeout in milliseconds.
+ * @param immediate - Whether to trigger the function immediately.
+ * @returns The debounced function.
+ */
+export function debounce<F extends (...args: Parameters<F>) => ReturnType<F>>(
+  func: F,
+  timeout: number = 500,
+  immediate: boolean = false
+): (...args: Parameters<F>) => Promise<ReturnType<F> | undefined> {
+  let timeoutId: ReturnType<typeof setTimeout> | null;
+  return (...args: Parameters<F>) => {
+    return new Promise((resolve, reject) => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+        if (immediate) {
+          // resolve undefined if debounced
+          resolve(undefined);
+        }
+      } else if (immediate) {
+        try {
+          resolve(func(...args));
+        } catch (error) {
+          reject(error);
+        }
+      }
+      timeoutId = setTimeout(() => {
+        if (!immediate) {
+          try {
+            resolve(func(...args));
+          } catch (error) {
+            reject(error);
+          }
+        }
+        timeoutId = null;
+      }, timeout);
+    });
+  };
+}
+
+/**
+ * Throttle function.
+ *
+ * @param func - The function to throttle.
+ * @param timeout - The throttle timeout in milliseconds.
+ * @param immediate - Whether to trigger the function immediately.
+ * @returns The throttled function.
+ */
+export function throttle<F extends (...args: Parameters<F>) => ReturnType<F>>(
+  func: F,
+  timeout: number = 500,
+  immediate: boolean = true
+): (...args: Parameters<F>) => Promise<ReturnType<F> | undefined> {
+  let previous = 0;
+  return (...args: Parameters<F>) => {
+    return new Promise((resolve, reject) => {
+      const now = Date.now();
+      if (now - previous > timeout) {
+        previous = now;
+        if (immediate) {
+          try {
+            resolve(func(...args));
+          } catch (error) {
+            reject(error);
+          }
+        } else {
+          setTimeout(() => {
+            try {
+              resolve(func(...args));
+            } catch (error) {
+              reject(error);
+            }
+          }, timeout);
+        }
+      } else {
+        // resolve undefined if throttled
+        resolve(undefined);
+      }
+    });
+  };
+}
+
+/**
+ * Extended Document interface for Fullscreen API methods.
+ */
+interface DocumentFullscreen extends Document {
+  webkitFullscreenElement?: Element;
+  webkitExitFullscreen?: () => void;
+  webkitCurrentFullScreenElement?: Element;
+  webkitCancelFullScreen?: () => void;
+  mozFullScreenElement?: Element;
+  mozCancelFullScreen?: () => void;
+  msFullscreenElement?: Element;
+  msExitFullscreen?: () => void;
+}
+
+/**
+ * Extended HTMLElement interface for Fullscreen API methods.
+ */
+interface HTMLElementFullscreen extends HTMLElement {
+  webkitRequestFullscreen?: () => void;
+  webkitRequestFullScreen?: () => void;
+  mozRequestFullScreen?: () => void;
+  msRequestFullscreen?: () => void;
+}
+
+/**
+ * Fullscreen API utilities.
+ */
+export const fullscreen = {
+  enter: () => {
+    const elm = document.documentElement as HTMLElementFullscreen;
+    if (elm.requestFullscreen) {
+      elm.requestFullscreen();
+    } else if (elm.webkitRequestFullscreen) {
+      elm.webkitRequestFullscreen();
+    } else if (elm.webkitRequestFullScreen) {
+      elm.webkitRequestFullScreen();
+    } else if (elm.mozRequestFullScreen) {
+      elm.mozRequestFullScreen();
+    } else if (elm.msRequestFullscreen) {
+      elm.msRequestFullscreen();
+    }
+  },
+  exit: () => {
+    const doc = document as DocumentFullscreen;
+    if (doc.exitFullscreen) {
+      doc.exitFullscreen();
+    } else if (doc.webkitExitFullscreen) {
+      doc.webkitExitFullscreen();
+    } else if (doc.webkitCancelFullScreen) {
+      doc.webkitCancelFullScreen();
+    } else if (doc.mozCancelFullScreen) {
+      doc.mozCancelFullScreen();
+    } else if (doc.msExitFullscreen) {
+      doc.msExitFullscreen();
+    }
+  },
+  isFullscreen: () => {
+    const doc = document as DocumentFullscreen;
+    return !!(
+      doc.fullscreenElement ||
+      doc.webkitFullscreenElement ||
+      doc.webkitCurrentFullScreenElement ||
+      doc.mozFullScreenElement ||
+      doc.msFullscreenElement
+    );
+  }
+};
+
+/**
+ * Parsed user agent information.
+ *
+ * https://docs.uaparser.dev/api/main/overview.html
+ */
+const { browser, device, os, ua } = UAParser(navigator.userAgent);
+
+/**
+ * Sniffer utilities.
+ */
+export const sniffer = {
+  isIos: () => {
+    return os.name === 'iOS';
+  },
+  isIpad: () => {
+    // https://github.com/bytedance/xgplayer/blob/main/packages/xgplayer/src/utils/sniffer.js
+    return /(?:iPad|PlayBook)/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  },
+  isMobile: () => {
+    return device.type === 'mobile';
+  },
+  isMobileSafari: () => {
+    return browser.name === 'Mobile Safari';
+  },
+  isAndroid: () => {
+    return os.name === 'Android' || os.name === 'Android-x86';
+  },
+  isAndroidEdge: () => {
+    return (os.name === 'Android' || os.name === 'Android-x86') && browser.name === 'Edge';
+  }
+};
+
+/**
+ * Load a file as a base64 string from an input event.
+ *
+ * @param e - The input event.
+ * @returns A promise that resolves to the base64 string.
+ */
+export function loadFile(e: Event & { currentTarget: EventTarget & HTMLInputElement }): Promise<string | null> {
+  return new Promise((resolve, reject) => {
+    const target = e.currentTarget;
+    if (target.files && target.files[0]) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        resolve(event.target?.result as string);
+      };
+      reader.onerror = (error) => {
+        reject(error);
+      };
+      reader.readAsDataURL(target.files[0]);
+    } else {
+      resolve(null);
+    }
+  });
+}
+
+/**
+ * Escape HTML special characters in a string to prevent XSS attacks.
+ *
+ * @param str - The string to escape.
+ * @returns The escaped string.
+ */
+export function escapeHTML(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+/**
+ * Check if a color is white.
+ *
+ * @param color - The color string to check.
+ */
+export function isWhite(color: string | null | undefined): boolean {
+  if (!color) {
+    return false;
+  }
+  // normalize the color code
+  const code = color.trim().toLowerCase().replace(/\s+/g, '');
+  // check common white color codes
+  const whiteCodes = ['#ffffff', '#fff', 'rgb(255,255,255)', 'hsl(0,0%,100%)', 'white'];
+  return whiteCodes.includes(code);
+}

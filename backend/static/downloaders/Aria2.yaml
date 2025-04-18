@@ -1,0 +1,92 @@
+# https://aria2.github.io/manual/en/html/aria2c.html#rpc-interface
+name: Aria2
+
+# URL
+protocol: http
+host: 127.0.0.1
+port: 6800
+path: /jsonrpc
+
+# Authentication
+auth:
+  secret:
+
+# API methods
+methods:
+  version:
+    json:
+      id: kaloscope
+      jsonrpc: '2.0'
+      method: aria2.getVersion
+      params:
+        - token:{{secret}}
+    response:
+      mappings:
+        version: $.result.version
+  add_link:
+    json:
+      id: kaloscope
+      jsonrpc: '2.0'
+      method: aria2.addUri
+      params:
+        - token:{{secret}}
+        - ['{{link}}']
+        - { dir: '{{dir}}', pause: '{{pause|tojson}}' }
+    response:
+      mappings:
+        unique_id: $.result
+  add_torrent:
+    json:
+      id: kaloscope
+      jsonrpc: '2.0'
+      method: aria2.addTorrent
+      params:
+        - token:{{secret}}
+        - '{{torrent[1]|b64encode}}'
+        - []
+        - { dir: '{{dir}}', pause: '{{pause|tojson}}' }
+    response:
+      mappings:
+        unique_id: $.result
+  list:
+    json:
+      id: kaloscope
+      jsonrpc: '2.0'
+      method: aria2.tellActive
+      params:
+        - token:{{secret}}
+    response:
+      each: $.result[?bittorrent.info.name]
+      mappings:
+        name: $.bittorrent.info.name
+        unique_id: $.gid
+        info_hash: $.infoHash
+        up_speed: $.uploadSpeed
+        dl_speed: $.downloadSpeed
+        total_size: $.totalLength
+        completed_size: $.completedLength
+        raw_state: $.status
+  pause:
+    json:
+      id: kaloscope
+      jsonrpc: '2.0'
+      method: aria2.pause
+      params:
+        - token:{{secret}}
+        - '{{id}}'
+  start:
+    json:
+      id: kaloscope
+      jsonrpc: '2.0'
+      method: aria2.unpause
+      params:
+        - token:{{secret}}
+        - '{{id}}'
+  delete:
+    json:
+      id: kaloscope
+      jsonrpc: '2.0'
+      method: aria2.remove
+      params:
+        - token:{{secret}}
+        - '{{id}}'

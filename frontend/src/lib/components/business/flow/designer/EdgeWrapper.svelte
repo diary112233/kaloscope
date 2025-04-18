@@ -1,0 +1,27 @@
+<script lang="ts">
+  import { BaseEdge, EdgeLabel, getBezierPath, useEdges, type EdgeProps } from '@xyflow/svelte';
+
+  let { id, sourceX, sourceY, sourcePosition, targetX, targetY, targetPosition, markerEnd }: EdgeProps = $props();
+  let [path, labelX, labelY] = $derived(
+    // render a bezier edge between two nodes
+    getBezierPath({ sourceX, sourceY, sourcePosition, targetX, targetY, targetPosition })
+  );
+
+  // get all edges
+  const edges = useEdges();
+
+  // check if the edge is selected
+  const selected = $derived(edges.current.find((edge) => edge.id === id)?.selected ?? false);
+
+  /**
+   * Delete the edge.
+   */
+  function deleteEdge() {
+    edges.current = edges.current.filter((edge) => edge.id !== id);
+  }
+</script>
+
+<BaseEdge {path} {markerEnd} />
+<EdgeLabel x={labelX} y={labelY} class="absolute -top-[2px] !bg-transparent opacity-50 hover:opacity-100">
+  <button class="cursor-pointer text-3xl {selected ? '' : 'hidden'}" onclick={deleteEdge}>x</button>
+</EdgeLabel>
