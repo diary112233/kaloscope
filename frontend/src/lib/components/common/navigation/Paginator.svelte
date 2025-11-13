@@ -101,7 +101,7 @@
 
         <div
           class={simpleMode
-            ? 'mx-auto join grid grid-cols-2 rounded-field shadow-sm'
+            ? 'join mx-auto grid grid-cols-2 rounded-field shadow-sm'
             : 'ml-auto flex gap-2 sm:mx-auto sm:gap-1'}
         >
           <!-- previous page button -->

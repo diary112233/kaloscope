@@ -6,16 +6,16 @@ authors = [{ name = "Xylitol", email = "jam.xylitol@gmail.com" }]
 license = { text = "GPL-3.0-or-later" }
 requires-python = ">=3.13,<4.0"
 dependencies = [
-  "sanic[ext] (>=25.3.0,<26.0.0)",
-  "pydantic[email] (>=2.12.3,<3.0.0)",
-  "tortoise-orm[accel] (>=0.25.1,<0.26.0)",
+  "sanic[ext] (>=25.12.0,<26.0.0)",
+  "pydantic[email] (>=2.12.5,<3.0.0)",
+  "tortoise-orm[accel] (>=0.25.3,<0.26.0)",
   "aerich[toml] (>=0.9.2,<0.10.0)",
   "httpx[brotli,http2,socks,zstd] (>=0.28.1,<0.29.0)",
   "dnspython (>=2.8.0,<3.0.0)",
-  "apscheduler (>=3.11.0,<4.0.0)",
+  "apscheduler (>=3.11.2,<4.0.0)",
   "watchdog (>=6.0.0,<7.0.0)",
   "jinja2 (>=3.1.6,<4.0.0)",
-  "orjson (>=3.11.3,<4.0.0)",
+  "orjson (>=3.11.5,<4.0.0)",
   "jsonpath-ng (>=1.7.0,<2.0.0)",
   "lxml (>=6.0.2,<7.0.0)",
   "lxml-stubs (>=0.5.1,<0.6.0)",
@@ -25,7 +25,7 @@ dependencies = [
   "autopep8 (>=2.3.2,<3.0.0)",
   "opencc (>=1.1.9,<2.0.0)",
   "torrentool (>=1.2.0,<2.0.0)",
-  "gitpython (>=3.1.45,<4.0.0)"
+  "gitpython (>=3.1.46,<4.0.0)"
 ]
 
 [tool.poetry]
@@ -34,10 +34,10 @@ package-mode = true
 packages = [{ include = "app" }]
 
 [tool.poetry.group.dev.dependencies]
-ruff = "^0.14.1"
-pytest = "^8.4.2"
-pre-commit = "^4.3.0"
-commitizen = "^4.9.1"
+ruff = "^0.14.13"
+pytest = "^9.0.2"
+pre-commit = "^4.5.1"
+commitizen = "^4.12.0"
 pip-licenses = "^5.5.0"
 
 [tool.ruff]
