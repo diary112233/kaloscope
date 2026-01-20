@@ -12,7 +12,6 @@
 <script lang="ts">
   import { page } from '$app/state';
   import { _ } from '$lib/i18n';
-  import { scale } from 'svelte/transition';
 
   let { navs, shadow = true }: DockProps = $props();
   // box shadow class
@@ -24,12 +23,12 @@
     {@const active = page.url.pathname.startsWith(nav.path)}
     <a
       href={nav.path}
-      class="mt-4 mb-0 justify-start {active ? 'text-content' : ''}"
+      class="mt-4 mb-0 justify-start duration-0 {active ? 'cursor-default text-content' : ''}"
       onclick={(event) => active && event.preventDefault()}
     >
       <div class="size-5">
         {#if active}
-          <iconify-icon icon={nav.iconFilled} width="1.25rem" in:scale={{ duration: 500 }}></iconify-icon>
+          <iconify-icon icon={nav.iconFilled} width="1.25rem"></iconify-icon>
         {:else}
           <iconify-icon icon={nav.icon} width="1.25rem" class="opacity-70"></iconify-icon>
         {/if}

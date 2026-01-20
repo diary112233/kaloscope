@@ -21,7 +21,6 @@
   import { _ } from '$lib/i18n';
   import { icons } from '$lib/icons';
   import { historyBack } from '$lib/stores';
-  import { scale } from 'svelte/transition';
 
   let { navs = [], back = false, shadow = false, appMode = false }: NavbarProps = $props();
   let themeSwitcher: Themes;
@@ -95,7 +94,7 @@
             <li>
               <a
                 href={nav.path}
-                class="flex-center size-10 {active ? 'item-active' : ''}"
+                class="flex-center size-10 duration-0 {active ? 'cursor-default item-active' : ''}"
                 onclick={(event) => active && event.preventDefault()}
                 use:tooltip={{
                   zIndex: 9999,
@@ -104,11 +103,7 @@
                   delay: [800, 0]
                 }}
               >
-                {#if active}
-                  <iconify-icon icon={nav.iconFilled} width="1.5rem" in:scale={{ duration: 500 }}></iconify-icon>
-                {:else}
-                  <iconify-icon icon={nav.icon} width="1.5rem"></iconify-icon>
-                {/if}
+                <iconify-icon icon={active ? nav.iconFilled : nav.icon} width="1.5rem"></iconify-icon>
               </a>
             </li>
           {/each}
