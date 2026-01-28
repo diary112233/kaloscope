@@ -17,7 +17,7 @@
 </script>
 
 <fieldset class="mt-2 fieldset grid-cols-2">
-  <Label required={field.required} tip={$tooltip(field.tooltip)} tipPlacement="right" class="!my-0 justify-start">
+  <Label required={field.required} tip={$tooltip(field.tooltip)} tipPlacement="right" class="my-0! justify-start">
     {$label(field.label)}
   </Label>
   <input

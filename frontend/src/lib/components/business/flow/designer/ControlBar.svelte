@@ -390,7 +390,7 @@
       />
     </div>
     {#if !readonly}
-      <div class="divider !mx-0 divider-horizontal"></div>
+      <div class="divider mx-0! divider-horizontal"></div>
       <div class="flex-center gap-2">
         <Button
           size="xs"
@@ -428,7 +428,7 @@
         />
       </div>
     {/if}
-    <div class="divider !mx-0 divider-horizontal"></div>
+    <div class="divider mx-0! divider-horizontal"></div>
     <div class="flex-center gap-2">
       {#if autoSaveMode}
         <Button size="xs" text={$_('flow.autosave.off')} class="group" onclick={() => autoSave(false)}>
@@ -474,7 +474,7 @@
 
   {#if $minimap}
     <div transition:fade={{ duration: 200 }}>
-      <MiniMap pannable={true} zoomable={true} class="overflow-hidden rounded-box border !bg-blur-70 shadow-md" />
+      <MiniMap pannable={true} zoomable={true} class="overflow-hidden rounded-box border bg-blur-70! shadow-md" />
     </div>
   {/if}
 {/if}

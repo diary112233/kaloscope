@@ -209,7 +209,7 @@
   {#if !isEmpty}
     <div class="tabs-border tabs" in:fly={{ y: 100, duration: transition ? 200 : 0 }}>
       {#each Object.values(tabs) as tab (tab.id)}
-        <label class="tab gap-[5px]">
+        <label class="tab gap-1.25">
           <input
             type="radio"
             checked={activeId === tab.id}

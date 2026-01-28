@@ -128,7 +128,7 @@
                 data={rsrcs.list}
                 mode={board.viewMode}
                 loading={board.loading}
-                class="!px-0"
+                class="px-0!"
                 tableClass="[&_thead_tr]:border-0"
                 gridClass="grid-cols-2 grid-cols-sparse"
                 itemClass="rounded-sm bg-base-100 shadow-sm lg:hover:shadow-lg lg:mb-4"

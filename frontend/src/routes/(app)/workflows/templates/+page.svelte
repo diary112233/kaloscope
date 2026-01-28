@@ -193,7 +193,7 @@
         {$_(category.label)}
       </Badge>
     </div>
-    <div class="m-4 mt-0 line-clamp-3 h-[3.75rem] text-sm opacity-70" title={tmpl.description}>
+    <div class="m-4 mt-0 line-clamp-3 h-15 text-sm opacity-70" title={tmpl.description}>
       {tmpl.description}
     </div>
     <div class="divider mx-2 my-0 h-0"></div>

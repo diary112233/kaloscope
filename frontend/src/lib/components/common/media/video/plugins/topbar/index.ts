@@ -80,19 +80,19 @@ export default class TopBar extends Plugin {
   render() {
     return `
     <div class="flex gap-4 w-full">
-      <div class="!pt-3 cursor-pointer back-icon">
+      <div class="pt-3! cursor-pointer back-icon">
         ${iconToSVG(icons.backSolid, 'size-5 text-white opacity-80')}
       </div>
-      <div class="!pt-2 flex flex-col truncate">
+      <div class="pt-2! flex flex-col truncate">
         <div>
           <div class="font-title font-medium text-lg text-white/80 w-max">
-            <span class="!pr-8">${this.title}</span>
-            <span class="!pr-8 hidden">${this.title}</span>
+            <span class="pr-8!">${this.title}</span>
+            <span class="pr-8! hidden">${this.title}</span>
           </div>
         </div>
         <div class="text-xs text-white/60">${this.uploader}</div>
       </div>
-      <div class="!pt-2.5 !ml-auto cursor-pointer settings-icon">
+      <div class="pt-2.5! ml-auto! cursor-pointer settings-icon">
         ${iconToSVG(icons.moreVertical, 'size-6 text-white/80')}
       </div>
     </div>

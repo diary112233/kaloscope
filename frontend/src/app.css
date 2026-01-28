@@ -116,7 +116,7 @@
   .border-r,
   .border-b,
   .border-l {
-    @apply !border-base-content/20;
+    @apply border-base-content/20!;
   }
 
   /* base focus ring color */
@@ -127,7 +127,7 @@
     @apply transition-colors;
     &:focus,
     &:focus-within {
-      @apply !border-primary/80 !outline-none;
+      @apply border-primary/80! outline-none!;
     }
   }
 
@@ -137,14 +137,14 @@
       & > *:not(ul, .menu-title, details, .btn):active,
       & > *:not(ul, .menu-title, details, .btn).menu-active,
       & > details > summary:active {
-        @apply !bg-active;
+        @apply bg-active!;
       }
     }
   }
 
   /* modal dialog box */
   .modal-box {
-    @apply flex !max-h-11/12 flex-col gap-4 !overscroll-none !p-4;
+    @apply flex max-h-11/12! flex-col gap-4 overscroll-none! p-4!;
     > form {
       @apply flex flex-col gap-4;
     }
@@ -158,7 +158,7 @@
       }
     }
     .modal-action {
-      @apply !mt-4;
+      @apply mt-4!;
       > button {
         @apply min-w-20;
       }
@@ -219,10 +219,10 @@
 
 /* grid columns with different widths */
 @utility grid-cols-sparse {
-  @apply md:!grid-cols-2 lg:!grid-cols-3 xl:!grid-cols-4 2xl:!grid-cols-5;
+  @apply md:grid-cols-2! lg:grid-cols-3! xl:grid-cols-4! 2xl:grid-cols-5!;
 }
 @utility grid-cols-compact {
-  @apply md:!grid-cols-3 w60:!grid-cols-4 w72:!grid-cols-5 w84:!grid-cols-6 w96:!grid-cols-7 w108:!grid-cols-8;
+  @apply md:grid-cols-3! w60:grid-cols-4! w72:grid-cols-5! w84:grid-cols-6! w96:grid-cols-7! w108:grid-cols-8!;
 }
 
 /* flexbox with center alignment */
@@ -286,7 +286,7 @@
   @apply border-2 border-base-content/20 bg-base-200 text-xs font-semibold text-base-content;
 }
 .tippy-box[data-theme~='neutral'] {
-  @apply mt-1 border-1 glass bg-neutral text-xs text-neutral-content;
+  @apply mt-1 border glass bg-neutral text-xs text-neutral-content;
 }
 .tippy-box[data-theme~='description'] {
   @apply mt-4 bg-base-300/90 shadow-xl backdrop-blur-xs;

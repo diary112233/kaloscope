@@ -67,7 +67,7 @@
           preset={browser.name?.toLowerCase()}
           icon={device.type === 'mobile' ? icons.phone : device.type === 'tablet' ? icons.tablet : icons.desktop}
           width="2rem"
-          class="[&_iconify-icon]:!opacity-70"
+          class="[&_iconify-icon]:opacity-70!"
         />
         <div class="flex items-baseline gap-1 overflow-hidden">
           <span class="text-base {browser.version ? '' : 'truncate'}">

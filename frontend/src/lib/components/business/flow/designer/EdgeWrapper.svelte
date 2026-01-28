@@ -22,6 +22,6 @@
 </script>
 
 <BaseEdge {path} {markerEnd} />
-<EdgeLabel x={labelX} y={labelY} class="absolute -top-[2px] !bg-transparent opacity-50 hover:opacity-100">
+<EdgeLabel x={labelX} y={labelY} class="absolute -top-0.5 bg-transparent! opacity-50 hover:opacity-100">
   <button class="cursor-pointer text-3xl {selected ? '' : 'hidden'}" onclick={deleteEdge}>x</button>
 </EdgeLabel>

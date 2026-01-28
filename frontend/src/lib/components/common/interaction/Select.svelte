@@ -88,7 +88,7 @@
 {:else if options}
   <!-- custom dropdown select -->
   {@const label = options.filter((o) => o.value === value)[0]?.label}
-  <Dropdown class="dropdown-end [&:open_.select]:!border-primary/80 {_class}" contentClass="bg-base-200 my-1">
+  <Dropdown class="dropdown-end [&:open_.select]:border-primary/80! {_class}" contentClass="bg-base-200 my-1">
     {#snippet trigger()}
       <div class={selectClass}>{$_(label, { default: label })}</div>
     {/snippet}

@@ -27,7 +27,7 @@
   });
 </script>
 
-<div class="history-back fixed inset-0 layer-1 max-sm:bottom-[var(--ks-dock-h)]">
+<div class="history-back fixed inset-0 layer-1 max-sm:bottom-(--ks-dock-h)">
   <Overlay black loading={$loading} />
   <VideoPlayer bind:this={player} />
 </div>

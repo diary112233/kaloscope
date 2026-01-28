@@ -76,7 +76,7 @@
           class="group inline-flex min-h-8 items-center p-1 transition-all duration-300 {sortClass} {sortedClass}"
           onclick={() => sort && sort.toggle()}
         >
-          <span class="truncate pt-[1px] text-xs font-semibold uppercase">
+          <span class="truncate pt-px text-xs font-semibold uppercase">
             {#if actions && !desktop.current}
               <iconify-icon icon={icons.wrenchSettings} width="1rem"></iconify-icon>
             {:else}

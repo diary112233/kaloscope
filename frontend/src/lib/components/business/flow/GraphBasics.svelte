@@ -11,7 +11,7 @@
 <div class="truncate">
   {#if graph.tmpl && !graph.editable}
     <a
-      class="border-b-1 border-transparent text-primary hover:border-primary/80 {nameClass}"
+      class="border-b border-transparent text-primary hover:border-primary/80 {nameClass}"
       title={graph.name}
       href={graph.tmpl.repo.repo_url}
       target="_blank"

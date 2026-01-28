@@ -81,13 +81,13 @@
         <div
           tabindex="0"
           role="button"
-          class="flex-center size-[96px] overflow-hidden rounded-sm border"
+          class="flex-center size-24 overflow-hidden rounded-sm border"
           ondblclick={() => iconInput.click()}
         >
           <img src={cropSrc} alt="" class="size-full" use:cropper={(img) => (cropImg = img)} />
         </div>
       {:else}
-        <div class="group relative size-[96px]">
+        <div class="group relative size-24">
           <Image
             border
             transparent
@@ -99,7 +99,7 @@
           {#if icon}
             {@const opacityClass = 'opacity-0 group-hover:opacity-100 transition-opacity'}
             <button
-              class="btn absolute top-[2px] right-[2px] btn-square btn-xs {opacityClass}"
+              class="btn absolute top-0.5 right-0.5 btn-square btn-xs {opacityClass}"
               aria-label="Delete"
               onclick={(event) => {
                 event.preventDefault();

@@ -106,7 +106,7 @@
         >
           <!-- previous page button -->
           {#if prevDisabled}
-            <button class="btn-disabled {simpleMode ? '!bg-base-300' : ''} {prevClass}">
+            <button class="btn-disabled {simpleMode ? 'bg-base-300!' : ''} {prevClass}">
               {$_('data.paginator.previous')}
             </button>
           {:else}
@@ -148,7 +148,7 @@
 
           <!-- next page button -->
           {#if nextDisabled}
-            <button class="btn-disabled {simpleMode ? '!bg-base-300' : ''} {nextClass}">
+            <button class="btn-disabled {simpleMode ? 'bg-base-300!' : ''} {nextClass}">
               {$_('data.paginator.next')}
             </button>
           {:else}

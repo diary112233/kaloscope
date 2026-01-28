@@ -290,7 +290,7 @@
             ghost={false}
             icon={icons.userFill}
             text={loggedUser}
-            class="max-w-36 [&>:last-child]:max-sm:hidden"
+            class="max-w-36 *:last:max-sm:hidden"
             disabled={$authLoading !== null}
             loading={$authLoading}
             onclick={() => {
@@ -306,7 +306,7 @@
             square={false}
             icon={icons.user}
             text={$_('app.login')}
-            class="max-w-36 bg-base-300 !opacity-50"
+            class="max-w-36 bg-base-300 opacity-50!"
             disabled={$authLoading !== null}
             loading={$authLoading}
             onclick={() => loginModal.show()}

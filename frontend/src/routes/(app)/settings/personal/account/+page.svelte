@@ -133,16 +133,16 @@
 <Modal title={$_('action.change', $_('model.field.avatar'))} bind:this={avatarDialog}>
   <div class="flex-col-center gap-4">
     {#if cropSrc}
-      <div class="flex-center size-[320px] overflow-hidden rounded-full border">
+      <div class="flex-center size-80 overflow-hidden rounded-full border">
         <img src={cropSrc} alt="" class="size-full" use:cropper={(img) => (cropImg = img)} />
       </div>
     {:else}
-      <div class="group relative size-[320px]">
+      <div class="group relative size-80">
         <Image circle border src={avatarSrc} icon={icons.user} width="320px" />
         {#if avatarSrc}
           {@const opacityClass = 'opacity-0 group-hover:opacity-100 transition-opacity'}
           <button
-            class="btn absolute top-[30px] right-[30px] btn-square btn-sm {opacityClass}"
+            class="btn absolute top-7.5 right-7.5 btn-square btn-sm {opacityClass}"
             aria-label="Delete"
             onclick={(event) => {
               event.preventDefault();

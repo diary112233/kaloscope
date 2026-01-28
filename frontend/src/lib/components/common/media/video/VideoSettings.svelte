@@ -223,7 +223,7 @@
         {#if definitions.length > 0}
           <Select
             native={!rotateFullscreen}
-            class="dropdown-top [&_p]:!max-h-32"
+            class="dropdown-top [&_p]:max-h-32!"
             options={definitions.map((d) => ({ value: d.url, label: String(d.definition) }))}
             bind:value={definition}
             onchange={() => changeDefinition(definition)}
@@ -237,7 +237,7 @@
           {@render optionName($_('media.video.landscape.title'), true)}
           <Select
             native={!rotateFullscreen}
-            class="dropdown-top [&_p]:!max-h-32"
+            class="dropdown-top [&_p]:max-h-32!"
             options={[
               { value: 'rotate', label: 'media.video.landscape.rotate' },
               { value: 'web_api', label: 'media.video.landscape.web_api' }
@@ -337,7 +337,7 @@
   {@const tabClass = checked ? '!text-white/80' : '!text-white/20 hover:!text-white/80'}
   <label class="tab mb-4 h-8 gap-1 rounded-field px-2 transition-colors {tabClass}">
     <input type="radio" {checked} value={id} bind:group={tabId} />
-    <iconify-icon {icon} width="1.125rem" class="mt-0.5 size-[1.125rem]"></iconify-icon>
+    <iconify-icon {icon} width="1.125rem" class="mt-0.5 size-4.5"></iconify-icon>
     <span class="text-lg font-bold">{name}</span>
   </label>
 {/snippet}
@@ -406,6 +406,7 @@
 
   .tab-content {
     max-height: 30rem;
+    border-radius: 0;
     border-top-color: color-mix(in oklab, #fff 10%, transparent);
     > div {
       display: flex;

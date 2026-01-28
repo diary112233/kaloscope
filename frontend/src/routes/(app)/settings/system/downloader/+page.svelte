@@ -86,7 +86,7 @@
           preset={downloader.preset?.toLowerCase()}
           icon={icons.box3dScanFill}
           width="2rem"
-          class="[&_iconify-icon]:!opacity-70"
+          class="[&_iconify-icon]:opacity-70!"
         />
         <div class="flex items-baseline gap-1 overflow-hidden">
           <span class="text-base {downloader.version ? '' : 'truncate'}">

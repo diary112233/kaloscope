@@ -79,7 +79,7 @@
     {@const libType = LibType[lib.lib_type]}
     <div class="flex justify-between gap-2 rounded-t-field bg-base-200 p-4">
       <div class="grid grid-flow-col items-center gap-2">
-        <Image transparent icon={libType.icon} width="2rem" class="[&_iconify-icon]:!opacity-70" />
+        <Image transparent icon={libType.icon} width="2rem" class="[&_iconify-icon]:opacity-70!" />
         <div class="truncate text-base">{lib.name}</div>
       </div>
       <div class="flex items-center gap-1">

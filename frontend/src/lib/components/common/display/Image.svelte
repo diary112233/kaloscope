@@ -136,7 +136,7 @@
       <img
         src={proxyImage(src, proxy)}
         alt=""
-        class="size-full object-cover"
+        class="size-full rotate-0 object-cover"
         loading="lazy"
         draggable={false}
         in:fade

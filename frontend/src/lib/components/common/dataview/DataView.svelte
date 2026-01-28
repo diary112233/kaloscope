@@ -175,7 +175,8 @@
   {/if}
   <!-- data view -->
   <div
-    class="overflow-auto overscroll-none {dvh && hideOnScroll ? 'h-(--ks-svh) sm:h-(--ks-lvh)' : 'h-full'} {viewClass}"
+    class="overflow-auto {dvh && hideOnScroll ? 'h-(--ks-svh) sm:h-(--ks-lvh)' : 'h-full'} {viewClass}"
+    class:overscroll-none={dvh}
     onscroll={() => _onscroll()}
     bind:this={view}
   >
