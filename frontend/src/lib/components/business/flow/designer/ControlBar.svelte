@@ -283,7 +283,6 @@
           onconfirm: () => {
             leaving = true;
             confirming = false;
-            // eslint-disable-next-line svelte/no-navigation-without-resolve
             to && goto(to.url);
           }
         });

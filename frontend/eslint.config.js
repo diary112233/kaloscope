@@ -24,7 +24,25 @@ export default defineConfig(
     rules: {
       // typescript-eslint strongly recommend that you do not use the no-undef lint rule on TypeScript projects.
       // see: https://typescript-eslint.io/troubleshooting/faqs/eslint/#i-get-errors-from-the-no-undef-rule-about-global-variables-not-being-defined-even-though-there-are-no-typescript-errors
-      'no-undef': 'off'
+      'no-undef': 'off',
+      // https://eslint.org/docs/latest/rules/no-unused-expressions
+      '@typescript-eslint/no-unused-expressions': [
+        'error',
+        {
+          allowShortCircuit: true,
+          allowTernary: true
+        }
+      ],
+      // https://sveltejs.github.io/eslint-plugin-svelte/rules/no-navigation-without-resolve/
+      'svelte/no-navigation-without-resolve': [
+        'error',
+        {
+          ignoreGoto: true,
+          ignoreLinks: true,
+          ignorePushState: false,
+          ignoreReplaceState: false
+        }
+      ]
     }
   },
   {
@@ -36,16 +54,6 @@ export default defineConfig(
         parser: ts.parser,
         svelteConfig
       }
-    },
-    rules: {
-      // https://eslint.org/docs/latest/rules/no-unused-expressions
-      '@typescript-eslint/no-unused-expressions': [
-        'error',
-        {
-          allowShortCircuit: true,
-          allowTernary: true
-        }
-      ]
     }
   }
 );
