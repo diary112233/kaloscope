@@ -182,6 +182,12 @@ export const sniffer = {
   },
   isAndroidEdge: () => {
     return (os.name === 'Android' || os.name === 'Android-x86') && browser.name === 'Edge';
+  },
+  isTablet: () => {
+    return device.type === 'tablet';
+  },
+  isDesktop: () => {
+    return device.type === 'desktop' || !device.type;
   }
 };
 

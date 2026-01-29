@@ -14,6 +14,7 @@
 <script lang="ts">
   import { tooltip } from '$lib/actions';
   import { icons } from '$lib/icons';
+  import { sniffer } from '$lib/utils';
 
   let { children, title, tip }: SettingProps = $props();
 </script>
@@ -22,7 +23,10 @@
   <div class="flex items-center justify-between text-xl">
     <span class="font-bold">{title}</span>
     {#if tip}
-      <span class="flex-center cursor-help" use:tooltip={{ content: tip, placement: 'left' }}>
+      <span
+        class="flex-center cursor-help"
+        use:tooltip={{ content: tip, placement: 'left', trigger: sniffer.isDesktop() ? 'mouseenter' : 'click' }}
+      >
         <iconify-icon icon={icons.questionCircle}></iconify-icon>
       </span>
     {/if}

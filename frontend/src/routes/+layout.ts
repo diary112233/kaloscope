@@ -22,7 +22,7 @@ export const load: LayoutLoad = async () => {
     theme: 'neutral',
     animation: 'scale',
     placement: 'bottom',
-    trigger: sniffer.isMobile() ? 'click' : 'mouseenter',
+    trigger: sniffer.isDesktop() ? 'mouseenter' : '',
     plugins: [followCursor]
   });
 
