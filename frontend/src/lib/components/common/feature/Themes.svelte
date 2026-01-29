@@ -115,10 +115,9 @@
 
 {#snippet themes()}
   {#each AVAILABLE_THEMES as theme (theme)}
-    <li>
+    <li data-theme={theme} class="rounded-field">
       <button
         class="bg-base-100 font-sans shadow-sm hover:bg-base-300 {$themeStore === theme ? '[&_svg]:block' : ''}"
-        data-theme={theme}
         onclick={(event) => {
           switchTheme(theme);
           event.currentTarget.blur();
