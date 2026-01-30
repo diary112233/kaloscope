@@ -493,6 +493,7 @@
     "http_request_failed": "发送 HTTP 请求失败！",
     "flow_already_running": "流程任务已在运行！",
     "import_graphs_failed": "导入流程定义失败！",
+    "export_graphs_failed": "导出流程定义失败！",
     "select_export_data": "请先选择要导出的数据。"
   },
   "message": {

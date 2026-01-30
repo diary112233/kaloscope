@@ -493,6 +493,7 @@
     "http_request_failed": "HTTP request failed!",
     "flow_already_running": "Workflow task is already running!",
     "import_graphs_failed": "Failed to import workflow definitions!",
+    "export_graphs_failed": "Failed to export workflow definitions!",
     "select_export_data": "Please select at least one item to export."
   },
   "message": {

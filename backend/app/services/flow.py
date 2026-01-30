@@ -309,7 +309,7 @@ class FlowGraphService(BaseService[FlowGraph], model=FlowGraph):
         if not ids:
             return None
 
-        graphs = await FlowGraph.filter(id__in=ids, state=GraphState.PUBLISHED)
+        graphs = await FlowGraph.filter(id__in=ids, state__not=GraphState.DRAFTING)
         if not graphs:
             return None
 

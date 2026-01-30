@@ -109,6 +109,10 @@
       .post('flow/graph/export', { json: { ids: selectedKeys } })
       .blob()
       .then((blob) => {
+        if (blob.size === 0) {
+          alert({ level: 'error', message: 'export_graphs_failed' });
+          return;
+        }
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
