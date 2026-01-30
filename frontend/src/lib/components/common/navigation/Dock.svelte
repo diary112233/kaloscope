@@ -10,8 +10,10 @@
 </script>
 
 <script lang="ts">
+  import { goto } from '$app/navigation';
   import { page } from '$app/state';
   import { _ } from '$lib/i18n';
+  import { subroutes } from '$lib/stores';
 
   let { navs, shadow = true }: DockProps = $props();
   // box shadow class
@@ -24,7 +26,18 @@
     <a
       href={nav.path}
       class="mt-4 mb-0 justify-start duration-0 {active ? 'cursor-default text-content' : ''}"
-      onclick={(event) => active && event.preventDefault()}
+      onclick={(event) => {
+        if (active) {
+          event.preventDefault();
+          return;
+        }
+        // navigate to subroute if exists
+        const subroute = $subroutes?.[nav.path];
+        if (subroute) {
+          event.preventDefault();
+          goto(subroute, { replaceState: true });
+        }
+      }}
     >
       <div class="size-5">
         {#if active}

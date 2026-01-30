@@ -14,13 +14,13 @@
 </script>
 
 <script lang="ts">
-  import { afterNavigate } from '$app/navigation';
+  import { afterNavigate, goto } from '$app/navigation';
   import { page } from '$app/state';
   import { tooltip } from '$lib/actions';
   import { Languages, Logo, PageHeader, Signposts, Themes, UserCenter } from '$lib/components';
   import { _ } from '$lib/i18n';
   import { icons } from '$lib/icons';
-  import { historyBack } from '$lib/stores';
+  import { historyBack, subroutes } from '$lib/stores';
 
   let { navs = [], back = false, shadow = false, appMode = false }: NavbarProps = $props();
   let themeSwitcher: Themes;
@@ -94,9 +94,20 @@
             <li>
               <a
                 href={nav.path}
-                class="flex-center size-10 duration-0 {active ? 'cursor-default item-active' : ''}"
-                onclick={(event) => active && event.preventDefault()}
                 aria-label={$_(nav.title)}
+                class="flex-center size-10 duration-0 {active ? 'cursor-default item-active' : ''}"
+                onclick={(event) => {
+                  if (active) {
+                    event.preventDefault();
+                    return;
+                  }
+                  // navigate to subroute if exists
+                  const subroute = $subroutes?.[nav.path];
+                  if (subroute) {
+                    event.preventDefault();
+                    goto(subroute, { replaceState: true });
+                  }
+                }}
                 use:tooltip={{
                   zIndex: 9999,
                   content: $_(nav.title),
