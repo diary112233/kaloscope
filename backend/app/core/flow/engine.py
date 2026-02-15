@@ -9,6 +9,7 @@ from datetime import datetime
 from enum import Enum, auto
 from functools import cached_property
 from multiprocessing import Queue
+from multiprocessing.managers import DictProxy, ListProxy
 from multiprocessing.synchronize import Event, Lock
 from typing import Any, Literal, Self
 
@@ -199,7 +200,7 @@ class FlowEngine:
         return self._app.shared_ctx.flow_reload_flag
 
     @cached_property
-    def _job_actions(self) -> dict[int, JobAction]:  # -> DictProxy
+    def _job_actions(self) -> DictProxy[int, JobAction]:
         return self._app.shared_ctx.flow_job_actions
 
     async def _reload(self):
@@ -527,7 +528,7 @@ class FlowTask(ABC):
     )
 
     _running_lock: Lock | None = None
-    _running_tasks: list | None = None
+    _running_tasks: ListProxy | None = None
 
     def __init__(self, graph_id: int, bootparams: Mapping[str, Any], repeatable: bool):
         self.graph_id = graph_id
@@ -572,9 +573,9 @@ class FlowTask(ABC):
         return cls._running_lock
 
     @classmethod
-    def running_tasks(cls) -> list[tuple]:  # -> ListProxy
+    def running_tasks(cls) -> ListProxy[tuple]:
         if cls._running_tasks is None:
-            running_tasks: list = Sanic.get_app().shared_ctx.flow_running_tasks
+            running_tasks: ListProxy = Sanic.get_app().shared_ctx.flow_running_tasks
             cls._running_tasks = running_tasks
         return cls._running_tasks
 

@@ -1,5 +1,6 @@
 import time
 from http.cookiejar import Cookie, CookieJar
+from multiprocessing.managers import DictProxy
 from multiprocessing.synchronize import RLock
 
 from sanic import Sanic
@@ -12,7 +13,7 @@ class SQLiteCookieJar(CookieJar):
 
     def __init__(self, app: Sanic, policy=None):
         super().__init__(policy)
-        self._cookies: dict = app.shared_ctx.cookies  # DictProxy
+        self._cookies: DictProxy = app.shared_ctx.cookies
         self._cookies_lock: RLock = app.shared_ctx.cookies_lock
 
     def set_cookie(self, cookie):

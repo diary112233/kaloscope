@@ -1,6 +1,7 @@
 import asyncio
 import queue
 from functools import cached_property
+from multiprocessing.managers import ListProxy
 from multiprocessing.synchronize import Lock
 from pathlib import Path
 from queue import Queue
@@ -121,11 +122,11 @@ class LibWatcher:
         return self._app.shared_ctx.lib_watcher_lock
 
     @cached_property
-    def _removing_paths(self) -> list[str]:  # -> ListProxy
+    def _removing_paths(self) -> ListProxy[str]:
         return self._app.shared_ctx.lib_removing_paths
 
     @cached_property
-    def _observing_paths(self) -> list[str]:  # -> ListProxy
+    def _observing_paths(self) -> ListProxy[str]:
         return self._app.shared_ctx.lib_observing_paths
 
     async def start(self):

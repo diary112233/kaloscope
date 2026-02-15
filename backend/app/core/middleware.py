@@ -1,4 +1,5 @@
 from datetime import timedelta
+from multiprocessing.managers import DictProxy
 from multiprocessing.synchronize import Lock
 
 from sanic import HTTPResponse, Request, Sanic, json
@@ -100,7 +101,7 @@ class SessionHolder:
         self._sessions_lock: Lock = app.shared_ctx.sessions_lock
 
     @staticmethod
-    def get_sessions() -> dict[str, UserInfo]:  # -> DictProxy
+    def get_sessions() -> DictProxy[str, UserInfo]:
         """Get the shared user sessions.
 
         Returns:

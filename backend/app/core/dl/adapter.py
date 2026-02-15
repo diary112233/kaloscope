@@ -1,6 +1,7 @@
 import contextlib
 import re
 from functools import cached_property
+from multiprocessing.managers import DictProxy
 from typing import Any, Literal
 
 import httpx
@@ -81,7 +82,7 @@ class Adapter(BaseModel):
         return self.csrf.header
 
     @cached_property
-    def csrf_tokens(self) -> dict[str, str]:  # -> DictProxy
+    def csrf_tokens(self) -> DictProxy[str, str]:
         return Sanic.get_app().shared_ctx.csrf_tokens
 
     async def version(self) -> str | None:

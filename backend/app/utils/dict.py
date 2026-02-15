@@ -1,8 +1,9 @@
 from collections.abc import Callable
+from multiprocessing.managers import DictProxy
 
 
 def entries[K, V](
-    d: dict[K, V],
+    d: dict[K, V] | DictProxy[K, V],
     *,
     keys: list[K] | None = None,
     kfilter: Callable[[K], bool] | None = None,
@@ -31,7 +32,7 @@ def entries[K, V](
 
 
 def keys[K, V](
-    d: dict[K, V],
+    d: dict[K, V] | DictProxy[K, V],
     *,
     keys: list[K] | None = None,
     kfilter: Callable[[K], bool] | None = None,
@@ -52,7 +53,7 @@ def keys[K, V](
 
 
 def values[K, V](
-    d: dict[K, V],
+    d: dict[K, V] | DictProxy[K, V],
     *,
     keys: list[K] | None = None,
     kfilter: Callable[[K], bool] | None = None,
@@ -73,7 +74,7 @@ def values[K, V](
 
 
 def remove[K, V](
-    d: dict[K, V],
+    d: dict[K, V] | DictProxy[K, V],
     key: K | None = None,
     *,
     keys: list[K] | None = None,
