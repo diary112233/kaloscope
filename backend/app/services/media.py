@@ -4,7 +4,7 @@ from tortoise.transactions import atomic
 from app.core.exceptions import ErrorCode, KaloscopeException
 from app.core.media.watcher import LibWatcher
 from app.models.flow import FlowTrigger, GraphCategory
-from app.models.media import MediaItem, MediaLib, MediaLibBasics
+from app.models.media import MediaItem, MediaLib, MediaLibUpsert
 from app.services.base import BaseService
 from app.services.flow import FlowTriggerService
 
@@ -30,11 +30,11 @@ class MediaLibService(BaseService[MediaLib], model=MediaLib):
 
     @classmethod
     @atomic()
-    async def upsert_basics(cls, basics: MediaLibBasics) -> MediaLib:
-        """Create or update the media library basics.
+    async def upsert(cls, obj: MediaLibUpsert) -> MediaLib:
+        """Create or update a media library.
 
         Args:
-            basics: The media library basics.
+            obj: The media library data.
 
         Raises:
             KaloscopeException: If the name or directory already exists.
@@ -44,27 +44,27 @@ class MediaLibService(BaseService[MediaLib], model=MediaLib):
         """
 
         # check if the name or directory already exists
-        filter = ~Q(id=basics.id) if basics.id else Q()
-        if await MediaLib.filter(filter & Q(name=basics.name)).count() > 0:
+        filter = ~Q(id=obj.id) if obj.id else Q()
+        if await MediaLib.filter(filter & Q(name=obj.name)).count() > 0:
             raise KaloscopeException(ErrorCode.NAME_ALREADY_EXISTS)
-        if basics.dir and await MediaLib.filter(filter & Q(dir=basics.dir)).count() > 0:
+        if obj.dir and await MediaLib.filter(filter & Q(dir=obj.dir)).count() > 0:
             raise KaloscopeException(ErrorCode.DIRECTORY_ALREADY_EXISTS)
 
-        if basics.id:
+        if obj.id:
             # update the media library
-            await MediaLib.filter(id=basics.id).update(
-                name=basics.name,
-                language=basics.language or None,
+            await MediaLib.filter(id=obj.id).update(
+                name=obj.name,
+                language=obj.language or None,
             )
-            lib = await MediaLib.get(id=basics.id)
+            lib = await MediaLib.get(id=obj.id)
         else:
             # create the media library
             priorities: list = await MediaLib.all().values_list("priority", flat=True)
             lib = MediaLib(
-                lib_type=basics.lib_type,
-                name=basics.name,
-                dir=basics.dir,
-                language=basics.language or None,
+                lib_type=obj.lib_type,
+                name=obj.name,
+                dir=obj.dir,
+                language=obj.language or None,
                 priority=(max(priorities) + 1 if len(priorities) > 0 else 1),
             )
             await lib.save()
@@ -73,7 +73,7 @@ class MediaLibService(BaseService[MediaLib], model=MediaLib):
 
         # bind the flow triggers to the media library
         await FlowTriggerService.bind_triggers(
-            GraphCategory.INGEST, lib.id, basics.triggers
+            GraphCategory.INGEST, lib.id, obj.triggers
         )
 
         return lib

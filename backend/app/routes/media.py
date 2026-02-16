@@ -13,7 +13,7 @@ from app.models.flow import GraphCategory
 from app.models.media import (
     MediaItem,
     MediaLib,
-    MediaLibBasics,
+    MediaLibUpsert,
     MediaQuery,
     MediaStream,
 )
@@ -45,10 +45,10 @@ async def sort_libraries(_, body: IDs) -> HTTPResponse:
 
 
 @media.post("/lib/upsert")
-@validate(json=MediaLibBasics)
-async def upsert_library_basics(_, body: MediaLibBasics) -> HTTPResponse:
-    """Create or update the media library basics."""
-    return json(await MediaLibService.dump(await MediaLibService.upsert_basics(body)))
+@validate(json=MediaLibUpsert)
+async def upsert_library(_, body: MediaLibUpsert) -> HTTPResponse:
+    """Create or update a media library."""
+    return json(await MediaLibService.dump(await MediaLibService.upsert(body)))
 
 
 @media.post("/lib/delete")

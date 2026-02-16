@@ -111,7 +111,7 @@ class MediaEvent(TortoiseModel):
 
 
 # -------------------- Pydantic Models -------------------- #
-class MediaLibBasics(BaseModel):
+class MediaLibUpsert(BaseModel):
     id: PositiveInt | None = None
     lib_type: LibType | None = None
     name: str = Field(min_length=1, max_length=64)
