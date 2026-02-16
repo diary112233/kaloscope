@@ -55,8 +55,9 @@ class KaloscopeConfig:
             "connections": {"default": db_url},
             "apps": {
                 "models": {
-                    "models": ["app.models", "aerich.models"],
+                    "models": ["app.models"],
                     "default_connection": "default",
+                    "migrations": "app.migrations",
                 },
             },
             "use_tz": True,

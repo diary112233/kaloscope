@@ -4,11 +4,10 @@ from multiprocessing.managers import SyncManager
 from pathlib import Path
 
 import httpx
-from aerich import Command
 from sanic import Sanic
 from sanic.log import Colors, logger
 from tortoise import Tortoise
-from tortoise.connection import connections
+from tortoise.migrations.api import migrate
 
 import app.routes as routes
 from app.core.config import KaloscopeConfig
@@ -74,7 +73,6 @@ async def before_server_stop(app: Sanic):
 @app.main_process_stop
 async def main_process_stop(app: Sanic):
     """Handle the main process shutdown event."""
-    await close_orm(app)
     await close_shared_ctx(app)
 
 
@@ -125,13 +123,12 @@ async def init_workspace(app: Sanic):
 
 
 async def upgrade_db(app: Sanic):
-    """Upgrade the database schema using aerich.
+    """Upgrade the database schema.
 
-    See https://github.com/tortoise/aerich for more details.
+    See https://tortoise.github.io/migration.html for more details.
     """
-    command = Command(tortoise_config, location=str(APP_PATH / "migrations"))
-    await command.init()
-    await command.upgrade(run_in_transaction=True)
+    await migrate(config=tortoise_config)
+    await Tortoise.close_connections()
     logger.debug(_msg(Colors.BLUE, "Database schema upgraded."), _worker(app))
 
 
@@ -144,13 +141,13 @@ async def start_orm(app: Sanic):
         # enable debug logging for Tortoise ORM
         logging.getLogger("tortoise").setLevel(logging.DEBUG)
         logging.getLogger("tortoise.db_client").setLevel(logging.DEBUG)
-    await Tortoise.init(tortoise_config)
+    await Tortoise.init(tortoise_config, _enable_global_fallback=True)
     logger.debug(_msg(Colors.BLUE, "Tortoise ORM initialized."), _worker(app))
 
 
 async def close_orm(app: Sanic):
     """Close the Tortoise ORM connections."""
-    await connections.close_all()
+    await Tortoise.close_connections()
     logger.debug(_msg(Colors.YELLOW, "Tortoise ORM closed."), _worker(app))
 
 

@@ -11,7 +11,7 @@ import aiofiles
 import httpx
 from sanic.log import logger
 from sanic.request.form import File
-from tortoise import connections, timezone
+from tortoise import Tortoise, timezone
 from tortoise.expressions import Q
 from tortoise.transactions import atomic
 
@@ -191,11 +191,11 @@ class FlowGraphService(BaseService[FlowGraph], model=FlowGraph):
             i += 1
 
     @classmethod
-    async def upsert_basics(cls, basics: GraphBasics) -> FlowGraph:
-        """Create or update the flow graph basics.
+    async def upsert(cls, obj: GraphBasics) -> FlowGraph:
+        """Create or update a flow graph.
 
         Args:
-            basics: The flow graph basics.
+            obj: The flow graph basics.
 
         Raises:
             KaloscopeException: If the name already exists.
@@ -204,28 +204,28 @@ class FlowGraphService(BaseService[FlowGraph], model=FlowGraph):
             The flow graph instance.
         """
         # check if the name already exists
-        filter = Q(name=basics.name)
-        if basics.id:
-            filter &= ~Q(id=basics.id)
+        filter = Q(name=obj.name)
+        if obj.id:
+            filter &= ~Q(id=obj.id)
         if await FlowGraph.filter(filter).count() > 0:
             raise KaloscopeException(ErrorCode.NAME_ALREADY_EXISTS)
 
-        if basics.id:
+        if obj.id:
             # update the flow graph
-            await FlowGraph.filter(id=basics.id).update(
-                name=basics.name,
-                icon=await save_icon(basics.image) or basics.icon,
-                description=basics.description,
+            await FlowGraph.filter(id=obj.id).update(
+                name=obj.name,
+                icon=await save_icon(obj.image) or obj.icon,
+                description=obj.description,
             )
-            graph = await FlowGraph.get(id=basics.id)
+            graph = await FlowGraph.get(id=obj.id)
         else:
             # create the flow graph
             graph = FlowGraph(
-                name=basics.name,
-                icon=await save_icon(basics.image),
-                description=basics.description,
+                name=obj.name,
+                icon=await save_icon(obj.image),
+                description=obj.description,
                 editable=True,
-                category=basics.category,
+                category=obj.category,
                 state=GraphState.DRAFTING,
                 draft={"nodes": [], "edges": []},
             )
@@ -483,7 +483,7 @@ class FlowTriggerService(BaseService[FlowTrigger], model=FlowTrigger):
         Returns:
             A list of dictionaries containing the flow trigger details.
         """
-        conn = connections.get("default")
+        conn = Tortoise.get_connection("default")
         triggers = await conn.execute_query_dict(
             """
             SELECT

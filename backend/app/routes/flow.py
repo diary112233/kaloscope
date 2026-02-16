@@ -125,9 +125,9 @@ async def list_graphs(_, query: GraphQuery) -> HTTPResponse:
 
 @flow.post("/graph/upsert")
 @validate(form=GraphBasics)
-async def upsert_graph_basics(_, body: GraphBasics) -> HTTPResponse:
-    """Create or update the flow graph basics."""
-    return json(await FlowGraphService.dump(await FlowGraphService.upsert_basics(body)))
+async def upsert_graph(_, body: GraphBasics) -> HTTPResponse:
+    """Create or update a flow graph."""
+    return json(await FlowGraphService.dump(await FlowGraphService.upsert(body)))
 
 
 @flow.get("/graph/<id:int>")

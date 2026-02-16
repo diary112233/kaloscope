@@ -135,8 +135,8 @@ class DownloadDirService(BaseService[DownloadDir], model=DownloadDir):
     """The service class for all download directory related operations."""
 
     @classmethod
-    async def upsert_dir(cls, path: str) -> DownloadDir:
-        """Create or update the download directory.
+    async def upsert(cls, path: str) -> DownloadDir:
+        """Create or update a download directory.
 
         Args:
             path: The download directory path.
@@ -208,7 +208,7 @@ class DownloadTaskService(BaseService[DownloadTask], model=DownloadTask):
             raise KaloscopeException(ErrorCode.GET_INFO_HASH_FAILED)
 
         # save the download directory
-        await DownloadDirService.upsert_dir(add.dir)
+        await DownloadDirService.upsert(add.dir)
         # create the download task
         unique_id = result.get("unique_id") if isinstance(result, dict) else None
         return await DownloadTask.create(
