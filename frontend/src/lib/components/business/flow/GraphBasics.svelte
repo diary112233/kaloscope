@@ -10,12 +10,7 @@
 <Image transparent src={graph.icon} icon={icons.documentFlowchart} class={imgClass} />
 <div class="truncate">
   {#if graph.tmpl && !graph.editable}
-    <a
-      class="border-b border-transparent text-primary hover:border-primary/80 {nameClass}"
-      title={graph.name}
-      href={graph.tmpl.repo.repo_url}
-      target="_blank"
-    >
+    <a class="hover-link {nameClass}" title={graph.name} href={graph.tmpl.repo.repo_url} target="_blank">
       <iconify-icon icon={icons.link}></iconify-icon>
       <span class="truncate">{graph.name}</span>
     </a>

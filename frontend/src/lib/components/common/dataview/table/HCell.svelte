@@ -67,7 +67,7 @@
       {#if children}
         {@render children()}
       {:else if cellText}
-        {@const sortClass = sort ? 'btn btn-subtle btn-sm bg-transparent hover:border-base-content/20' : ''}
+        {@const sortClass = sort ? 'btn btn-subtle btn-sm' : ''}
         {@const sortedClass = sort && ($sort === sort.asc || $sort === sort.desc) ? 'text-base-content' : ''}
         <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
         <div

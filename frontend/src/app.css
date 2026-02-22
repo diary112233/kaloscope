@@ -217,6 +217,10 @@
   mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
 }
 
+@utility hover-link {
+  @apply border-b border-transparent text-primary hover:border-primary/80;
+}
+
 @utility hover-dashed {
   @apply cursor-pointer overflow-hidden rounded-field border-dashed border-base-content/20 hover:border;
 }
