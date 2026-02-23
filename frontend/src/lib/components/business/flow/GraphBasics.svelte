@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { Image } from '$lib/components';
+  import { Image, confirm } from '$lib/components';
+  import { _ } from '$lib/i18n';
   import { icons } from '$lib/icons';
   import type { FlowGraph } from '$lib/types';
 
@@ -10,10 +11,26 @@
 <Image transparent src={graph.icon} icon={icons.documentFlowchart} class={imgClass} />
 <div class="truncate">
   {#if graph.tmpl && !graph.editable}
-    <a class="hover-link {nameClass}" title={graph.name} href={graph.tmpl.repo.repo_url} target="_blank">
+    <!-- svelte-ignore a11y_click_events_have_key_events -->
+    <div
+      tabindex="0"
+      role="button"
+      class="{graph.newest_tmpl ? 'hover-link' : ''} {nameClass}"
+      title={graph.name}
+      onclick={() => {
+        if (!graph.newest_tmpl) {
+          return;
+        }
+        confirm({
+          icon: icons.arrowBigUp,
+          message: $_('flow.tmpl.confirm_update'),
+          onconfirm: () => console.log('confirm_update')
+        });
+      }}
+    >
       <iconify-icon icon={icons.link}></iconify-icon>
       <span class="truncate">{graph.name}</span>
-    </a>
+    </div>
   {:else if !graph.editable}
     <div class="opacity-70 {nameClass}" title={graph.name}>
       <iconify-icon icon={icons.unlink}></iconify-icon>

@@ -305,6 +305,7 @@ export type FlowGraph = {
   last_execution: string | null;
   node_types: string[];
   tmpl: FlowTemplate | null;
+  newest_tmpl: FlowTemplate | null;
 };
 
 /**

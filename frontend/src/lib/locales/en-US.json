@@ -464,7 +464,8 @@
     "tmpl": {
       "last_sync": "Last sync: {0}",
       "confirm_repo": "Please enter the GitHub repository URL:",
-      "confirm_name": "Please confirm the name to use:"
+      "confirm_name": "Please confirm the name to use:",
+      "confirm_update": "Update to the latest version?"
     },
     "trigger": {
       "count": "Workflow Count",

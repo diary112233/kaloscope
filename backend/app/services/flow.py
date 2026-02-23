@@ -163,6 +163,29 @@ class FlowTemplateService(BaseService[FlowTemplate], model=FlowTemplate):
             editable=True,
         )
 
+    @classmethod
+    async def get_newest(cls, tmpl: dict) -> dict | None:
+        """Get the newest template for the same repo and path.
+
+        Args:
+            tmpl: The serialized template dict.
+
+        Returns:
+            The serialized newest template dict, or None if no newer template exists.
+        """
+        newest = (
+            await FlowTemplate.filter(
+                repo_id=tmpl["repo"]["repo_name"],
+                path=tmpl["path"],
+                newest=True,
+            )
+            .exclude(id=tmpl["id"])
+            .first()
+        )
+        if newest is None:
+            return None
+        return await cls.dump(newest)
+
 
 class FlowGraphService(BaseService[FlowGraph], model=FlowGraph):
     """The service class for all flow graph related operations."""
