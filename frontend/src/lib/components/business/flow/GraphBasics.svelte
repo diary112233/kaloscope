@@ -4,7 +4,16 @@
   import { icons } from '$lib/icons';
   import type { FlowGraph } from '$lib/types';
 
-  let { graph, imgClass }: { graph: FlowGraph; imgClass?: string } = $props();
+  let {
+    graph,
+    imgClass,
+    onupdate
+  }: {
+    graph: FlowGraph;
+    imgClass?: string;
+    onupdate?: (graph: FlowGraph) => void;
+  } = $props();
+
   const nameClass = 'mb-2 flex max-w-fit items-center gap-1 [&_*]:-mb-1';
 </script>
 
@@ -15,7 +24,7 @@
     <div
       tabindex="0"
       role="button"
-      class="{graph.newest_tmpl ? 'hover-link' : ''} {nameClass}"
+      class="{graph.newest_tmpl ? 'hover-link' : 'pb-px'} {nameClass}"
       title={graph.name}
       onclick={() => {
         if (!graph.newest_tmpl) {
@@ -24,7 +33,7 @@
         confirm({
           icon: icons.arrowBigUp,
           message: $_('flow.tmpl.confirm_update'),
-          onconfirm: () => console.log('confirm_update')
+          onconfirm: () => onupdate?.(graph)
         });
       }}
     >

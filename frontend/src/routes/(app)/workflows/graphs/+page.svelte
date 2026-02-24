@@ -9,9 +9,9 @@
     Checkbox,
     DataView,
     FlowLogs,
-    GraphBasics,
     GraphEditor,
     HCell,
+    Image,
     Paginator,
     Search,
     Select,
@@ -24,7 +24,7 @@
   import { createLoading, createSortField } from '$lib/helpers';
   import { _, dateTime, milliseconds } from '$lib/i18n';
   import { icons } from '$lib/icons';
-  import type { FlowGraph, OptionValue, Page, Resp } from '$lib/types';
+  import type { FlowGraph, FlowTemplate, OptionValue, Page, Resp } from '$lib/types';
   import { untrack } from 'svelte';
 
   let graphs: FlowGraph[] = $state([]);
@@ -94,6 +94,20 @@
     loading.start();
     api
       .post('flow/graph/delete', { json: { ids: [id] } })
+      .then(() => search(pagination.current))
+      .catch(() => loading.end());
+  }
+
+  /**
+   * Update flow graph by ID.
+   *
+   * @param id - The flow graph ID.
+   * @param tmpl - The newest template to reference.
+   */
+  function update(id: number, tmpl: FlowTemplate) {
+    loading.start();
+    api
+      .post(`flow/graph/${id}/update`, { json: tmpl })
       .then(() => search(pagination.current))
       .catch(() => loading.end());
   }
@@ -216,7 +230,42 @@
       <Checkbox key={String(graph.id)} disabled={drafting} />
     </Cell>
     <Cell>
-      <GraphBasics {graph} imgClass="max-sm:hidden" />
+      {@const nameClass = 'mb-2 flex max-w-fit items-center gap-1 [&_*]:-mb-1'}
+      <Image transparent src={graph.icon} icon={icons.documentFlowchart} class="max-sm:hidden" />
+      <div class="truncate">
+        {#if graph.tmpl && !graph.editable}
+          <!-- svelte-ignore a11y_click_events_have_key_events -->
+          <div
+            tabindex="0"
+            role="button"
+            class="{graph.newest_tmpl ? 'hover-link' : 'pb-px'} {nameClass}"
+            title={graph.name}
+            onclick={() => {
+              if (!graph.newest_tmpl) {
+                return;
+              }
+              confirm({
+                icon: icons.arrowBigUp,
+                message: $_('flow.tmpl.confirm_update'),
+                onconfirm: () => update(graph.id, graph.newest_tmpl!)
+              });
+            }}
+          >
+            <iconify-icon icon={icons.link}></iconify-icon>
+            <span class="truncate">{graph.name}</span>
+          </div>
+        {:else if !graph.editable}
+          <div class="opacity-70 {nameClass}" title={graph.name}>
+            <iconify-icon icon={icons.unlink}></iconify-icon>
+            <span class="truncate">{graph.name}</span>
+          </div>
+        {:else}
+          <div class={nameClass} title={graph.name}>
+            <span class="truncate">{graph.name}</span>
+          </div>
+        {/if}
+        <div class="truncate text-xs opacity-50" title={graph.description}>{graph.description}</div>
+      </div>
     </Cell>
     <Cell>
       {@const category = GraphCategory[graph.category]}

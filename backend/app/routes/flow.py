@@ -166,6 +166,13 @@ async def publish_graph(request: Request, id: int) -> HTTPResponse:
     return json(await FlowGraphService.dump(graph))
 
 
+@flow.post("/graph/<id:int>/update")
+async def update_graph(request: Request, id: int) -> HTTPResponse:
+    """Update the flow graph."""
+    graph = await FlowGraphService.update_graph(id, request.json)
+    return json(await FlowGraphService.dump(graph))
+
+
 @flow.post("/graph/<id:int>/retract")
 async def retract_graph(_, id: int) -> HTTPResponse:
     """Retract the flow graph."""

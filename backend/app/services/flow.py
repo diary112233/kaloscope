@@ -264,7 +264,7 @@ class FlowGraphService(BaseService[FlowGraph], model=FlowGraph):
             draft: The JSON content of the nodes and edges.
 
         Returns:
-            The flow graph instance.
+            The saved flow graph instance.
         """
         graph = await FlowGraph.get(id=id)
         # check if the graph is editable
@@ -287,7 +287,7 @@ class FlowGraphService(BaseService[FlowGraph], model=FlowGraph):
             definition: The JSON content of the nodes and edges.
 
         Returns:
-            The published flow graph.
+            The published flow graph instance.
         """
         graph = await FlowGraph.get(id=id)
         definition = Node.compress(definition)
@@ -313,6 +313,30 @@ class FlowGraphService(BaseService[FlowGraph], model=FlowGraph):
         graph.definition = definition
         graph.updated_at = now
         graph.state = GraphState.PUBLISHED
+        await graph.save()
+        return graph
+
+    @classmethod
+    async def update_graph(cls, id: int, tmpl: dict) -> FlowGraph:
+        """Update the flow graph by referencing a new template.
+
+        Args:
+            id: The flow graph ID.
+            tmpl: The serialized template dict to reference.
+
+        Returns:
+            The updated flow graph instance.
+        """
+        graph = await FlowGraph.get(id=id)
+        # check if the graph is editable
+        if graph.editable:
+            return graph
+
+        graph.tmpl_id = tmpl["id"]
+        graph.category = tmpl["category"]
+        graph.revision = tmpl["revision"]
+        graph.draft = tmpl["definition"]
+        graph.state = GraphState.DRAFTING
         await graph.save()
         return graph
 

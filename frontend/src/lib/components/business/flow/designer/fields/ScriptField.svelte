@@ -102,6 +102,7 @@ def execute(node_id, node_data, context):
 
   // register the validator
   let validatorClass = $state('');
+  // svelte-ignore state_referenced_locally
   if (field.required && hasContext('flow/graph')) {
     const context = getContext('flow/graph') as FlowGraphContext;
     context.addValidator(() => {
