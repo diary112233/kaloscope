@@ -109,7 +109,7 @@
         {
           icon: icons.documentEdit,
           text: $_('action.edit', $_('model.graph')),
-          onclick: () => goto(`/workflows/graphs/${graph.editable ? '' : 'r/'}${graph.id}`)
+          onclick: () => goto(`/settings/workflows/graphs/${graph.editable ? '' : 'r/'}${graph.id}`)
         },
         {
           icon: icons.back,

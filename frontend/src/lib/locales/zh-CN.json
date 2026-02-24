@@ -39,12 +39,6 @@
         "dl": "{0}/s"
       }
     },
-    "workflows": {
-      "title": "工作流",
-      "templates": "流程模板",
-      "graphs": "流程定义",
-      "instances": "流程实例"
-    },
     "settings": {
       "title": "设置",
       "personal": {
@@ -52,6 +46,11 @@
         "account": "账号设置",
         "sessions": "在线设备",
         "preferences": "偏好设置"
+      },
+      "workflows": {
+        "title": "工作流",
+        "templates": "流程模板",
+        "graphs": "流程定义"
       },
       "system": {
         "title": "系统设置",

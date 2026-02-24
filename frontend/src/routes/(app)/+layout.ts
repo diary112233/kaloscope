@@ -36,14 +36,6 @@ export const load: LayoutLoad = () => {
       drawerStyle: 'menu'
     },
     {
-      title: 'nav.workflows.title',
-      path: '/workflows',
-      icon: icons.flowchart,
-      iconFilled: icons.flowchartFilled,
-      mobile: false,
-      drawerStyle: 'menu'
-    },
-    {
       title: 'nav.settings.title',
       path: '/settings',
       icon: icons.settings,

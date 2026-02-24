@@ -100,7 +100,7 @@
       .post(`flow/tmpl/${id}/ref`, { json: { name } })
       .json<Resp<FlowGraph>>()
       .then(() => {
-        goto('/workflows/graphs');
+        goto('/settings/workflows/graphs');
       })
       .finally(() => {
         loading.end();
@@ -119,7 +119,7 @@
       .post(`flow/tmpl/${id}/copy`, { json: { name } })
       .json<Resp<FlowGraph>>()
       .then(() => {
-        goto('/workflows/graphs');
+        goto('/settings/workflows/graphs');
       })
       .finally(() => {
         loading.end();

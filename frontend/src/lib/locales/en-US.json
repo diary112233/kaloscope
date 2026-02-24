@@ -39,12 +39,6 @@
         "dl": "{0}/s"
       }
     },
-    "workflows": {
-      "title": "Workflows",
-      "templates": "Templates",
-      "graphs": "Graphs",
-      "instances": "Instances"
-    },
     "settings": {
       "title": "Settings",
       "personal": {
@@ -52,6 +46,11 @@
         "account": "Account",
         "sessions": "Sessions",
         "preferences": "Preferences"
+      },
+      "workflows": {
+        "title": "Workflows",
+        "templates": "Templates",
+        "graphs": "Graphs"
       },
       "system": {
         "title": "System",
