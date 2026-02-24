@@ -428,7 +428,7 @@
 
 <div class="shrink-0 overflow-auto rounded-box border {_class}">
   <div class={editorClass} bind:this={editor}></div>
-  <div class="flex items-center justify-between border-t px-2 py-px {panelClass}">
+  <div class="flex items-center justify-between border-t px-2 py-0.5 {panelClass}">
     <span class="flex-center gap-1">
       <Button
         size="xs"

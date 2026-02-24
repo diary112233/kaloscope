@@ -39,7 +39,7 @@
   // dynamic class names
   const shadowClass = $derived(selected ? 'shadow-xl' : 'shadow-lg hover:shadow-xl');
   const borderClass = $derived(
-    `border-2 ${selected ? 'border-base-content/30' : 'border-base-content/20 hover:border-base-content/30'}`
+    `border-2 ${selected ? 'border-base-content/30' : 'border-border hover:border-base-content/30'}`
   );
   const titleClass = $derived(
     `backdrop-blur-lg transition-colors ${selected ? 'bg-base-300' : 'bg-base-300/50 group-hover:bg-base-300'}`

@@ -108,8 +108,8 @@
   bind:this={modal}
 >
   {#if repos.length > 0}
-    <ul class="list overflow-hidden rounded-box shadow-md">
-      <li class="bg-base-150 px-4 py-2 text-xs text-base-content/50">
+    <ul class="list overflow-hidden rounded-box border shadow-md">
+      <li class="gradient px-3 py-1 text-xs text-base-content/50" style="border-bottom: 1px inset var(--color-border)">
         {$_('flow.tmpl.last_sync', $dateTime(repos[0].updated_at))}
       </li>
       {#each repos as repo (repo.id)}
