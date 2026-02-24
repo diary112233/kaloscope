@@ -9,7 +9,6 @@ export { default as FlowExecutor } from './flow/FlowExecutor.svelte';
 export { default as FlowLogs } from './flow/FlowLogs.svelte';
 export { default as FlowRepos } from './flow/FlowRepos.svelte';
 export { default as FlowTriggers } from './flow/FlowTriggers.svelte';
-export { default as GraphBasics } from './flow/GraphBasics.svelte';
 export { default as GraphEditor } from './flow/GraphEditor.svelte';
 
 export { markFavorites, default as SearchHit } from './indexer/SearchHit.svelte';

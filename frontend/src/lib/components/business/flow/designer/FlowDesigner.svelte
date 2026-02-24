@@ -358,7 +358,7 @@
 </script>
 
 {#snippet sideButton()}
-  {@const btnClass = 'svelte-flow__panel flex-center size-8 border bg-blur-70 shadow-md [&_*]:opacity-80'}
+  {@const btnClass = 'svelte-flow__panel flex-center size-8 border bg-blur-70 shadow-md **:opacity-80'}
   {#if readonly && graph}
     <div class="rounded-field {btnClass}" use:tooltip={{ content: $_('flow.readonly'), followCursor: true }}>
       <iconify-icon icon={icons.eye} width="1.5rem"></iconify-icon>

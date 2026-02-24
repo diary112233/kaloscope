@@ -5,8 +5,8 @@
     Cell,
     DataView,
     FlowLogs,
-    GraphBasics,
     HCell,
+    Image,
     Paginator,
     Search,
     Status,
@@ -91,7 +91,11 @@
   {/snippet}
   {#snippet row(graph)}
     <Cell>
-      <GraphBasics {graph} />
+      <Image transparent src={graph.icon} icon={icons.documentFlowchart} />
+      <div class="truncate">
+        <div class="mb-1 truncate" title={graph.name}>{graph.name}</div>
+        <div class="truncate text-xs opacity-50" title={graph.description}>{graph.description}</div>
+      </div>
     </Cell>
     <Cell text={$dateTime(graph.last_execution)} />
     <Cell text={$milliseconds(graph.average_time)} />

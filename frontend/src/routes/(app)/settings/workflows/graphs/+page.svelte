@@ -230,7 +230,7 @@
       <Checkbox key={String(graph.id)} disabled={drafting} />
     </Cell>
     <Cell>
-      {@const nameClass = 'mb-2 flex max-w-fit items-center gap-1 [&_*]:-mb-1'}
+      {@const nameClass = 'mb-2 flex max-w-fit items-center gap-1 **:-mb-1'}
       <Image transparent src={graph.icon} icon={icons.documentFlowchart} class="max-sm:hidden" />
       <div class="truncate">
         {#if graph.tmpl && !graph.editable}
