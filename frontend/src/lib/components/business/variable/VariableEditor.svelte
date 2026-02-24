@@ -86,7 +86,7 @@
         <button
           type="button"
           aria-label="Encrypted"
-          class="flex-center {!!id ? 'cursor-not-allowed' : 'cursor-pointer'}"
+          class="flex-center {id ? 'cursor-not-allowed' : 'cursor-pointer'}"
           onclick={() => (encrypted = !encrypted)}
           disabled={!!id}
         >
