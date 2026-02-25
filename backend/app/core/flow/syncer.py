@@ -4,6 +4,7 @@ import uuid
 from functools import cached_property
 from multiprocessing.synchronize import Event, Lock
 from pathlib import Path
+from typing import Any
 
 import aiofiles
 from git import GitError, InvalidGitRepositoryError
@@ -14,6 +15,7 @@ from sanic.request.form import File
 from tortoise import timezone
 
 from app.core.config import KaloscopeConfig
+from app.core.constants import ENCODING
 from app.models.flow import FlowRepository, FlowTemplate
 from app.utils import json
 
@@ -130,7 +132,7 @@ async def scan_directory(path: Path, repo: str):
     for file in [*path.glob("*.json"), *path.glob("*/*.json")]:
         # read and parse the JSON file
         async with aiofiles.open(file, "rb") as f:
-            data = json.loads(await f.read())
+            data = json.try_loads((await f.read()).decode(ENCODING), with_comments=True)
 
         # validate the template
         if not isinstance(data, dict):
@@ -168,7 +170,7 @@ async def scan_directory(path: Path, repo: str):
         await FlowTemplate.filter(id__in=existing_ids).update(newest=True)
 
 
-async def save_icon(icon: File | bytes | str | None) -> str | None:
+async def save_icon(icon: Any) -> str | None:
     """Save the icon file to the workspace.
 
     Args:
