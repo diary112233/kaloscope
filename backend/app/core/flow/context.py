@@ -1,7 +1,9 @@
 import copy
 import time
+import tomllib
 from collections.abc import Mapping
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any, Self
 
 from app.core.decorators import after
@@ -10,6 +12,9 @@ from app.models.general import GlobalVariable
 from app.utils.crypto import xor_decrypt
 from app.utils.deep import deep_update
 from app.utils.dict import TrackableDict
+
+with open(Path(__file__).parents[3] / "pyproject.toml", "rb") as _f:
+    _KS_VERSION: str = tomllib.load(_f)["project"]["version"]
 
 AUTH_KEY = "auth"
 """The key to the indexer authentication in the local variables."""
@@ -83,16 +88,18 @@ class Context:
 
     def union(self):
         """Merge the context variables into a single dictionary."""
-        context = getattr(self, "_context", None)
-        if context is None:
-            context = {}
-            context.update(self.globalvars)
-            context.update(self.localvars)
-            context.update(self.bootparams)
-        context.update(self.storage)
+        merged = getattr(self, "_context", None)
+        if merged is None:
+            merged = {
+                "ks_version": _KS_VERSION,
+            }
+            merged.update(self.globalvars)
+            merged.update(self.localvars)
+            merged.update(self.bootparams)
+        merged.update(self.storage)
         if self.loopvar is not None:
-            context.update(self.loopvar)
-        self._context = context
+            merged.update(self.loopvar)
+        self._context = merged
 
     def __getitem__(self, key: str):
         return self._context[key]

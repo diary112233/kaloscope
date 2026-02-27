@@ -47,6 +47,7 @@
    * @returns The standardized URL.
    */
   function standardize(url: string): string {
+    url = url.trim();
     if (url.toLowerCase().startsWith(HTTP)) {
       secure = false;
       return url.slice(7);

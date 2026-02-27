@@ -44,7 +44,7 @@ class HTTPNode(Node):
         language="jinja2",
         width="32rem",
         darkmode=True,
-        default='{\n  "response": {{ response.text|tojson }}\n}',
+        default='{\n  "response": {{ response.text }}\n}',
     )
 
     @classmethod

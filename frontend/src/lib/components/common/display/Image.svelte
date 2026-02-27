@@ -83,6 +83,25 @@
     onclick
   }: ImageProps = $props();
 
+  // svelte-ignore state_referenced_locally
+  let src: string | null = $state(_src);
+  // svelte-ignore state_referenced_locally
+  let text: string | null = $state(_text);
+
+  // update the `src` and `text` states slowly to prevent flickering
+  const _sluggish = debounce((s: string | null, t: string | null) => {
+    src = s;
+    text = t;
+  });
+  $effect(() => {
+    if (sluggish) {
+      _sluggish(_src, _text);
+    } else {
+      src = _src;
+      text = _text;
+    }
+  });
+
   // the default aspect ratio
   let aspectRatio = $derived(ratio || '1/1');
 
@@ -94,22 +113,6 @@
       return '2.5rem';
     } else if (!ratio) {
       return width || height;
-    }
-  });
-
-  // the states for the image source and fallback text
-  let src: string | null = $derived(_src);
-  let text: string | null = $derived(_text);
-  $effect(() => {
-    if (sluggish) {
-      // update the `src` and `text` states slowly to prevent flickering
-      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      _src && _text;
-      debounce(() => (src = _src))();
-      debounce(() => (text = _text))();
-    } else {
-      src = _src;
-      text = _text;
     }
   });
 
