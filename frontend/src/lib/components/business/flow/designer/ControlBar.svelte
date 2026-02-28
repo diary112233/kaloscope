@@ -16,7 +16,7 @@
   import { v4 as uuidv4 } from 'uuid';
 
   let {
-    nodes = $bindable(),
+    nodes: _nodes = $bindable(),
     edges = $bindable(),
     graph,
     jsonGraph,
@@ -34,6 +34,9 @@
   let graphEditor: GraphEditor | null = $state(null);
   const minimap = mediaQuery('(min-width: 40rem)');
   const store = useStore();
+
+  // ignore some properties of nodes to avoid unnecessary history records
+  let nodes = $derived(_nodes.map((node) => ({ ...node, selected: false, measured: {} })));
 
   /**
    * Toggle on/off the interactivity.
@@ -74,7 +77,7 @@
       skipRecord = true;
       historyId = keys[index - 1];
       const record = $state.snapshot(histories.get(historyId) as unknown) as History;
-      nodes = record.nodes;
+      _nodes = record.nodes;
       edges = record.edges;
     }
   }
@@ -89,7 +92,7 @@
       skipRecord = true;
       historyId = keys[index + 1];
       const record = $state.snapshot(histories.get(historyId) as unknown) as History;
-      nodes = record.nodes;
+      _nodes = record.nodes;
       edges = record.edges;
     }
   }
@@ -123,6 +126,12 @@
       skipRecord = false;
       return;
     }
+    // skip if the content is identical to the current history record
+    const current = histories.get(historyId);
+    if (current && JSON.stringify(current) === JSON.stringify({ nodes, edges })) {
+      return;
+    }
+    // save the new history record and truncate the old histories if needed
     truncateHistories();
     historyId = uuidv4();
     if (histories.size === 0) {
