@@ -429,6 +429,9 @@
 
 <svelte:window
   onkeydown={(event) => {
+    if (readOnly) {
+      return;
+    }
     if ((event.ctrlKey || event.metaKey) && event.code === 'KeyU') {
       // update the document when undo/redo is triggered
       setTimeout(() => setDocument(document), 0);
