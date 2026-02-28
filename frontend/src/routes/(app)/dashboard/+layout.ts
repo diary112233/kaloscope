@@ -17,7 +17,7 @@ export const load: LayoutLoad = async () => {
     })
     .json<Resp<Page<FlowGraph>>>()
     .then((resp) => {
-      graphs = resp.data.list;
+      graphs = resp.data.items;
       graphs = graphs.filter((g) => g.node_types.includes('board_start'));
     });
 

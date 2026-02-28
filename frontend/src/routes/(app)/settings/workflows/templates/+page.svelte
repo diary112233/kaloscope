@@ -60,7 +60,7 @@
         pagination.current = page;
         pagination.size = size;
         pagination.total = resp.data.total;
-        tmpls = resp.data.list;
+        tmpls = resp.data.items;
       })
       .finally(() => {
         loading.end();

@@ -22,7 +22,7 @@ class SearchEndNode(Node):
         required=True,
         language="jinja2",
         darkmode=True,
-        default=json.pretty({"total": 0, "list": [{"id": ""}]}),
+        default=json.pretty({"total": 0, "items": [{"id": ""}]}),
     )
     force_end = ToggleField("force_end", tooltip="force_end", required=True)
 

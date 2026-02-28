@@ -52,7 +52,7 @@
         pagination.current = page;
         pagination.size = size;
         pagination.total = resp.data.total;
-        users = resp.data.list;
+        users = resp.data.items;
       })
       .finally(() => {
         loading.end();

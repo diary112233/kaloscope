@@ -22,7 +22,7 @@ class BoardEndNode(Node):
         required=True,
         language="jinja2",
         darkmode=True,
-        default=json.pretty([{"title": "", "list": [{"id": ""}]}]),
+        default=json.pretty([{"title": "", "items": [{"id": ""}]}]),
     )
     force_end = ToggleField("force_end", tooltip="force_end", required=True)
 

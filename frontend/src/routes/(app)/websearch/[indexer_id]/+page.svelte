@@ -182,12 +182,12 @@
       })
       .json<Resp<Page<Resource>>>()
       .then((resp) => {
-        if (!resp.data || !resp.data.list) {
+        if (!resp.data || !resp.data.items) {
           resources = [];
           pagination.total = null;
           return;
         }
-        resources = resp.data.list;
+        resources = resp.data.items;
         markFavorites(indexerId, resources);
         if (resp.data.total === null || resp.data.total === undefined) {
           pagination.total = resources.length;

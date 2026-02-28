@@ -44,7 +44,7 @@
       .json<Resp<Page<Favorite>>>()
       .then((resp) => {
         pagination.total = resp.data.total;
-        favorites = resp.data.list;
+        favorites = resp.data.items;
       })
       .finally(() => {
         loading.end();

@@ -47,7 +47,7 @@ class Page[M: Model]:
     """A paginated list wrapper."""
 
     total: int
-    list: list[M]
+    items: list[M]
 
 
 class Pageable(BaseModel):
@@ -169,8 +169,8 @@ class TortoiseModel(Model):
             queryset = queryset.annotate(**annotations)
         # return all if page_num is 0
         if page_num == 0:
-            list = await queryset
-            return Page(len(list), list)
+            items = await queryset
+            return Page(len(items), items)
         # return empty result if total is 0
         total = await queryset.count()
         if total == 0:

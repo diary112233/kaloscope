@@ -64,7 +64,7 @@
         pagination.current = page;
         pagination.size = size;
         pagination.total = resp.data.total;
-        graphs = resp.data.list;
+        graphs = resp.data.items;
       })
       .finally(() => {
         loading.end();

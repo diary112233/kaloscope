@@ -49,7 +49,7 @@
         pagination.current = page;
         pagination.size = size;
         pagination.total = resp.data.total;
-        variables = resp.data.list;
+        variables = resp.data.items;
       })
       .finally(() => {
         loading.end();

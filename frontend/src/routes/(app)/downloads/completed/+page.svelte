@@ -56,7 +56,7 @@
         pagination.current = page;
         pagination.size = size;
         pagination.total = resp.data.total;
-        tasks = resp.data.list;
+        tasks = resp.data.items;
       })
       .finally(() => {
         loading.end();

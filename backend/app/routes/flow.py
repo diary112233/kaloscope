@@ -122,7 +122,7 @@ async def list_graphs(_, query: GraphQuery) -> HTTPResponse:
         exclude={"draft", "definition", "logs"},
     )
     # get the newest template for each graph if the template exists
-    for graph in page["list"]:
+    for graph in page["items"]:
         if tmpl := graph["tmpl"]:
             graph["newest_tmpl"] = await FlowTemplateService.get_newest(tmpl)
     return json(page)

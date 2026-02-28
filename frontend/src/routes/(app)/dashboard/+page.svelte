@@ -11,7 +11,7 @@
 
   type Resources = {
     title?: string | null;
-    list: Resource[];
+    items: Resource[];
   };
   type Board = {
     id: number;
@@ -125,7 +125,7 @@
           {#if board.activeId === index}
             <div class="tab-content mt-2" transition:fade>
               <DataView
-                data={rsrcs.list}
+                data={rsrcs.items}
                 mode={board.viewMode}
                 loading={board.loading}
                 class="px-0!"

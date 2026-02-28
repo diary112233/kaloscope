@@ -41,7 +41,7 @@ async def list_users(_, query: UserQuery) -> HTTPResponse:
         u.id: u.last_activity
         for u in sorted(sessions.values(), key=lambda u: u.last_activity)
     }
-    for user in page["list"]:
+    for user in page["items"]:
         user["last_activity"] = activities.get(user["id"])
     return json(page)
 

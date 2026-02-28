@@ -137,12 +137,12 @@
           }
         })
         .json<Resp<Page<Resource>>>();
-      if (!resp.data || !resp.data.list) {
+      if (!resp.data || !resp.data.items) {
         tab.resources = [];
         tab.total = null;
         return;
       }
-      tab.resources = await markFavorites(tab.id, resp.data.list);
+      tab.resources = await markFavorites(tab.id, resp.data.items);
       if (resp.data.total === null || resp.data.total === undefined) {
         tab.total = tab.resources.length;
         tab.simpleMode = true;

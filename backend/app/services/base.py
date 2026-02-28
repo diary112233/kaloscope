@@ -158,5 +158,5 @@ class BaseService[M: TortoiseModel]:
         """
         return {
             "total": page.total,
-            "list": await cls.dump_list(page.list, include=include, exclude=exclude),
+            "items": await cls.dump_list(page.items, include=include, exclude=exclude),
         }

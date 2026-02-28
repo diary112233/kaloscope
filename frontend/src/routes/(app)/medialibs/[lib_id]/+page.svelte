@@ -95,7 +95,7 @@
       })
       .json<Resp<Page<MediaItem>>>()
       .then((resp) => {
-        items = resp.data.list;
+        items = resp.data.items;
         pagination.total = resp.data.total;
       })
       .catch((error) => {
