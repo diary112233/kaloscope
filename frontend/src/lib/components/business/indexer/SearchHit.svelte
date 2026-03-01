@@ -188,7 +188,7 @@
       src={rsrc.cover}
       width="100%"
       ratio={coverRatio ?? '16/9'}
-      class="group-hover:opacity-80 [&_div]:rounded-b-none {transClass}"
+      class="rounded-b-none group-hover:opacity-80 {transClass}"
     />
     {#if rsrc.category || rsrc.brief}
       <div class="absolute bottom-0 h-8 w-full bg-linear-to-t from-black/50 to-transparent">

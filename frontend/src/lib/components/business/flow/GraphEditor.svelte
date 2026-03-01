@@ -84,7 +84,9 @@
           class="flex-center size-24 overflow-hidden rounded-sm border"
           ondblclick={() => iconInput.click()}
         >
-          <img src={cropSrc} alt="" class="size-full" use:cropper={(img) => (cropImg = img)} />
+          {#key cropSrc}
+            <img src={cropSrc} alt="" class="size-full" use:cropper={(img) => (cropImg = img)} />
+          {/key}
         </div>
       {:else}
         <div class="group relative size-24">

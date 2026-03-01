@@ -93,6 +93,7 @@ export function cropper(element: HTMLImageElement, transform: (blob: Promise<Blo
   return {
     destroy: () => {
       image?.removeEventListener('transform', _transform);
+      instance.destroy();
     }
   };
 }

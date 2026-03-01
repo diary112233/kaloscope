@@ -134,7 +134,9 @@
   <div class="flex-col-center gap-4">
     {#if cropSrc}
       <div class="flex-center size-80 overflow-hidden rounded-full border">
-        <img src={cropSrc} alt="" class="size-full" use:cropper={(img) => (cropImg = img)} />
+        {#key cropSrc}
+          <img src={cropSrc} alt="" class="size-full" use:cropper={(img) => (cropImg = img)} />
+        {/key}
       </div>
     {:else}
       <div class="group relative size-80">
