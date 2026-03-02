@@ -2,6 +2,18 @@
   import type { Favorite, IndexerConfig, Page, Resource, Resp, ViewMode } from '$lib/types';
 
   /**
+   * Calculate the height for a cover image based on the given aspect ratio.
+   *
+   * @param ratio - A CSS aspect-ratio string, e.g. "16/9", "9/16", "0.75", "auto".
+   */
+  function coverHeight(ratio: string): string {
+    const [w, h = '1'] = ratio.split('/');
+    const r = Number(w) / Number(h);
+    if (Number.isNaN(r) || r >= 1) return '3.5rem';
+    return `${(3.5 / r).toFixed(4)}rem`;
+  }
+
+  /**
    * Mark the resources as favorite or not.
    *
    * @param indexerId - The indexer ID.
@@ -115,9 +127,11 @@
 {#if mode === 'table'}
   <Cell class="group {detailsConfig ? 'cursor-pointer' : ''}" onclick={() => gotoDetails(rsrc)}>
     {#if rsrc.cover}
+      {@const ratio = coverRatio ?? '16/9'}
       <div class="relative">
-        <Image transparent src={rsrc.cover} height="3.5rem" ratio={coverRatio ?? '16/9'} />
-        <div class="absolute inset-0 flex size-full items-end justify-center">
+        <Image transparent src={rsrc.cover} height={coverHeight(ratio)} {ratio} />
+        <div class="absolute inset-0 flex size-full flex-col items-center justify-between">
+          <span class="px-0.5 text-white opacity-80 text-stroke">{rsrc.rating}</span>
           <span
             class="px-0.5 text-white opacity-80 text-stroke"
             style="font-size: clamp(0.5rem, calc(1rem - 0.05rem * {rsrc.category?.length || 0}), 0.75rem);"
