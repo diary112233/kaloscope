@@ -1,5 +1,6 @@
 <script lang="ts" module>
   import { goto } from '$app/navigation';
+  import { api } from '$lib/api';
   import type { Favorite, IndexerConfig, Page, Resource, Resp, ViewMode } from '$lib/types';
 
   type SearchHitProps = {
@@ -67,7 +68,6 @@
 </script>
 
 <script lang="ts">
-  import { api } from '$lib/api';
   import { Button, Cell, Image, Uploader, downloadPrompt } from '$lib/components';
   import { _ } from '$lib/i18n';
   import { icons } from '$lib/icons';
@@ -136,16 +136,24 @@
   }
 </script>
 
+{#snippet rating(score: number | null | undefined, _class?: string)}
+  {#if score !== null && score !== undefined}
+    <span class="rounded-sm bg-black/60 px-1 text-yellow-500 opacity-80 text-stroke {_class}">
+      {score.toFixed(1)}
+    </span>
+  {/if}
+{/snippet}
+
 {#if mode === 'table'}
   <Cell class="group {detailsConfig ? 'cursor-pointer' : ''}" onclick={() => gotoDetails(rsrc)}>
     {#if rsrc.cover}
       {@const ratio = coverRatio ?? '16/9'}
       <div class="relative">
         <Image transparent src={rsrc.cover} height={coverHeight(ratio)} {ratio} />
-        <div class="absolute inset-0 flex size-full flex-col items-center justify-between">
-          <span class="px-0.5 text-white opacity-80 text-stroke">{rsrc.rating}</span>
+        <div class="absolute inset-0 flex size-full flex-col">
+          {@render rating(rsrc.rating, 'mt-1 ml-1 self-start text-xs')}
           <span
-            class="px-0.5 text-white opacity-80 text-stroke"
+            class="mt-auto max-w-full self-center truncate px-0.5 text-white opacity-80 text-stroke"
             style="font-size: clamp(0.5rem, calc(1rem - 0.05rem * {rsrc.category?.length || 0}), 0.75rem);"
           >
             {rsrc.category}
@@ -193,9 +201,7 @@
   {@const btnClass = 'hover:bg-base-300 hover:text-base-content border-0 bg-black/60 text-white'}
   <!-- svelte-ignore a11y_click_events_have_key_events -->
   <div tabindex="0" role="button" class="group relative {pointerClass}" onclick={() => gotoDetails(rsrc)}>
-    {#if rsrc.rating}
-      <span class="absolute top-0 left-0 z-1 px-1 text-white opacity-80 text-stroke">{rsrc.rating}</span>
-    {/if}
+    {@render rating(rsrc.rating, 'absolute top-1 left-1 z-1')}
     <div class="absolute top-0 right-0 z-1 flex gap-2 p-1 opacity-0 group-hover:opacity-100 {transClass}">
       {#if detailsConfig && rsrc.favorite !== undefined}
         <Button
