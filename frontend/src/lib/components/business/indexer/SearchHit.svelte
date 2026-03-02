@@ -130,8 +130,8 @@
     <div class="flex w-full flex-col gap-4">
       <div class={detailsConfig ? 'transition-colors group-hover:text-primary' : ''}>
         <span class="text-sm">{rsrc.title}</span>
-        {#if rsrc.brief}
-          <span class="italic-text">[{rsrc.brief}]</span>
+        {#if rsrc.misc}
+          <span class="italic-text">[{rsrc.misc}]</span>
         {/if}
       </div>
       <Uploader up={rsrc.uploader} at={rsrc.uploaded_at} extra={rsrc.size} />
@@ -190,11 +190,11 @@
       ratio={coverRatio ?? '16/9'}
       class="rounded-b-none group-hover:opacity-80 {transClass}"
     />
-    {#if rsrc.category || rsrc.brief}
+    {#if rsrc.category || rsrc.misc}
       <div class="absolute bottom-0 h-8 w-full bg-linear-to-t from-black/50 to-transparent">
         <div class="flex h-full items-end justify-between gap-4 px-2 pb-1 text-xs text-white">
           <span class="whitespace-nowrap">{rsrc.category}</span>
-          <span class="truncate" title={rsrc.brief}>{rsrc.brief}</span>
+          <span class="truncate" title={rsrc.misc}>{rsrc.misc}</span>
         </div>
       </div>
     {/if}

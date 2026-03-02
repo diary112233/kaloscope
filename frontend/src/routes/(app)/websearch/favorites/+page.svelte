@@ -89,8 +89,8 @@
       <div class="flex w-full flex-col gap-4">
         <div class={favorite.url ? 'transition-colors group-hover:text-primary' : ''}>
           <span class="text-sm">{rsrc.title}</span>
-          {#if rsrc.brief}
-            <span class="italic-text">[{rsrc.brief}]</span>
+          {#if rsrc.misc}
+            <span class="italic-text">[{rsrc.misc}]</span>
           {/if}
         </div>
         <Uploader up={rsrc.uploader} extra={$dateTime(favorite.created_at)} />

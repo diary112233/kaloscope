@@ -416,9 +416,10 @@ export type Resource = Optional<{
   id: string;
   title: string;
   cover: string;
+  rating: number;
   link: string;
   size: string;
-  brief: string;
+  misc: string;
   category: string;
   uploader: string;
   uploaded_at: string;
