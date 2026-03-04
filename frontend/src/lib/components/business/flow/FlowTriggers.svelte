@@ -73,7 +73,7 @@
 
 <div class="overflow-hidden rounded-box border shadow-md {_class}">
   <div
-    class="flex items-center justify-between gradient px-3 py-1"
+    class="flex items-center justify-between bg-gradient px-3 py-1"
     style="border-bottom: 1px inset var(--color-border)"
   >
     <span class="text-sm text-base-content/60">{$_('flow.trigger.bound')}</span>
