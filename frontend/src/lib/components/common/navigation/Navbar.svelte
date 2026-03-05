@@ -57,7 +57,7 @@
       {:else}
         <!-- drawer button -->
         {#if drawerStyle}
-          <label for="drawer" class="btn-square w-10 text-content opacity-90 sm:hidden {btnClass}">
+          <label for="drawer" class="btn-square w-10 text-surface opacity-90 sm:hidden {btnClass}">
             {#if drawerStyle === 'menu'}
               <iconify-icon icon={icons.menuFoldSolid} width="1.75rem"></iconify-icon>
             {:else if drawerStyle === 'app'}
@@ -96,7 +96,7 @@
               <a
                 href={nav.path}
                 aria-label={$_(nav.title)}
-                class="flex-center size-10 duration-0 {active ? 'pointer-events-none item-active' : ''}"
+                class="flex-center size-10 duration-0 {active ? 'pointer-events-none item-emphasis' : ''}"
                 onclick={(event) => {
                   if (active) {
                     event.preventDefault();

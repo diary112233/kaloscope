@@ -77,7 +77,7 @@
           <a
             href={route.path}
             target={blank ? '_blank' : ''}
-            class="{blank ? 'group' : ''} {active ? 'menu-glass' : ''}"
+            class="{blank ? 'group' : ''} {active ? 'menu-emphasis' : ''}"
             onclick={(event) => {
               if (!blank) {
                 event.preventDefault();

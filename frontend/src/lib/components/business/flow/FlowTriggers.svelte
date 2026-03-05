@@ -113,7 +113,7 @@
         size="xs"
         icon={icons.arrowBigUp}
         text={$_('action.move_up', '')}
-        class={appending || triggerGraphId === 0 ? 'btn-disabled' : 'text-content'}
+        class={appending || triggerGraphId === 0 ? 'btn-disabled' : 'text-surface'}
         onclick={() => {
           if (appending || triggerGraphId === 0) {
             return;
@@ -132,7 +132,7 @@
         size="xs"
         icon={icons.arrowBigDown}
         text={$_('action.move_down', '')}
-        class={appending || triggerGraphId === 0 ? 'btn-disabled' : 'text-content'}
+        class={appending || triggerGraphId === 0 ? 'btn-disabled' : 'text-surface'}
         onclick={() => {
           if (appending || triggerGraphId === 0) {
             return;

@@ -31,7 +31,7 @@
   {#each $locales.filter((l) => l !== 'languages') as code (code)}
     <li>
       <button
-        class={$locale?.startsWith(code) ? 'item-active' : ''}
+        class={$locale?.startsWith(code) ? 'item-emphasis' : ''}
         onclick={(event) => {
           switchLocale(code);
           event.currentTarget.blur();

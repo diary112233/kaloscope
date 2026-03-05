@@ -121,7 +121,7 @@
               {#if num < 0}
                 <button class="pointer-events-none btn-subtle px-1 max-sm:hidden {btnClass}">...</button>
               {:else}
-                {@const activeClass = current === num ? 'item-active active:!bg-active' : 'btn-subtle'}
+                {@const activeClass = current === num ? 'item-emphasis active:!bg-emphasis' : 'btn-subtle'}
                 <button
                   class="px-[0.7rem] max-sm:hidden {btnClass} {activeClass}"
                   onclick={() => current !== num && onchange?.((current = num), size)}

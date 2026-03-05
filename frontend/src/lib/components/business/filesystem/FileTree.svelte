@@ -132,7 +132,7 @@
 {#snippet tree(paths?: Path[] | null)}
   {#if paths}
     {#each paths as path (path.path)}
-      {@const activeClass = current === path.path ? 'item-active' : ''}
+      {@const activeClass = current === path.path ? 'item-emphasis' : ''}
       <li>
         {#if path.is_dir && !path.is_empty}
           <details open={false}>

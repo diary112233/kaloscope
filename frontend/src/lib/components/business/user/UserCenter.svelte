@@ -89,7 +89,7 @@
 
   <ul class="menu gap-1">
     {#if $user}
-      <div class="text-center text-lg font-bold text-content">
+      <div class="text-center text-lg font-bold text-surface">
         {$user.username}
       </div>
     {/if}

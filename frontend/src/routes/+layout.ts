@@ -19,7 +19,7 @@ export const load: LayoutLoad = async () => {
     zIndex: 9997,
     maxWidth: 300,
     arrow: false,
-    theme: 'neutral',
+    theme: 'default',
     animation: 'scale',
     placement: 'bottom',
     trigger: sniffer.isDesktop() ? 'mouseenter' : '',

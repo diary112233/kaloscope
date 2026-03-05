@@ -194,7 +194,7 @@
         {
           condition: task.state === 'downloading',
           loading: loadingIds.has(task.id),
-          class: '[&_iconify-icon]:text-content/80',
+          class: '[&_iconify-icon]:text-surface/80',
           icon: icons.pauseFilled,
           text: $_('action.pause', $_('model.task')),
           onclick: () => pause(task)
@@ -202,7 +202,7 @@
         {
           condition: task.state === 'paused',
           loading: loadingIds.has(task.id),
-          class: '[&_iconify-icon]:text-content/80',
+          class: '[&_iconify-icon]:text-surface/80',
           icon: icons.playFilled,
           text: $_('action.start', $_('model.task')),
           onclick: () => start(task)

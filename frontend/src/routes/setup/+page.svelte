@@ -64,7 +64,7 @@
         <span class="app-name text-4xl text-shadow-md">{$_('app.name', { locale: 'en-US' })}</span>
       </div>
       <div class="text-center">
-        <h2 class="text-2xl font-bold text-content">{$_('app.setup_welcome')}</h2>
+        <h2 class="text-2xl font-bold text-surface">{$_('app.setup_welcome')}</h2>
         <p class="mt-2 text-sm opacity-70">{$_('app.setup_description')}</p>
       </div>
     </div>

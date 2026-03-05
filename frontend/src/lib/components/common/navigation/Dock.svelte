@@ -26,7 +26,7 @@
     {@const active = page.url.pathname.startsWith(nav.path)}
     <a
       href={nav.path}
-      class="mt-4 mb-0 justify-start duration-0 {active ? 'pointer-events-none text-content' : ''}"
+      class="mt-4 mb-0 justify-start duration-0 {active ? 'pointer-events-none text-surface' : ''}"
       onclick={(event) => {
         if (active) {
           event.preventDefault();
