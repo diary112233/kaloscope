@@ -86,7 +86,6 @@
       "indexer": "索引器",
       "download": "下载事件",
       "ingest": "入库事件",
-      "manual": "手动触发",
       "schedule": "定时任务"
     },
     "graph_state": {
@@ -386,8 +385,6 @@
         "episode": "剧集",
         "album": "专辑",
         "artist": "艺术家",
-        "manual_start": "开始",
-        "manual_end": "结束",
         "schedule_start": "开始",
         "schedule_end": "结束",
         "loop": "循环",

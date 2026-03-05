@@ -86,7 +86,6 @@
       "indexer": "Indexer",
       "download": "Download",
       "ingest": "Ingest",
-      "manual": "Manual",
       "schedule": "Schedule"
     },
     "graph_state": {
@@ -386,8 +385,6 @@
         "episode": "Episode",
         "album": "Album",
         "artist": "Artist",
-        "manual_start": "Start",
-        "manual_end": "End",
         "schedule_start": "Start",
         "schedule_end": "End",
         "loop": "Loop",

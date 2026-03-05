@@ -84,11 +84,6 @@ export const GraphCategory = createEnum({
     icon: icons.library,
     iconColor: null
   },
-  manual: {
-    label: 'enum.graph_category.manual',
-    icon: icons.handRight,
-    iconColor: null
-  },
   schedule: {
     label: 'enum.graph_category.schedule',
     icon: icons.clock,

@@ -27,7 +27,6 @@ class GraphCategory(StrEnum):
     INDEXER = auto()
     DOWNLOAD = auto()
     INGEST = auto()
-    MANUAL = auto()
     SCHEDULE = auto()
 
 

@@ -58,7 +58,6 @@ const fluentUISystemIcons = {
   globeSearch: 'fluent:globe-search-24-regular',
   globeSearchFilled: 'fluent:globe-search-24-filled',
   grid: 'fluent:grid-24-regular',
-  handRight: 'fluent:hand-right-24-regular',
   image: 'fluent:image-24-regular',
   info: 'fluent:info-24-regular',
   key: 'fluent:key-24-regular',
