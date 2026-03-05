@@ -63,11 +63,20 @@
    * @param language - The language object.
    */
   function getLanguageName(language: LanguageSupport | Language | null | undefined): string {
-    if (!language) {
-      // default to plain text
-      return 'text';
+    // default to plain text
+    let name = 'text';
+    if (language) {
+      name = 'name' in language ? language.name : language.language.name;
     }
-    return 'name' in language ? language.name : language.language.name;
+    // mapping of language names not capitalized
+    const mappings: Record<string, string> = {
+      yaml: 'YAML',
+      json: 'JSON',
+      jsonc: 'JSONC',
+      javascript: 'JavaScript'
+    };
+    // return mapped name or capitalized name
+    return mappings[name] || name.charAt(0).toUpperCase() + name.slice(1);
   }
 
   /**
@@ -95,7 +104,7 @@
     try {
       const source = view.state.doc.toString();
       let formatted: string | null = null;
-      switch (language) {
+      switch (language.toLowerCase()) {
         case 'json':
           // format JSON using the built-in function
           formatted = JSON.stringify(JSON.parse(source), null, tabSize);
