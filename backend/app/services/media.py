@@ -48,7 +48,7 @@ class MediaLibService(BaseService[MediaLib], model=MediaLib):
         if await MediaLib.filter(filter & Q(name=obj.name)).count() > 0:
             raise KaloscopeException(ErrorCode.NAME_ALREADY_EXISTS)
         if obj.dir and await MediaLib.filter(filter & Q(dir=obj.dir)).count() > 0:
-            raise KaloscopeException(ErrorCode.DIRECTORY_ALREADY_EXISTS)
+            raise KaloscopeException(ErrorCode.DUPLICATE_DIRECTORY)
 
         if obj.id:
             # update the media library

@@ -25,7 +25,7 @@ export const load: LayoutLoad = () => {
       icon: icons.videoClipMultiple,
       iconFilled: icons.videoClipMultipleFilled,
       mobile: true,
-      drawerStyle: 'app'
+      drawerStyle: 'menu'
     },
     {
       title: 'nav.downloads.title',

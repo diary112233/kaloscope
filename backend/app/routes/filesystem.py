@@ -1,4 +1,6 @@
 import os
+import stat
+import sys
 from mimetypes import guess_file_type
 from pathlib import Path
 
@@ -31,17 +33,25 @@ async def list_files(_, query: ListRequest) -> HTTPResponse:
     if not os.access(path, os.R_OK) or not path.is_dir():
         raise BadRequestException
 
-    def readable(p: Path):
+    def readable(p: Path) -> bool:
         try:
             return os.access(p, os.R_OK) and (not query.only_dirs or p.is_dir())
         except OSError:
             return False
 
-    def is_empty(p: Path):
+    def is_empty(p: Path) -> bool:
         try:
             return not any(filter(readable, p.iterdir()))
         except OSError:
             return True
+
+    def is_hidden(p: Path) -> bool:
+        if sys.platform == "win32":
+            try:
+                return bool(p.stat().st_file_attributes & stat.FILE_ATTRIBUTE_HIDDEN)
+            except OSError:
+                return False
+        return p.name.startswith(".")
 
     files = filter(readable, path.iterdir())
     return json(
@@ -51,6 +61,7 @@ async def list_files(_, query: ListRequest) -> HTTPResponse:
                 "path": str(file.resolve()),
                 "is_dir": file.is_dir(),
                 "is_empty": is_empty(file) if file.is_dir() else None,
+                "is_hidden": is_hidden(file),
                 "file_type": guess_file_type(file)[0] if file.is_file() else None,
             }
             for file in sorted(files, key=lambda f: (not f.is_dir(), f.name))

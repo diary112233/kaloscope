@@ -129,6 +129,7 @@ export type Path = {
   path: string;
   is_dir: boolean;
   is_empty: boolean | null;
+  is_hidden: boolean;
   file_type: string | null;
   children?: Path[] | null;
   loading?: boolean;

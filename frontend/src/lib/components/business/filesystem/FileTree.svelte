@@ -17,6 +17,7 @@
   let { rootPath = '', onlyDirs = false, onconfirm }: FileTreeProps = $props();
   let paths: Path[] = $state([]);
   let current: string = $state('');
+  let showHidden: boolean = $state(false);
 
   // the modal dialog instance
   let modal: Modal;
@@ -114,6 +115,10 @@
       <ul class="menu max-h-[50vh] w-full flex-nowrap gap-1 overflow-y-auto rounded-box border">
         {@render tree(paths)}
       </ul>
+      <label class="mt-2 fieldset-label w-fit">
+        <input type="checkbox" class="checkbox" bind:checked={showHidden} />
+        <span class="text-base text-base-content opacity-90">{$_('filesystem.show_hidden')}</span>
+      </label>
     </fieldset>
     <div class="modal-action">
       <button type="button" class="btn" onclick={() => modal.close()}>
@@ -131,7 +136,7 @@
 
 {#snippet tree(paths?: Path[] | null)}
   {#if paths}
-    {#each paths as path (path.path)}
+    {#each paths.filter((p) => showHidden || !p.is_hidden) as path (path.path)}
       {@const activeClass = current === path.path ? 'item-emphasis' : ''}
       <li>
         {#if path.is_dir && !path.is_empty}
@@ -152,10 +157,12 @@
 {/snippet}
 
 {#snippet item(path: Path)}
-  {#if path.loading}
-    <span class="loading loading-xs loading-spinner"></span>
-  {:else}
-    <iconify-icon icon={path.is_dir ? icons.folder : icons.document} width="1rem" class="size-4"></iconify-icon>
-  {/if}
+  <span class="flex-center size-5 opacity-80">
+    {#if path.loading}
+      <span class="loading loading-xs loading-spinner"></span>
+    {:else}
+      <iconify-icon icon={path.is_dir ? icons.folder : icons.document} width="1.25rem"></iconify-icon>
+    {/if}
+  </span>
   {path.name}
 {/snippet}

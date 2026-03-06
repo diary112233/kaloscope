@@ -22,7 +22,7 @@ class ErrorCode(StrEnum):
     LOGIN_EXPIRED = auto()
     NAME_ALREADY_EXISTS = auto()
     USERNAME_ALREADY_EXISTS = auto()
-    DIRECTORY_ALREADY_EXISTS = auto()
+    DUPLICATE_DIRECTORY = auto()
     INCORRECT_PASSWORD = auto()
     INVALID_YAML_CONFIG = auto()
     GET_INFO_HASH_FAILED = auto()
