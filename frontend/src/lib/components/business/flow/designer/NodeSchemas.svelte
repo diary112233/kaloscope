@@ -163,7 +163,7 @@
                 <iconify-icon
                   icon={schema.icon in icons ? icons[schema.icon] : icons.box3d}
                   width="1.75rem"
-                  class="size-7"
+                  class="size-7 opacity-80"
                 ></iconify-icon>
                 <span class="truncate">{$_(`flow.node.name.${schema.node_type}`, { default: schema.name })}</span>
                 <!-- svelte-ignore a11y_click_events_have_key_events -->

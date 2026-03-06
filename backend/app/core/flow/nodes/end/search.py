@@ -8,7 +8,7 @@ from app.models.flow import GraphCategory
 from app.utils import json
 
 
-@end_node(order=2, icon="boxMultipleSearchFilled", categories=(GraphCategory.INDEXER,))
+@end_node(order=3, icon="boxMultipleSearchFilled", categories=(GraphCategory.INDEXER,))
 class SearchEndNode(Node):
     example = CodeField(
         "response_example",

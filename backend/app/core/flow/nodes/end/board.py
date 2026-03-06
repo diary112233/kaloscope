@@ -8,7 +8,7 @@ from app.models.flow import GraphCategory
 from app.utils import json
 
 
-@end_node(order=3, icon="appsListDetailFilled", categories=(GraphCategory.INDEXER,))
+@end_node(order=2, icon="appsListDetailFilled", categories=(GraphCategory.INDEXER,))
 class BoardEndNode(Node):
     example = CodeField(
         "response_example",

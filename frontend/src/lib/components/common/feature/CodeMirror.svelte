@@ -458,7 +458,7 @@
         class="border-0 bg-transparent shadow-none {enlarger ? '' : 'pointer-events-none'}"
         onclick={() => enlarger && largerView?.show()}
       />
-      <span class="font-semibold opacity-70">{languageName}</span>
+      <span class="text-xs font-semibold opacity-70">{languageName}</span>
     </span>
     <span class="flex-center gap-1">
       {#if !readOnly && resetter}

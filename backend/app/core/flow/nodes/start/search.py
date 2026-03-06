@@ -4,7 +4,7 @@ from app.core.flow.nodes.base import TEMPLATES_PATH, Node, start_node
 from app.models.flow import GraphCategory
 
 
-@start_node(order=2, icon="boxMultipleSearch", categories=(GraphCategory.INDEXER,))
+@start_node(order=3, icon="boxMultipleSearch", categories=(GraphCategory.INDEXER,))
 class SearchStartNode(Node):
     example = CodeField(
         "request_example",
