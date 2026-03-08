@@ -22,9 +22,12 @@
     },
     "websearch": {
       "title": "搜索",
-      "global": "全局搜索",
-      "favorites": "我的收藏",
-      "indexers": "索引器"
+      "global": {
+        "title": "全局",
+        "search": "全局搜索",
+        "favorites": "我的收藏"
+      },
+      "indexers": "网络搜索"
     },
     "medialibs": {
       "title": "媒体库"
@@ -47,17 +50,17 @@
         "sessions": "在线设备",
         "preferences": "偏好设置"
       },
-      "workflows": {
-        "title": "工作流",
-        "templates": "流程模板",
-        "graphs": "流程定义"
-      },
       "system": {
         "title": "系统设置",
         "users": "用户管理",
         "variables": "全局变量",
         "medialibs": "媒体库管理",
-        "downloader": "下载器设置"
+        "downloaders": "下载器设置"
+      },
+      "workflows": {
+        "title": "工作流",
+        "templates": "流程模板",
+        "graphs": "流程定义"
       },
       "help": {
         "title": "帮助",
@@ -83,8 +86,8 @@
       "music": "音乐"
     },
     "graph_category": {
-      "indexer": "索引器",
-      "ingest": "入库事件",
+      "indexer": "网络搜索",
+      "ingest": "资源入库",
       "schedule": "定时任务"
     },
     "graph_state": {

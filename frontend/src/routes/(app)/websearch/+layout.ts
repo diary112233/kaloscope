@@ -6,15 +6,15 @@ import type { LayoutLoad } from './$types';
 export const load: LayoutLoad = async () => {
   const menus: Menu[] = [
     {
-      title: 'nav.websearch.title',
+      title: 'nav.websearch.global.title',
       routes: [
         {
-          title: 'nav.websearch.global',
+          title: 'nav.websearch.global.search',
           path: '/websearch/global',
           icon: icons.search
         },
         {
-          title: 'nav.websearch.favorites',
+          title: 'nav.websearch.global.favorites',
           path: '/websearch/favorites',
           icon: icons.star
         }

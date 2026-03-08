@@ -25,26 +25,6 @@ export const load: LayoutLoad = () => {
       ]
     },
     {
-      title: 'nav.settings.workflows.title',
-      routes: [
-        {
-          title: 'nav.settings.workflows.templates',
-          path: '/settings/workflows/templates',
-          icon: icons.appStore
-        },
-        {
-          title: 'nav.settings.workflows.graphs',
-          path: '/settings/workflows/graphs',
-          icon: icons.documentFlowchart
-        },
-        {
-          title: 'enum.graph_category.schedule',
-          path: '/settings/workflows/schedule',
-          icon: icons.clock
-        }
-      ]
-    },
-    {
       title: 'nav.settings.system.title',
       routes: [
         {
@@ -63,9 +43,29 @@ export const load: LayoutLoad = () => {
           icon: icons.videoClipMultiple
         },
         {
-          title: 'nav.settings.system.downloader',
-          path: '/settings/system/downloader',
+          title: 'nav.settings.system.downloaders',
+          path: '/settings/system/downloaders',
           icon: icons.box3dDownload
+        }
+      ]
+    },
+    {
+      title: 'nav.settings.workflows.title',
+      routes: [
+        {
+          title: 'nav.settings.workflows.templates',
+          path: '/settings/workflows/templates',
+          icon: icons.appStore
+        },
+        {
+          title: 'nav.settings.workflows.graphs',
+          path: '/settings/workflows/graphs',
+          icon: icons.documentFlowchart
+        },
+        {
+          title: 'enum.graph_category.schedule',
+          path: '/settings/workflows/schedule',
+          icon: icons.clock
         }
       ]
     },

@@ -22,8 +22,11 @@
     },
     "websearch": {
       "title": "Search",
-      "global": "Global Search",
-      "favorites": "My Favorites",
+      "global": {
+        "title": "Global",
+        "search": "Global Search",
+        "favorites": "My Favorites"
+      },
       "indexers": "Indexers"
     },
     "medialibs": {
@@ -47,17 +50,17 @@
         "sessions": "Sessions",
         "preferences": "Preferences"
       },
-      "workflows": {
-        "title": "Workflows",
-        "templates": "Templates",
-        "graphs": "Graphs"
-      },
       "system": {
         "title": "System",
         "users": "Users",
         "variables": "Variables",
         "medialibs": "Libraries",
-        "downloader": "Downloader"
+        "downloaders": "Downloaders"
+      },
+      "workflows": {
+        "title": "Workflows",
+        "templates": "Templates",
+        "graphs": "Graphs"
       },
       "help": {
         "title": "Help",
