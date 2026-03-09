@@ -82,8 +82,7 @@
     },
     "lib_type": {
       "movie": "电影",
-      "tv_show": "电视剧",
-      "music": "音乐"
+      "tv_show": "电视剧"
     },
     "graph_category": {
       "indexer": "网络搜索",
@@ -386,8 +385,6 @@
         "movie": "电影",
         "tv_show": "电视剧",
         "episode": "剧集",
-        "album": "专辑",
-        "artist": "艺术家",
         "schedule_start": "开始",
         "schedule_end": "结束",
         "loop": "循环",

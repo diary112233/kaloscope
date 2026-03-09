@@ -1186,16 +1186,6 @@ export const icons: Readonly<{ [key in keyof typeof names]: IconifyIcon }> = {
     hFlip: false,
     body: '<g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M14.186 2.753v3.596c0 .487.194.955.54 1.3a1.85 1.85 0 0 0 1.306.539h4.125"/><path d="M20.25 8.568v8.568a4.25 4.25 0 0 1-1.362 2.97a4.28 4.28 0 0 1-3.072 1.14h-7.59a4.3 4.3 0 0 1-3.1-1.124a4.26 4.26 0 0 1-1.376-2.986V6.862a4.25 4.25 0 0 1 1.362-2.97a4.28 4.28 0 0 1 3.072-1.14h5.714a3.5 3.5 0 0 1 2.361.905l2.96 2.722a2.97 2.97 0 0 1 1.031 2.189"/><path d="m8.36 13.682l1.879 1.88a.71.71 0 0 0 1.01 0l3.787-3.787"/></g>'
   },
-  musicSquare: {
-    left: 0,
-    top: 0,
-    width: 24,
-    height: 24,
-    rotate: 0,
-    vFlip: false,
-    hFlip: false,
-    body: '<g fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" d="M9.667 17.5a2.333 2.333 0 1 0 0-4.667a2.333 2.333 0 0 0 0 4.667ZM12 15.167V6.5m0 0l3.7 1.053a1.33 1.33 0 0 1 .967 1.28v.56A1.334 1.334 0 0 1 15 10.68l-3-.847"/><rect width="18.5" height="18.5" x="2.75" y="2.75" rx="6"/></g>'
-  },
   pinFill: {
     left: 0,
     top: 0,
@@ -1516,16 +1506,6 @@ export const icons: Readonly<{ [key in keyof typeof names]: IconifyIcon }> = {
     hFlip: false,
     body: '<path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M42 19H6M30 7l12 12M6.799 29h36m-36 0l12 12"/>'
   },
-  album: {
-    left: 0,
-    top: 0,
-    width: 24,
-    height: 24,
-    rotate: 0,
-    vFlip: false,
-    hFlip: false,
-    body: '<g fill="none"><path d="m12.593 23.258l-.011.002l-.071.035l-.02.004l-.014-.004l-.071-.035q-.016-.005-.024.005l-.004.01l-.017.428l.005.02l.01.013l.104.074l.015.004l.012-.004l.104-.074l.012-.016l.004-.017l-.017-.427q-.004-.016-.017-.018m.265-.113l-.013.002l-.185.093l-.01.01l-.003.011l.018.43l.005.012l.008.007l.201.093q.019.005.029-.008l.004-.014l-.034-.614q-.005-.018-.02-.022m-.715.002a.02.02 0 0 0-.027.006l-.006.014l-.034.614q.001.018.017.024l.015-.002l.201-.093l.01-.008l.004-.011l.017-.43l-.003-.012l-.01-.01z"/><path fill="currentColor" d="M12 2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12S6.477 2 12 2m0 2a8 8 0 1 0 0 16a8 8 0 0 0 0-16m0 6a2 2 0 1 1 0 4a2 2 0 0 1 0-4m-.56-3.493a1 1 0 0 1-.61 1.276a5.02 5.02 0 0 0-2.664 2.216a1 1 0 1 1-1.732-1.001a7.02 7.02 0 0 1 3.73-3.1a1 1 0 0 1 1.276.609"/></g>'
-  },
   danmakuFill: {
     left: 0,
     top: 0,
@@ -1585,15 +1565,5 @@ export const icons: Readonly<{ [key in keyof typeof names]: IconifyIcon }> = {
     vFlip: false,
     hFlip: false,
     body: '<path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m13 19l3.5-9l3.5 9m-6.125-2h5.25M3 7h7m0 0h2m-2 0c0 1.63-.793 3.926-2.239 5.655M7.5 6.818V5m.261 7.655C6.79 13.82 5.521 14.725 4 15m3.761-2.345L5 10m2.761 2.655L10.2 15"/>'
-  },
-  artist: {
-    left: 0,
-    top: 0,
-    width: 24,
-    height: 24,
-    rotate: 0,
-    vFlip: false,
-    hFlip: false,
-    body: '<path fill="currentColor" d="M17.5 20q-1.05 0-1.775-.725T15 17.5t.725-1.775T17.5 15q.2 0 .45.038t.55.162V11q0-.425.288-.712T19.5 10H21q.425 0 .713.288T22 11t-.288.713T21 12h-1v5.5q0 1.05-.725 1.775T17.5 20M4 20q-.425 0-.712-.288T3 19v-1.8q0-.875.438-1.575T4.6 14.55q1.55-.775 3.15-1.162T11 13q.575 0 1.175.038t1.175.162q.525.1.725.45t.15.725t-.35.65t-.775.175q-.525-.1-1.037-.15T11 15q-1.425 0-2.8.35t-2.7 1q-.225.125-.362.35T5 17.2v.8h7.325q.5 0 .75.313t.25.687t-.25.688t-.75.312zm7-8q-1.65 0-2.825-1.175T7 8t1.175-2.825T11 4t2.825 1.175T15 8t-1.175 2.825T11 12m0-2q.825 0 1.413-.587T13 8t-.587-1.412T11 6t-1.412.588T9 8t.588 1.413T11 10m0 8"/>'
   }
 };

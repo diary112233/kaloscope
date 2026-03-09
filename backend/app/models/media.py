@@ -30,15 +30,12 @@ class MediaType(StrEnum):
 class LibType(StrEnum):
     MOVIE = auto()
     TV_SHOW = auto()
-    MUSIC = auto()
 
 
 class NFOType(StrEnum):
     MOVIE = "movie"
     TV_SHOW = "tvshow"
     EPISODE = "episode"
-    ALBUM = "album"
-    ARTIST = "artist"
 
 
 class Language(StrEnum):

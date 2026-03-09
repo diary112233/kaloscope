@@ -116,7 +116,7 @@
       {@render term($_('session.activity'), $dateTime(session.last_activity))}
     </dl>
     {#if index === 0}
-      <div class="absolute -top-1 -right-2 z-1">
+      <div class="absolute -top-2 -right-2 z-1">
         <iconify-icon icon={icons.pinFill} width="1.5rem"></iconify-icon>
       </div>
     {/if}

@@ -60,11 +60,6 @@ export const LibType = createEnum({
     label: 'enum.lib_type.tv_show',
     icon: icons.deviceTvOld,
     iconColor: null
-  },
-  music: {
-    label: 'enum.lib_type.music',
-    icon: icons.musicSquare,
-    iconColor: null
   }
 });
 

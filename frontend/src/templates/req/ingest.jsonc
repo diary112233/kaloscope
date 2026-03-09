@@ -1,7 +1,7 @@
 {
   "event_type": "created", // created | moved
   "lib": {
-    "type": "movie", // movie | tv_show | music
+    "type": "movie", // movie | tv_show
     "name": "Movies"
   },
   "item": {

@@ -132,7 +132,6 @@ const mageIcons = {
   edit: 'mage:edit',
   externalLink: 'mage:external-link',
   fileCheck: 'mage:file-check',
-  musicSquare: 'mage:music-square',
   pinFill: 'mage:pin-fill',
   stars: 'mage:stars-c',
   user: 'mage:user',
@@ -190,7 +189,6 @@ const iconPark = {
  * {@link https://icon-sets.iconify.design/mingcute/ }
  */
 const mingCuteIcon = {
-  album: 'mingcute:album-line',
   danmakuFill: 'mingcute:danmaku-fill',
   listCheck: 'mingcute:list-check-line',
   loading: 'mingcute:loading-line',
@@ -207,15 +205,6 @@ const flowbiteIcons = {
   language: 'flowbite:language-outline'
 };
 
-/**
- * Material Symbols by [Google](https://github.com/google/material-design-icons)
- *
- * {@link https://icon-sets.iconify.design/material-symbols/ }
- */
-const materialSymbols = {
-  artist: 'material-symbols:artist-outline-rounded'
-};
-
 // export all icons as a single object
 export const icons = {
   ...fluentUISystemIcons,
@@ -223,8 +212,7 @@ export const icons = {
   ...tablerIcons,
   ...iconPark,
   ...mingCuteIcon,
-  ...flowbiteIcons,
-  ...materialSymbols
+  ...flowbiteIcons
 };
 
 /**

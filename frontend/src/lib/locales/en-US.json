@@ -82,8 +82,7 @@
     },
     "lib_type": {
       "movie": "Movie",
-      "tv_show": "TV Show",
-      "music": "Music"
+      "tv_show": "TV Show"
     },
     "graph_category": {
       "indexer": "Indexer",
@@ -386,8 +385,6 @@
         "movie": "Movie",
         "tv_show": "TV Show",
         "episode": "Episode",
-        "album": "Album",
-        "artist": "Artist",
         "schedule_start": "Start",
         "schedule_end": "End",
         "loop": "Loop",
