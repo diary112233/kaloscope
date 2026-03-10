@@ -1,5 +1,6 @@
 import asyncio
 import queue
+from datetime import UTC, datetime
 from functools import cached_property
 from multiprocessing.managers import ListProxy
 from multiprocessing.synchronize import Lock
@@ -351,11 +352,12 @@ async def _parse_nfo(lib: MediaLib, path: Path):
         dir=str(path.parent.resolve()),
         name=path.stem,
     ).update(
-        meta=meta.path,
+        meta_path=meta.path,
+        meta_mtime=datetime.fromtimestamp(path.stat().st_mtime, tz=UTC),
         title=meta.title,
+        year=meta.year,
         cover=meta.cover,
         backdrop=meta.backdrop,
-        year=meta.year,
         rating=meta.rating,
     )
 
@@ -384,17 +386,19 @@ async def _handle_deleted(event: MediaEvent):
         await MediaItem.filter(lib_id=lib_id, dir=src_path).delete()
     elif NFOParser.is_nfo(src_path):
         # update the media item meta to None
-        await MediaItem.filter(lib_id=lib_id, meta=src_path).update(meta=None)
+        await MediaItem.filter(lib_id=lib_id, meta_path=src_path).update(
+            meta_path=None, meta_mtime=None
+        )
     else:
         # delete the media item
         item = await MediaItem.filter(lib_id=lib_id, path=src_path).get_or_none()
         if item is not None:
             await item.delete()
             # delete the NFO file if it exists
-            if item.meta:
-                meta_path = Path(item.meta)
-                if meta_path.exists() and meta_path.is_file():
-                    send2trash(meta_path)
+            if item.meta_path:
+                nfo_path = Path(item.meta_path)
+                if nfo_path.exists() and nfo_path.is_file():
+                    send2trash(nfo_path)
 
 
 async def _handle_created(event: MediaEvent) -> MediaItem | None:

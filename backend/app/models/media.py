@@ -6,6 +6,7 @@ from tortoise.fields import (
     BooleanField,
     CharEnumField,
     CharField,
+    DatetimeField,
     DecimalField,
     ForeignKeyField,
     ForeignKeyNullableRelation,
@@ -74,11 +75,12 @@ class MediaItem(TortoiseModel):
     dir = CharField(max_length=4096)
     path = CharField(max_length=4096)
     name = CharField(max_length=255)
-    meta = CharField(max_length=4096, null=True)
+    meta_path = CharField(max_length=4096, null=True)
+    meta_mtime = DatetimeField(null=True)
     title = CharField(max_length=255, null=True)
+    year = IntField(null=True)
     cover = CharField(max_length=255, null=True)
     backdrop = CharField(max_length=255, null=True)
-    year = IntField(null=True)
     rating = DecimalField(max_digits=4, decimal_places=2, null=True)
     # relational fields
     children: ReverseRelation["MediaItem"]
