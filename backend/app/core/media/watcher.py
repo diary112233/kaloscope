@@ -434,4 +434,10 @@ async def _handle_moved(event: MediaEvent) -> MediaItem | None:
         name=dest_path.stem,
     )
     item.lib = event.lib
+
+    # parse the NFO file if it exists
+    nfo_path = Path(item.dir) / f"{item.name}.nfo"
+    if nfo_path.exists() and nfo_path.is_file():
+        await _parse_nfo(event.lib, nfo_path)
+
     return item
