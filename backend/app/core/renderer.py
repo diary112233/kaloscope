@@ -200,15 +200,18 @@ def _find(
     # determine the finder type based on the limit
     finder_type: Literal["first", "all"]
     if isinstance(limit, int):
-        if limit <= 1:
+        if limit < 1:
             finder_type = "first"
         else:
             finder_type = "all"
             slicer = slice(0, limit)
     elif auto:
         finder_type = "all"
-    else:
+    elif limit:
         finder_type = limit
+    else:
+        finder_type = "all"
+        slicer = slice(0, 1)
 
     # call the appropriate finder function
     finder = _FINDERS[f"{expr_type}_{finder_type}"]

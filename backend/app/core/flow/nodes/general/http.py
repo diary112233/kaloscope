@@ -79,7 +79,7 @@ class HTTPNode(Node):
                 method, url, headers=headers, content=binary, data=form, json=json
             )
             formatter = cls.formatter.extract(node_data)
-            rendered = render(formatter, {"response": response})
+            rendered = render(formatter, {**context._context, "response": response})
             if rendered and isinstance((obj := try_loads(rendered)), dict):
                 context.update(obj)
         except httpx.RequestError as e:

@@ -17,7 +17,7 @@
   <genre>{{ genre }}</genre>
 {% endfor %}
   <art>
-    <poster>{{ poster }}</poster>
+    <poster>{{ cover }}</poster>
     <fanart>{{ backdrop }}</fanart>
   </art>
 {% for studio in studios %}
