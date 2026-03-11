@@ -271,6 +271,60 @@ def ternary[V](value: V, v1: V, v2: V) -> V:
     return v1 if value else v2
 
 
+_DATE_FORMATS = [
+    "%Y-%m-%d",
+    "%Y/%m/%d",
+    "%Y-%m-%dT%H:%M:%S",
+    "%Y-%m-%dT%H:%M:%SZ",
+    "%Y-%m-%dT%H:%M:%S.%f",
+    "%Y-%m-%dT%H:%M:%S.%fZ",
+    "%Y-%m-%d %H:%M:%S",
+    "%Y-%m-%d %H:%M:%S.%f",
+    "%m/%d/%Y",
+    "%B %d, %Y",
+    "%b %d, %Y",
+    "%Y",
+]
+
+
+def year(value: Any) -> int | None:
+    """Extract the 4-digit year from a timestamp or date string."""
+    if value is None:
+        return None
+    if isinstance(value, (datetime.datetime, datetime.date)):
+        return value.year
+    if isinstance(value, (int, float)):
+        ts = float(value)
+        if ts > 1e11:  # milliseconds threshold
+            ts /= 1000
+        try:
+            return datetime.datetime.fromtimestamp(ts, tz=datetime.UTC).year
+        except (OverflowError, OSError, ValueError):
+            return None
+    if isinstance(value, str):
+        value = value.strip()
+        # numeric string
+        try:
+            return year(int(value))
+        except ValueError:
+            pass
+        try:
+            return year(float(value))
+        except ValueError:
+            pass
+        # try known date string formats
+        for fmt in _DATE_FORMATS:
+            try:
+                return datetime.datetime.strptime(value, fmt).year
+            except ValueError:
+                continue
+        # fallback to regex search for a 4-digit year
+        m = re.search(r"\b(\d{4})\b", value)
+        if m:
+            return int(m.group(1))
+    return None
+
+
 # register custom filters
 # https://jinja.palletsprojects.com/en/stable/api/#custom-filters
 ENV.filters["trim"] = trim
@@ -292,6 +346,7 @@ ENV.filters["duration"] = duration
 ENV.filters["b64decode"] = b64decode
 ENV.filters["b64encode"] = b64encode
 ENV.filters["ifel"] = ternary
+ENV.filters["year"] = year
 
 
 def render(value: json.JSONType, context: dict, *, raw: bool = False) -> Any:
