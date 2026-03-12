@@ -353,8 +353,23 @@ async def consume_event(event: MediaEvent):
         elif event.event_type == EVENT_TYPE_MOVED:
             item = await _handle_moved(event)
 
-    # fire the flow triggers if the item is created or moved
     if item is not None:
+        # generate parent media item if necessary
+        if item.dir != item.lib.dir:
+            dir = Path(item.dir)
+            parent_item, _ = await MediaItem.get_or_create(
+                lib_id=item.lib_id,
+                path=str(dir.resolve()),
+                defaults={
+                    "dir": str(dir.resolve()),
+                    "name": dir.name,
+                },
+            )
+            if item.parent_id != parent_item.id:
+                item.parent_id = parent_item.id
+                await item.save(update_fields=["parent_id"])
+
+        # fire the flow triggers
         await FlowTriggerService.fire(
             GraphCategory.INGEST,
             event.lib_id,
@@ -471,9 +486,11 @@ async def _handle_moved(event: MediaEvent) -> MediaItem | None:
     # get or create the destination media item
     item, _ = await MediaItem.get_or_create(
         lib_id=event.lib_id,
-        dir=str(dest_path.parent.resolve()),
         path=str(dest_path.resolve()),
-        name=dest_path.stem,
+        defaults={
+            "dir": str(dest_path.parent.resolve()),
+            "name": dest_path.stem,
+        },
     )
     item.lib = event.lib
 
