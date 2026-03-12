@@ -21,16 +21,16 @@ from app.utils.disk import is_directory
 
 
 # -------------------- Enumerations -------------------- #
+class LibType(StrEnum):
+    MOVIE = auto()
+    TV_SHOW = auto()
+
+
 class MediaType(StrEnum):
     VIDEO = auto()
     AUDIO = auto()
     IMAGE = auto()
     TEXT = auto()
-
-
-class LibType(StrEnum):
-    MOVIE = auto()
-    TV_SHOW = auto()
 
 
 class NFOType(StrEnum):
@@ -75,6 +75,7 @@ class MediaItem(TortoiseModel):
     dir = CharField(max_length=4096)
     path = CharField(max_length=4096)
     name = CharField(max_length=255)
+    visible = BooleanField(default=False)
     meta_path = CharField(max_length=4096, null=True)
     meta_mtime = DatetimeField(null=True)
     title = CharField(max_length=255, null=True)
