@@ -1,8 +1,11 @@
 import mimetypes
 from abc import ABC, abstractmethod
+from dataclasses import dataclass, field
+from decimal import Decimal
 from fnmatch import fnmatch
 from pathlib import Path
 
+from lxml import etree
 from sanic.log import Colors, logger
 from watchdog.events import (
     EVENT_TYPE_CREATED,
@@ -13,12 +16,26 @@ from watchdog.events import (
 )
 
 from app.core.constants import ENCODING
-from app.core.media.parsers.base import NFO_MIME_TYPE
 from app.models.media import LibType
 
+# the mime type for NFO files
+NFO_MIME_TYPE = "text/x-nfo"
 
-class EventFilter(ABC):
-    """The base class for media event filters."""
+
+@dataclass(kw_only=True)
+class MediaMeta:
+    """The metadata of a media item parsed from an NFO file."""
+
+    path: str = field(init=False, repr=False)
+    title: str | None = None
+    cover: str | None = None
+    backdrop: str | None = None
+    year: int | None = None
+    rating: Decimal | None = None
+
+
+class MediaHandler(ABC):
+    """The base class for media item handlers."""
 
     @abstractmethod
     def accept(self) -> list[str]:
@@ -28,20 +45,107 @@ class EventFilter(ABC):
     def hierarchies(self) -> list[int]:
         raise NotImplementedError
 
-    def _decode_path(self, path: bytes | str) -> str:
-        """Convert the path to a string.
+    @abstractmethod
+    def extract_meta(self, data: etree._ElementTree) -> MediaMeta:
+        raise NotImplementedError
+
+    @classmethod
+    def is_nfo(cls, path: Path | str) -> bool:
+        """Check if the path is an NFO file.
 
         Args:
-            path: The path to convert.
+            path: The path to check.
 
         Returns:
-            The converted path as a string.
+            True if the path is an NFO file, False otherwise.
         """
-        if isinstance(path, bytes | bytearray):
-            path = path.decode(ENCODING)
-        elif isinstance(path, memoryview):
-            path = path.tobytes().decode(ENCODING)
-        return path
+        if not isinstance(path, Path):
+            path = Path(path)
+        mime_type, _ = mimetypes.guess_file_type(path)
+        return mime_type == NFO_MIME_TYPE
+
+    @classmethod
+    def get_text(cls, element: etree._Element | None, tag_name: str) -> str | None:
+        """Get the text content of the first matching sub-element.
+
+        Args:
+            element: The parent XML element.
+            tag_name: The tag name of the sub-element.
+
+        Returns:
+            The text content of the sub-element, or None if not found.
+        """
+        if element is None:
+            return None
+        tag = element.find(tag_name)
+        # https://lxml.de/tutorial.html#elements-are-lists
+        if tag is not None and tag.text:
+            return tag.text.strip()
+        return None
+
+    @classmethod
+    def get_integer(cls, element: etree._Element | None, tag_name: str) -> int | None:
+        """Get the integer content of the first matching sub-element.
+
+        Args:
+            element: The parent XML element.
+            tag_name: The tag name of the sub-element.
+
+        Returns:
+            The integer content of the sub-element, or None if not found or invalid.
+        """
+        text = cls.get_text(element, tag_name)
+        if text and text.isdigit():
+            return int(text)
+        return None
+
+    @classmethod
+    def get_decimal(
+        cls, element: etree._Element | None, tag_name: str
+    ) -> Decimal | None:
+        """Get the decimal content of the first matching sub-element.
+
+        Args:
+            element: The parent XML element.
+            tag_name: The tag name of the sub-element.
+
+        Returns:
+            The decimal content of the sub-element, or None if not found or invalid.
+        """
+        text = cls.get_text(element, tag_name)
+        if text:
+            try:
+                return Decimal(text)
+            except Exception:
+                logger.warning("Invalid decimal value for tag '%s': %s", tag_name, text)
+        return None
+
+    async def parse_nfo(self, path: Path | str) -> MediaMeta:
+        """Parse the NFO file at the given path.
+
+        Args:
+            path: The path to the NFO file.
+
+        Returns:
+            The parsed metadata as a MediaMeta object.
+        """
+        data = None
+        if not isinstance(path, Path):
+            path = Path(path)
+        if path.exists() and path.is_file():
+            try:
+                data = etree.parse(path, parser=etree.XMLParser())
+            except Exception:
+                logger.error(
+                    f"Failed to parse the NFO file: {Colors.RED}%s{Colors.END}",
+                    path,
+                    exc_info=True,
+                )
+
+        # if data is None, return an empty MediaMeta
+        meta = self.extract_meta(data) if data else MediaMeta()
+        meta.path = str(path.resolve())
+        return meta
 
     def is_target(
         self,
@@ -51,7 +155,7 @@ class EventFilter(ABC):
         check_dir: bool = False,
         check_exists: bool = True,
     ) -> bool:
-        """Check if the path is a target for the filter.
+        """Check if the path is a target for the media item handler.
 
         Args:
             base_path: The base path.
@@ -99,6 +203,21 @@ class EventFilter(ABC):
             return False
 
         return True
+
+    def _decode_path(self, path: bytes | str) -> str:
+        """Convert the path to a string.
+
+        Args:
+            path: The path to convert.
+
+        Returns:
+            The converted path as a string.
+        """
+        if isinstance(path, bytes | bytearray):
+            path = path.decode(ENCODING)
+        elif isinstance(path, memoryview):
+            path = path.tobytes().decode(ENCODING)
+        return path
 
     def do_filter(
         self, event: FileSystemEvent, *, base_path: str
@@ -217,11 +336,11 @@ class EventFilter(ABC):
         return event
 
 
-_FILTERS: dict[LibType, EventFilter] = {}
+_HANDLERS: dict[LibType, MediaHandler] = {}
 
 
-def get_filter(lib_type: LibType) -> EventFilter:
-    """Get the registered filter for the given type.
+def get_handler(lib_type: LibType) -> MediaHandler:
+    """Get the registered handler for the given type.
 
     Args:
         lib_type: The media library type.
@@ -230,9 +349,9 @@ def get_filter(lib_type: LibType) -> EventFilter:
         ValueError: If the type is not supported.
 
     Returns:
-        The registered filter for the type.
+        The registered handler for the type.
     """
-    filter = _FILTERS.get(lib_type)
-    if filter is None:
+    handler = _HANDLERS.get(lib_type)
+    if handler is None:
         raise ValueError(f"Unsupported media library type: {lib_type}")
-    return filter
+    return handler
