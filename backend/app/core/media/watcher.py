@@ -190,8 +190,8 @@ class LibWatcher:
             # get all existing media items for this lib
             items = await MediaItem.filter(lib_id=lib.id).all()
             path_items = {item.path: item for item in items}
-            meta_mtimes = {
-                item.meta_path: item.meta_mtime for item in items if item.meta_path
+            nfo_mtimes = {
+                item.nfo_path: item.nfo_mtime for item in items if item.nfo_path
             }
             # track which item ids still have their media file on disk
             existing_ids: list[int] = []
@@ -213,13 +213,13 @@ class LibWatcher:
 
                 if MediaHandler.is_nfo(src_path):
                     # handle NFO file
-                    if initialize or (meta_mtime := meta_mtimes.get(src_path)) is None:
+                    if initialize or (nfo_mtime := nfo_mtimes.get(src_path)) is None:
                         # delay the NFO file event creation
                         nfo_events.append(sys_event)
                     else:
                         # check if mtime has been updated
                         mtime = datetime.fromtimestamp(file.stat().st_mtime, tz=UTC)
-                        if mtime > meta_mtime:
+                        if mtime > nfo_mtime:
                             nfo_events.append(FileModifiedEvent(src_path))
                 else:
                     # handle media file
@@ -227,13 +227,11 @@ class LibWatcher:
                         await _create_media_event(sys_event)
                     else:
                         existing_ids.append(media_item.id)
-                        if media_item.meta_path:
+                        if media_item.nfo_path:
                             # check if the NFO file has been deleted
-                            meta_path = Path(media_item.meta_path)
-                            if not meta_path.exists():
-                                nfo_events.append(
-                                    FileDeletedEvent(media_item.meta_path)
-                                )
+                            nfo_path = Path(media_item.nfo_path)
+                            if not nfo_path.exists():
+                                nfo_events.append(FileDeletedEvent(media_item.nfo_path))
 
         # create media events for NFO files
         for nfo_event in nfo_events:
@@ -404,10 +402,12 @@ async def _parse_nfo(lib: MediaLib, path: Path):
         dir=str(path.parent.resolve()),
         name=path.stem,
     ).update(
-        meta_path=meta.path,
-        meta_mtime=datetime.fromtimestamp(path.stat().st_mtime, tz=UTC),
+        nfo_path=meta.nfo_path,
+        nfo_mtime=datetime.fromtimestamp(path.stat().st_mtime, tz=UTC),
         title=meta.title,
         year=meta.year,
+        season=meta.season,
+        episode=meta.episode,
         cover=meta.cover,
         backdrop=meta.backdrop,
         rating=meta.rating,
@@ -437,9 +437,9 @@ async def _handle_deleted(event: MediaEvent):
         # delete the media items in the directory
         await MediaItem.filter(lib_id=lib_id, dir=src_path).delete()
     elif MediaHandler.is_nfo(src_path):
-        # update the media item meta to None
-        await MediaItem.filter(lib_id=lib_id, meta_path=src_path).update(
-            meta_path=None, meta_mtime=None
+        # update the media item to remove the NFO metadata
+        await MediaItem.filter(lib_id=lib_id, nfo_path=src_path).update(
+            nfo_path=None, nfo_mtime=None
         )
     else:
         # delete the media item
@@ -447,8 +447,8 @@ async def _handle_deleted(event: MediaEvent):
         if item is not None:
             await item.delete()
             # delete the NFO file if it exists
-            if item.meta_path:
-                nfo_path = Path(item.meta_path)
+            if item.nfo_path:
+                nfo_path = Path(item.nfo_path)
                 if nfo_path.exists() and nfo_path.is_file():
                     send2trash(nfo_path)
 

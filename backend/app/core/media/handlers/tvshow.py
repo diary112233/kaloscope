@@ -1,7 +1,14 @@
+from pathlib import Path
+
 from lxml import etree
 
-from app.core.media.handlers.base import _HANDLERS, MediaHandler, MediaMeta
-from app.models.media import LibType
+from app.core.media.handlers.base import (
+    _HANDLERS,
+    MediaHandler,
+    MediaMeta,
+    MetaKeywords,
+)
+from app.models.media import LibType, MediaLib
 
 
 class TVShowMediaHandler(MediaHandler):
@@ -48,6 +55,29 @@ class TVShowMediaHandler(MediaHandler):
             The extracted metadata.
         """
         return MediaMeta()
+
+    def extract_keywords(self, path: Path) -> MetaKeywords:
+        """Extract the metadata keywords for a TV show from the file path.
+
+        Args:
+            path: The path to extract from.
+
+        Returns:
+            The extracted metadata keywords.
+        """
+        return MetaKeywords(path, path.stem)
+
+    def gen_items(self, lib: MediaLib, path: Path) -> list[MetaKeywords]:
+        """Generate the media items for a TV show.
+
+        Args:
+            lib: The media library instance.
+            path: The path to generate from.
+
+        Returns:
+            The list of metadata keywords for the media items.
+        """
+        return []
 
 
 _HANDLERS[LibType.TV_SHOW] = TVShowMediaHandler()

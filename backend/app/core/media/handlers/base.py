@@ -16,19 +16,36 @@ from watchdog.events import (
 )
 
 from app.core.constants import ENCODING
-from app.models.media import LibType
+from app.models.media import Language, LibType, MediaLib, NFOType
 
 # the mime type for NFO files
 NFO_MIME_TYPE = "text/x-nfo"
 
 
 @dataclass(kw_only=True)
+class MetaKeywords:
+    """The keywords for a media item parsed from the file path."""
+
+    item_path: Path = field(kw_only=False)
+    item_name: str = field(kw_only=False)
+    nfo_path: Path | None = None
+    nfo_type: NFOType | None = None
+    language: Language | None = None
+    title: str = field(init=False)
+    year: int | None = None
+    season: int | None = None
+    episode: int | None = None
+
+
+@dataclass(kw_only=True)
 class MediaMeta:
     """The metadata of a media item parsed from an NFO file."""
 
-    path: str = field(init=False, repr=False)
+    nfo_path: str = field(init=False)
     title: str | None = None
     year: int | None = None
+    season: int | None = None
+    episode: int | None = None
     cover: str | None = None
     backdrop: str | None = None
     rating: Decimal | None = None
@@ -47,6 +64,14 @@ class MediaHandler(ABC):
 
     @abstractmethod
     def extract_meta(self, data: etree._ElementTree) -> MediaMeta:
+        raise NotImplementedError
+
+    @abstractmethod
+    def extract_keywords(self, path: Path) -> MetaKeywords:
+        raise NotImplementedError
+
+    @abstractmethod
+    def gen_items(self, lib: MediaLib, path: Path) -> list[MetaKeywords]:
         raise NotImplementedError
 
     @classmethod
@@ -144,7 +169,7 @@ class MediaHandler(ABC):
 
         # if data is None, return an empty MediaMeta
         meta = self.extract_meta(data) if data else MediaMeta()
-        meta.path = str(path.resolve())
+        meta.nfo_path = str(path.resolve())
         return meta
 
     def is_target(
