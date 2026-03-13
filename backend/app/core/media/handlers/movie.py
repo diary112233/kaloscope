@@ -45,10 +45,10 @@ class MovieMediaHandler(MediaHandler):
         movie = data.getroot()
         meta.title = self.get_text(movie, "title")
         meta.year = self.get_integer(movie, "year")
-        meta.rating = self.get_decimal(movie, "rating")
         art = movie.find("art")
         meta.cover = self.get_text(art, "poster")
         meta.backdrop = self.get_text(art, "fanart")
+        meta.rating = self.get_decimal(movie, "rating")
         return meta
 
 

@@ -28,9 +28,9 @@ class MediaMeta:
 
     path: str = field(init=False, repr=False)
     title: str | None = None
+    year: int | None = None
     cover: str | None = None
     backdrop: str | None = None
-    year: int | None = None
     rating: Decimal | None = None
 
 
