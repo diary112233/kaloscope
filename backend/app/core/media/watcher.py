@@ -345,10 +345,10 @@ async def consume_event(event: MediaEvent):
             await _handle_modified(event)
         elif event.event_type == EVENT_TYPE_DELETED:
             await _handle_deleted(event)
-        elif event.event_type == EVENT_TYPE_CREATED:
-            item = await _handle_created(event)
         elif event.event_type == EVENT_TYPE_MOVED:
             item = await _handle_moved(event)
+        elif event.event_type == EVENT_TYPE_CREATED:
+            item = await _handle_created(event)
 
     if item is not None:
         # generate parent media item if necessary
@@ -453,16 +453,6 @@ async def _handle_deleted(event: MediaEvent):
                     send2trash(nfo_path)
 
 
-async def _handle_created(event: MediaEvent) -> MediaItem | None:
-    """Handle the creation event.
-
-    Args:
-        event: The media event.
-    """
-    event.dest_path = event.src_path
-    return await _handle_moved(event)
-
-
 async def _handle_moved(event: MediaEvent) -> MediaItem | None:
     """Handle the movement event.
 
@@ -471,24 +461,33 @@ async def _handle_moved(event: MediaEvent) -> MediaItem | None:
     """
     # delete the source media item if it exists
     await _handle_deleted(event)
+    # create the destination media item if it exists
+    return await _handle_created(event)
 
+
+async def _handle_created(event: MediaEvent) -> MediaItem | None:
+    """Handle the creation event.
+
+    Args:
+        event: The media event.
+    """
     # check if the destination path exists
-    dest_path = Path(event.dest_path)
-    if not dest_path.exists():
+    path = Path(event.dest_path or event.src_path)
+    if not path.exists():
         return None
 
     # check if the destination path is an NFO file
-    if MediaHandler.is_nfo(dest_path):
-        await _parse_nfo(event.lib, dest_path)
+    if MediaHandler.is_nfo(path):
+        await _parse_nfo(event.lib, path)
         return None
 
     # get or create the destination media item
     item, _ = await MediaItem.get_or_create(
         lib_id=event.lib_id,
-        path=str(dest_path.resolve()),
+        path=str(path.resolve()),
         defaults={
-            "dir": str(dest_path.parent.resolve()),
-            "name": dest_path.stem,
+            "dir": str(path.parent.resolve()),
+            "name": path.stem,
         },
     )
     item.lib = event.lib

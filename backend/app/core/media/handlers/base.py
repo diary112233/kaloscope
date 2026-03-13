@@ -261,10 +261,10 @@ class MediaHandler(ABC):
             return self._filter_modified(event, base_path=base_path)
         elif event.event_type == EVENT_TYPE_DELETED:
             return self._filter_deleted(event, base_path=base_path)
-        elif event.event_type == EVENT_TYPE_CREATED:
-            return self._filter_created(event, base_path=base_path)
         elif event.event_type == EVENT_TYPE_MOVED:
             return self._filter_moved(event, base_path=base_path)
+        elif event.event_type == EVENT_TYPE_CREATED:
+            return self._filter_created(event, base_path=base_path)
         return None
 
     def _filter_modified(
@@ -279,14 +279,14 @@ class MediaHandler(ABC):
         Returns:
             The filtered event or None if the event is not accepted.
         """
-        if not self.is_target(
+        if self.is_target(
             base_path,
             event.src_path,
             check_dir=event.is_directory,
             check_exists=True,
         ):
-            return None
-        return event
+            return event
+        return None
 
     def _filter_deleted(
         self, event: FileSystemEvent, *, base_path: str
@@ -300,13 +300,49 @@ class MediaHandler(ABC):
         Returns:
             The filtered event or None if the event is not accepted.
         """
-        if not self.is_target(
+        if self.is_target(
             base_path,
             event.src_path,
             check_dir=event.is_directory,
             check_exists=False,
         ):
+            return event
+        return None
+
+    def _filter_moved(
+        self, event: FileSystemEvent, *, base_path: str
+    ) -> FileSystemEvent | None:
+        """Filter the movement event.
+
+        Args:
+            event: The file system event to filter.
+            base_path: The base path of the media library.
+
+        Returns:
+            The filtered event or None if the event is not accepted.
+        """
+        if event.is_directory:
             return None
+
+        src = self.is_target(base_path, event.src_path, check_exists=False)
+        dest = self.is_target(base_path, event.dest_path)
+
+        if not src and not dest:
+            return None
+        elif src and dest:
+            return event
+        elif src:
+            # src is a target, dest is not
+            # convert the event to a delete event
+            event.event_type = EVENT_TYPE_DELETED
+            event.dest_path = ""
+        else:
+            # dest is a target, src is not
+            # convert the event to a create event
+            event.event_type = EVENT_TYPE_CREATED
+            event.src_path = event.dest_path
+            event.dest_path = ""
+
         return event
 
     def _filter_created(
@@ -323,42 +359,9 @@ class MediaHandler(ABC):
         """
         if event.is_directory:
             return None
-        if not self.is_target(base_path, event.src_path):
-            return None
-        return event
-
-    def _filter_moved(
-        self, event: FileSystemEvent, *, base_path: str
-    ) -> FileSystemEvent | None:
-        """Filter the movement event.
-
-        Args:
-            event: The file system event to filter.
-            base_path: The base path of the media library.
-
-        Returns:
-            The filtered event or None if the event is not accepted.
-        """
-        if event.is_directory:
-            return None
-        src = self.is_target(base_path, event.src_path, check_exists=False)
-        dest = self.is_target(base_path, event.dest_path)
-        if not src and not dest:
-            return None
-        elif src and dest:
+        if self.is_target(base_path, event.src_path):
             return event
-        elif src:
-            # src is a target, dest is not
-            # convert the event to a delete event
-            event.event_type = EVENT_TYPE_DELETED
-            event.dest_path = ""
-        else:
-            # dest is a target, src is not
-            # convert the event to a create event
-            event.event_type = EVENT_TYPE_CREATED
-            event.src_path = event.dest_path
-            event.dest_path = ""
-        return event
+        return None
 
 
 _HANDLERS: dict[LibType, MediaHandler] = {}
