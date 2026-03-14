@@ -117,7 +117,7 @@ def extract_episode(name: str) -> int | None:
     return None
 
 
-def extract_title(name: str) -> str:
+def extract_title(name: str, ext: bool = False) -> str:
     """Extract a clean title string from a media file name.
 
     Strips common prefix noise (sub-group tags, download-site labels) and
@@ -126,12 +126,13 @@ def extract_title(name: str) -> str:
 
     Args:
         name: The raw file name or path stem string.
+        ext: Whether to remove the file extension before extraction.
 
     Returns:
         A cleaned title string suitable for media scraping.
     """
     # remove file extension if present
-    stem = re.sub(r"\.[a-zA-Z0-9]{2,4}$", "", name)
+    stem = re.sub(r"\.[a-zA-Z0-9]{2,4}$", "", name) if ext else name
 
     # strip leading bracketed prefixes
     title = _PREFIX_PATTERN.sub("", stem).strip()
@@ -149,7 +150,7 @@ def extract_title(name: str) -> str:
     # replace common separators with spaces and collapse whitespace
     title = _SEPARATOR_PATTERN.sub(" ", title).strip()
 
-    # fallback to original name (stripped of extension) if nothing survives
+    # fallback to original name if nothing survives
     if not title:
         title = _SEPARATOR_PATTERN.sub(" ", stem).strip()
 

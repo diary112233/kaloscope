@@ -202,9 +202,11 @@ class LibWatcher:
         for depth in handler.hierarchies():
             pattern = "/".join("*" * depth) + ".*"
             for file in Path(lib.dir).glob(pattern):
+                # skip directories
                 if not file.is_file():
                     continue
 
+                # skip files that are not accepted by the handler
                 src_path = str(file.resolve())
                 sys_event = handler.filter_event(
                     FileCreatedEvent(src_path), base_path=lib.dir
@@ -241,7 +243,7 @@ class LibWatcher:
         # create deletion events for missing media items
         if not initialize:
             for item in items:
-                if item.id not in set(existing_ids):
+                if item.id not in set(existing_ids) and not Path(item.path).exists():
                     await _create_media_event(FileDeletedEvent(item.path))
 
     async def add_observer(self, lib: MediaLib, *, initialize: bool = False):
@@ -355,7 +357,7 @@ async def consume_event(event: MediaEvent):
         for keywords in result:
             # parse the NFO file if it exists
             nfo_path = keywords.nfo_path
-            if nfo_path and nfo_path.exists() and nfo_path.is_file():
+            if nfo_path is not None:
                 await parse_nfo(event.lib, nfo_path)
 
             # fire the flow triggers
@@ -425,7 +427,7 @@ async def _handle_moved(event: MediaEvent) -> list[MetaKeywords] | None:
     """
     # delete the source media item if it exists
     await _handle_deleted(event)
-    # create the destination media item if it exists
+    # create media items for the destination path
     return await _handle_created(event)
 
 
@@ -445,5 +447,6 @@ async def _handle_created(event: MediaEvent) -> list[MetaKeywords] | None:
         await parse_nfo(event.lib, path)
         return None
 
+    # generate media items
     handler = get_handler(event.lib.lib_type)
     return await handler.gen_items(event.lib, path)

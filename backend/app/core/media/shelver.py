@@ -31,19 +31,21 @@ def is_nfo(path: Path | str) -> bool:
     return mime_type == NFO_MIME_TYPE
 
 
-def is_locked(nfo_path: Path) -> bool:
+def is_locked(path: Path | str) -> bool:
     """Check if the NFO file is locked by reading the <lockdata> tag.
 
     Args:
-        nfo_path: Path to the NFO file.
+        path: Path to the NFO file.
 
     Returns:
         True if the NFO file is locked, False otherwise.
     """
-    if not nfo_path.exists():
+    if not isinstance(path, Path):
+        path = Path(path)
+    if not (path.exists() and path.is_file()):
         return False
     try:
-        for _, element in etree.iterparse(nfo_path, events=("end",)):
+        for _, element in etree.iterparse(path, events=("end",)):
             if element.tag == "lockdata":
                 text = element.text
                 element.clear()
