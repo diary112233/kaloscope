@@ -30,7 +30,7 @@ from watchdog.events import (
 from watchdog.observers import Observer
 from watchdog.observers.api import BaseObserver
 
-from app.core.media.handlers.base import get_handler
+from app.core.media.handlers.base import MetaKeywords, get_handler
 from app.core.media.shelver import is_nfo, parse_nfo
 from app.models.flow import GraphCategory
 from app.models.media import MediaEvent, MediaItem, MediaLib
@@ -60,7 +60,7 @@ class EventHandler(FileSystemEventHandler):
             event: The file system event to persist.
         """
         handler = get_handler(self._lib.lib_type)
-        sys_event = handler.do_filter(event, base_path=self._lib.dir)
+        sys_event = handler.filter_event(event, base_path=self._lib.dir)
         if sys_event is not None:
             media_event = await MediaEvent.create(
                 lib_id=self._lib.id,
@@ -206,7 +206,7 @@ class LibWatcher:
                     continue
 
                 src_path = str(file.resolve())
-                sys_event = handler.do_filter(
+                sys_event = handler.filter_event(
                     FileCreatedEvent(src_path), base_path=lib.dir
                 )
                 if sys_event is None:
@@ -337,7 +337,7 @@ async def consume_event(event: MediaEvent):
     Args:
         event: The media event.
     """
-    item: MediaItem | None = None
+    result: list[MetaKeywords] | None = None
     async with in_transaction("default"):
         # delete the consumed event
         await event.delete()
@@ -347,46 +347,35 @@ async def consume_event(event: MediaEvent):
         elif event.event_type == EVENT_TYPE_DELETED:
             await _handle_deleted(event)
         elif event.event_type == EVENT_TYPE_MOVED:
-            item = await _handle_moved(event)
+            result = await _handle_moved(event)
         elif event.event_type == EVENT_TYPE_CREATED:
-            item = await _handle_created(event)
+            result = await _handle_created(event)
 
-    if item is not None:
-        # generate parent media item if necessary
-        if item.dir != item.lib.dir:
-            dir = Path(item.dir)
-            parent_item, _ = await MediaItem.get_or_create(
-                lib_id=item.lib_id,
-                path=str(dir.resolve()),
-                defaults={
-                    "dir": str(dir.resolve()),
-                    "name": dir.name,
+    if result:
+        for keywords in result:
+            # parse the NFO file if it exists
+            nfo_path = keywords.nfo_path
+            if nfo_path and nfo_path.exists() and nfo_path.is_file():
+                await parse_nfo(event.lib, nfo_path)
+
+            # fire the flow triggers
+            await FlowTriggerService.fire(
+                GraphCategory.INGEST,
+                event.lib_id,
+                bootparams={
+                    "item_path": keywords.item_path,
+                    "item_name": keywords.item_name,
+                    "nfo_path": str(nfo_path.resolve()) if nfo_path else None,
+                    "nfo_type": keywords.nfo_type,
+                    "language": keywords.language,
+                    "title": keywords.title,
+                    "year": keywords.year,
+                    "season": keywords.season,
+                    "episode": keywords.episode,
+                    "page_num": 1,
+                    "page_size": 1,
                 },
             )
-            if item.parent_id != parent_item.id:
-                item.parent_id = parent_item.id
-                await item.save(update_fields=["parent_id"])
-
-        # fire the flow triggers
-        await FlowTriggerService.fire(
-            GraphCategory.INGEST,
-            event.lib_id,
-            bootparams={
-                "event_type": event.event_type,
-                "lib": {
-                    "type": item.lib.lib_type,
-                    "name": item.lib.name,
-                },
-                "item": {
-                    "path": item.path,
-                    "name": item.name,
-                },
-                "keyword": item.name,
-                "language": item.lib.language,
-                "page_num": 1,
-                "page_size": 1,
-            },
-        )
 
 
 async def _handle_modified(event: MediaEvent):
@@ -428,7 +417,7 @@ async def _handle_deleted(event: MediaEvent):
                     send2trash(nfo_path)
 
 
-async def _handle_moved(event: MediaEvent) -> MediaItem | None:
+async def _handle_moved(event: MediaEvent) -> list[MetaKeywords] | None:
     """Handle the movement event.
 
     Args:
@@ -440,7 +429,7 @@ async def _handle_moved(event: MediaEvent) -> MediaItem | None:
     return await _handle_created(event)
 
 
-async def _handle_created(event: MediaEvent) -> MediaItem | None:
+async def _handle_created(event: MediaEvent) -> list[MetaKeywords] | None:
     """Handle the creation event.
 
     Args:
@@ -457,21 +446,4 @@ async def _handle_created(event: MediaEvent) -> MediaItem | None:
         return None
 
     handler = get_handler(event.lib.lib_type)
-    await handler.gen_items(event.lib, path)
-    # # get or create the destination media item
-    # item, _ = await MediaItem.get_or_create(
-    #     lib_id=event.lib_id,
-    #     path=str(path.resolve()),
-    #     defaults={
-    #         "dir": str(path.parent.resolve()),
-    #         "name": path.stem,
-    #     },
-    # )
-    # item.lib = event.lib
-
-    # # parse the NFO file if it exists
-    # nfo_path = Path(item.dir) / f"{item.name}.nfo"
-    # if nfo_path.exists() and nfo_path.is_file():
-    #     await _parse_nfo(event.lib, nfo_path)
-
-    # return item
+    return await handler.gen_items(event.lib, path)

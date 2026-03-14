@@ -1,6 +1,7 @@
 import decimal
 import re
 from functools import partial
+from pathlib import Path
 from typing import Any
 
 import orjson
@@ -27,6 +28,8 @@ def default(obj):
     """
     if isinstance(obj, set):
         return list(obj)
+    if isinstance(obj, Path):
+        return str(obj.resolve())
     if isinstance(obj, decimal.Decimal):
         return str(obj)
     return None

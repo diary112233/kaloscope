@@ -1,15 +1,13 @@
 {
-  "event_type": "created", // created | moved
-  "lib": {
-    "type": "movie", // movie | tv_show
-    "name": "Movies"
-  },
-  "item": {
-    "path": "/../Movie(2020).mp4",
-    "name": "Movie(2020)"
-  },
-  "keyword": "Movie(2020)",
+  "item_path": "/../Movie(2020).mp4",
+  "item_name": "Movie(2020)",
+  "nfo_path": "/../Movie(2020).nfo",
+  "nfo_type": "movie", // movie | tvshow | episode
   "language": "en-US",
+  "title": "Movie",
+  "year": 2020,
+  "season": null,
+  "episode": null,
   "page_num": 1,
   "page_size": 5
 }

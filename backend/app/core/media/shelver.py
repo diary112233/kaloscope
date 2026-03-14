@@ -5,7 +5,6 @@ from pathlib import Path
 import aiofiles
 from lxml import etree
 from sanic.log import Colors, logger
-from watchdog.events import EVENT_TYPE_CREATED, EVENT_TYPE_MOVED
 
 from app.core.constants import ENCODING, NFO_MIME_TYPE
 from app.core.flow.context import RETVAL_KEY, Context
@@ -62,22 +61,17 @@ async def gen_nfo(context: Context, tmpl: NFOType):
         context: Context of the flow execution.
         tmpl: Template type to use for NFO generation.
     """
-    # only generate NFO for created or moved items
-    event_type = context.bootparams.get("event_type")
-    if event_type not in (EVENT_TYPE_CREATED, EVENT_TYPE_MOVED):
-        return
-    # ensure we have item path and name
-    item = context.bootparams.get("item", {})
-    item_path = item.get("path")
-    item_name = item.get("name")
-    if not item_path or not item_name:
+    bootparams = context.bootparams
+    # ensure we have NFO type and path
+    nfo_type = bootparams.get("nfo_type")
+    nfo_path = bootparams.get("nfo_path")
+    if not nfo_type or not nfo_path:
         return
     # ensure we have return value
     retval = context.get(RETVAL_KEY)
     if not retval or not isinstance(retval, list):
         return
     # check if NFO file is locked
-    nfo_path = Path(item_path).parent / f"{item_name}.nfo"
     if is_locked(nfo_path):
         logger.info("NFO file is locked, skipping generation: %s", nfo_path)
         return

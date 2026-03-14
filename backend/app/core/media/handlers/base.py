@@ -79,6 +79,29 @@ class MediaHandler(ABC):
     async def gen_items(self, lib: MediaLib, path: Path) -> list[MetaKeywords]:
         raise NotImplementedError
 
+    def filter_event(
+        self, event: FileSystemEvent, *, base_path: str
+    ) -> FileSystemEvent | None:
+        """Filter the event based on the library type and hierarchy.
+
+        Args:
+            event: The file system event to filter.
+            base_path: The base path of the media library.
+
+        Returns:
+            The filtered event or None if the event is not accepted.
+        """
+        logger.info(f"Filtering file system event: {Colors.GREEN}%s{Colors.END}", event)
+        if event.event_type == EVENT_TYPE_MODIFIED:
+            return self._filter_modified(event, base_path=base_path)
+        elif event.event_type == EVENT_TYPE_DELETED:
+            return self._filter_deleted(event, base_path=base_path)
+        elif event.event_type == EVENT_TYPE_MOVED:
+            return self._filter_moved(event, base_path=base_path)
+        elif event.event_type == EVENT_TYPE_CREATED:
+            return self._filter_created(event, base_path=base_path)
+        return None
+
     def is_target(
         self,
         base_path: str,
@@ -150,29 +173,6 @@ class MediaHandler(ABC):
         elif isinstance(path, memoryview):
             path = path.tobytes().decode(ENCODING)
         return path
-
-    def do_filter(
-        self, event: FileSystemEvent, *, base_path: str
-    ) -> FileSystemEvent | None:
-        """Filter the event based on the library type and hierarchy.
-
-        Args:
-            event: The file system event to filter.
-            base_path: The base path of the media library.
-
-        Returns:
-            The filtered event or None if the event is not accepted.
-        """
-        logger.info(f"Filtering file system event: {Colors.GREEN}%s{Colors.END}", event)
-        if event.event_type == EVENT_TYPE_MODIFIED:
-            return self._filter_modified(event, base_path=base_path)
-        elif event.event_type == EVENT_TYPE_DELETED:
-            return self._filter_deleted(event, base_path=base_path)
-        elif event.event_type == EVENT_TYPE_MOVED:
-            return self._filter_moved(event, base_path=base_path)
-        elif event.event_type == EVENT_TYPE_CREATED:
-            return self._filter_created(event, base_path=base_path)
-        return None
 
     def _filter_modified(
         self, event: FileSystemEvent, *, base_path: str

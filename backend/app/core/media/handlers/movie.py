@@ -77,7 +77,8 @@ class MovieMediaHandler(MediaHandler):
             m = MetaKeywords(path)
             if nfo:
                 m.nfo_path = Path(m.item_dir) / f"{m.item_name}.nfo"
-                m.nfo_type = NFOType.MOVIE
+                if not m.nfo_path.exists():
+                    m.nfo_type = NFOType.MOVIE
             m.language = lib.language
             m.title = extract_title(m.item_name)
             m.year = extract_year(m.item_name)
