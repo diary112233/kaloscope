@@ -72,33 +72,33 @@ class MovieMediaHandler(MediaHandler):
             The list of metadata keywords for the media items.
         """
         result = []
-        dir = Path(lib.dir)
-        parts = path.relative_to(dir).parts
-        if len(parts) == 1:
+
+        def _gen_keywords(path: Path, *, nfo: bool = False) -> MetaKeywords:
             m = MetaKeywords(path)
-            m.nfo_path = dir / f"{m.item_name}.nfo"
-            m.nfo_type = NFOType.MOVIE
+            if nfo:
+                m.nfo_path = Path(m.item_dir) / f"{m.item_name}.nfo"
+                m.nfo_type = NFOType.MOVIE
             m.language = lib.language
             m.title = extract_title(m.item_name)
             m.year = extract_year(m.item_name)
-            result.append(m)
-            await MediaItemService.create(lib.id, None, m)
-        elif len(parts) == 2:
-            m1 = MetaKeywords(dir / parts[0])
-            m1.nfo_path = dir / parts[0] / f"{m1.item_name}.nfo"
-            m1.nfo_type = NFOType.MOVIE
-            m1.language = lib.language
-            m1.title = extract_title(m1.item_name)
-            m1.year = extract_year(m1.item_name)
-            result.append(m1)
-            parent_item = await MediaItemService.create(lib.id, None, m1)
+            return m
 
-            m2 = MetaKeywords(path)
-            m2.language = lib.language
-            m2.title = extract_title(m2.item_name)
-            m2.year = extract_year(m2.item_name)
-            result.append(m2)
+        dir = Path(lib.dir)
+        parts = path.relative_to(dir).parts
+        if len(parts) == 1:
+            m = _gen_keywords(path, nfo=True)
+            await MediaItemService.create(lib.id, None, m)
+            result.append(m)
+        elif len(parts) == 2:
+            # create parent item for the directory
+            m1 = _gen_keywords(dir / parts[0], nfo=True)
+            parent_item = await MediaItemService.create(lib.id, None, m1)
+            result.append(m1)
+            # create child item for the file
+            m2 = _gen_keywords(path)
             await MediaItemService.create(lib.id, parent_item.id, m2)
+            result.append(m2)
+
         return result
 
 
