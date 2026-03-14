@@ -15,11 +15,8 @@ from watchdog.events import (
     FileSystemEvent,
 )
 
-from app.core.constants import ENCODING
+from app.core.constants import ENCODING, NFO_MIME_TYPE
 from app.models.media import Language, LibType, MediaLib, NFOType
-
-# the mime type for NFO files
-NFO_MIME_TYPE = "text/x-nfo"
 
 
 @dataclass(kw_only=True)
@@ -81,48 +78,6 @@ class MediaHandler(ABC):
     @abstractmethod
     async def gen_items(self, lib: MediaLib, path: Path) -> list[MetaKeywords]:
         raise NotImplementedError
-
-    @classmethod
-    def is_nfo(cls, path: Path | str) -> bool:
-        """Check if the path is an NFO file.
-
-        Args:
-            path: The path to check.
-
-        Returns:
-            True if the path is an NFO file, False otherwise.
-        """
-        if not isinstance(path, Path):
-            path = Path(path)
-        mime_type, _ = mimetypes.guess_file_type(path)
-        return mime_type == NFO_MIME_TYPE
-
-    async def parse_nfo(self, path: Path | str) -> MediaMeta:
-        """Parse the NFO file at the given path.
-
-        Args:
-            path: The path to the NFO file.
-
-        Returns:
-            The parsed metadata as a MediaMeta object.
-        """
-        data = None
-        if not isinstance(path, Path):
-            path = Path(path)
-        if path.exists() and path.is_file():
-            try:
-                data = etree.parse(path, parser=etree.XMLParser())
-            except Exception:
-                logger.error(
-                    f"Failed to parse the NFO file: {Colors.RED}%s{Colors.END}",
-                    path,
-                    exc_info=True,
-                )
-
-        # if data is None, return an empty MediaMeta
-        meta = self.extract_meta(data) if data else MediaMeta()
-        meta.nfo_path = str(path.resolve())
-        return meta
 
     def is_target(
         self,

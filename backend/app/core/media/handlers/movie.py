@@ -73,7 +73,7 @@ class MovieMediaHandler(MediaHandler):
         """
         result = []
 
-        def _gen_keywords(path: Path, *, nfo: bool = False) -> MetaKeywords:
+        def _meta_keywords(path: Path, *, nfo: bool = False) -> MetaKeywords:
             m = MetaKeywords(path)
             if nfo:
                 m.nfo_path = Path(m.item_dir) / f"{m.item_name}.nfo"
@@ -86,17 +86,17 @@ class MovieMediaHandler(MediaHandler):
         dir = Path(lib.dir)
         parts = path.relative_to(dir).parts
         if len(parts) == 1:
-            m = _gen_keywords(path, nfo=True)
+            m = _meta_keywords(path, nfo=True)
             await MediaItemService.create(lib.id, None, m)
             result.append(m)
         elif len(parts) == 2:
             # create parent item for the directory
-            m1 = _gen_keywords(dir / parts[0], nfo=True)
-            parent_item = await MediaItemService.create(lib.id, None, m1)
+            m1 = _meta_keywords(dir / parts[0], nfo=True)
+            p = await MediaItemService.create(lib.id, None, m1)
             result.append(m1)
             # create child item for the file
-            m2 = _gen_keywords(path)
-            await MediaItemService.create(lib.id, parent_item.id, m2)
+            m2 = _meta_keywords(path)
+            await MediaItemService.create(lib.id, p.id, m2)
             result.append(m2)
 
         return result

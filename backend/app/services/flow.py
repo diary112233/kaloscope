@@ -17,7 +17,6 @@ from tortoise.transactions import atomic
 from app.core.config import KaloscopeConfig
 from app.core.constants import ENCODING
 from app.core.exceptions import ErrorCode, KaloscopeException, NotFoundException
-from app.core.flow.engine import FlowEngine
 from app.core.flow.nodes.base import Node
 from app.core.flow.syncer import save_icon, sync_repo
 from app.models.flow import (
@@ -577,7 +576,7 @@ class FlowTriggerService(BaseService[FlowTrigger], model=FlowTrigger):
             return
 
         # use the flow engine to execute the flow graphs
-        engine: FlowEngine = cls.app_ctx().engine
+        engine = cls.app_ctx().engine
         await engine.execute_batch(
             graph_ids, bootparams, repeatable=repeatable, recoverable=recoverable
         )

@@ -30,7 +30,8 @@ from watchdog.events import (
 from watchdog.observers import Observer
 from watchdog.observers.api import BaseObserver
 
-from app.core.media.handlers.base import MediaHandler, get_handler
+from app.core.media.handlers.base import get_handler
+from app.core.media.shelver import is_nfo, parse_nfo
 from app.models.flow import GraphCategory
 from app.models.media import MediaEvent, MediaItem, MediaLib
 from app.services.flow import FlowTriggerService
@@ -211,7 +212,7 @@ class LibWatcher:
                 if sys_event is None:
                     continue
 
-                if MediaHandler.is_nfo(src_path):
+                if is_nfo(src_path):
                     # handle NFO file
                     if initialize or (nfo_mtime := nfo_mtimes.get(src_path)) is None:
                         # delay the NFO file event creation
@@ -388,32 +389,6 @@ async def consume_event(event: MediaEvent):
         )
 
 
-async def _parse_nfo(lib: MediaLib, path: Path):
-    """Parse the NFO file and update the media item.
-
-    Args:
-        lib: The media library instance.
-        path: The path to the NFO file.
-    """
-    handler = get_handler(lib.lib_type)
-    meta = await handler.parse_nfo(path)
-    await MediaItem.filter(
-        lib_id=lib.id,
-        dir=str(path.parent.resolve()),
-        name=path.stem,
-    ).update(
-        nfo_path=meta.nfo_path,
-        nfo_mtime=datetime.fromtimestamp(path.stat().st_mtime, tz=UTC),
-        title=meta.title,
-        year=meta.year,
-        season=meta.season,
-        episode=meta.episode,
-        cover=meta.cover,
-        backdrop=meta.backdrop,
-        rating=meta.rating,
-    )
-
-
 async def _handle_modified(event: MediaEvent):
     """Handle the modification event.
 
@@ -421,8 +396,8 @@ async def _handle_modified(event: MediaEvent):
         event: The media event.
     """
     src_path = Path(event.src_path)
-    if MediaHandler.is_nfo(src_path):
-        await _parse_nfo(event.lib, src_path)
+    if is_nfo(src_path):
+        await parse_nfo(event.lib, src_path)
 
 
 async def _handle_deleted(event: MediaEvent):
@@ -436,7 +411,7 @@ async def _handle_deleted(event: MediaEvent):
     if event.is_directory:
         # delete the media items in the directory
         await MediaItem.filter(lib_id=lib_id, dir=src_path).delete()
-    elif MediaHandler.is_nfo(src_path):
+    elif is_nfo(src_path):
         # update the media item to remove the NFO metadata
         await MediaItem.filter(lib_id=lib_id, nfo_path=src_path).update(
             nfo_path=None, nfo_mtime=None
@@ -477,8 +452,8 @@ async def _handle_created(event: MediaEvent) -> MediaItem | None:
         return None
 
     # check if the destination path is an NFO file
-    if MediaHandler.is_nfo(path):
-        await _parse_nfo(event.lib, path)
+    if is_nfo(path):
+        await parse_nfo(event.lib, path)
         return None
 
     handler = get_handler(event.lib.lib_type)
