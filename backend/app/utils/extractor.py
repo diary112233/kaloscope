@@ -21,13 +21,14 @@ _SEASON_PATTERN = re.compile(
     re.VERBOSE,
 )
 
-# episode pattern: E01, ep1, 第1集 etc.
+# episode pattern: E01, ep1, 第1集, [01] etc.
 _EPISODE_PATTERN = re.compile(
     r"""
     (?:
         [Ee][Pp]?\.?(\d{1,4})
         | 第\s*(\d{1,4})\s*[集話话回]
         | \s-\s0*(\d{1,4})\s*(?:\[|$)
+        | \[0*(\d{1,4})\]
     )
     """,
     re.VERBOSE,
@@ -56,7 +57,7 @@ _VIDEO_TAGS_PATTERN = re.compile(
         | DTS(?:-HD|-MA|-X)? | TrueHD | Atmos | DD\+? | AAC | AC3 | FLAC | MP3 | OPUS
         | [257]\.1
         # language/subtitle markers
-        | (?:(?:zh|cn|jp|en|ko|fr|de|es|ru)[-_]?){1,3}(?:sub|dub)?
+        | (?:(?:zh|cn|jp|en|ko|fr|de|es|ru)[-_]?){1,3}(?:sub|dub)?\b
         | (?:CHS|CHT|ENG|JPN|KOR)(?:[._+](?:CHS|CHT|ENG|JPN|KOR))*
         | [Ss]ub(?:bed)?
         # misc
@@ -96,7 +97,7 @@ def extract_season(name: str) -> int | None:
     """
     match = _SEASON_PATTERN.search(name)
     if match:
-        value = match.group(1) or match.group(2) or match.group(3)
+        value = next(g for g in match.groups() if g is not None)
         return int(value)
     return None
 
@@ -112,7 +113,7 @@ def extract_episode(name: str) -> int | None:
     """
     match = _EPISODE_PATTERN.search(name)
     if match:
-        value = match.group(1) or match.group(2) or match.group(3)
+        value = next(g for g in match.groups() if g is not None)
         return int(value)
     return None
 

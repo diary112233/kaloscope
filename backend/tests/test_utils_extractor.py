@@ -80,6 +80,9 @@ class TestExtractEpisode:
     def test_dash_number_format(self):
         assert extract_episode("[SubGroup] Anime Title - 01 [1080p]") == 1
 
+    def test_bracket_format(self):
+        assert extract_episode("[SubGroup] Anime S2 [06][1080p].mkv") == 6
+
     def test_chinese_episode_marker_ji(self):
         assert extract_episode("庆余年 第3集") == 3
 
