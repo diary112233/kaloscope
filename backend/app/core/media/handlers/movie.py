@@ -52,13 +52,13 @@ class MovieMediaHandler(MediaHandler):
             The extracted metadata.
         """
         meta = MediaMeta()
-        movie = data.getroot()
-        meta.title = get_text(movie, "title")
-        meta.year = get_integer(movie, "year")
-        art = movie.find("art")
+        root = data.getroot()
+        meta.title = get_text(root, "title")
+        meta.year = get_integer(root, "year")
+        art = root.find("art")
         meta.cover = get_text(art, "poster")
         meta.backdrop = get_text(art, "fanart")
-        meta.rating = get_decimal(movie, "rating")
+        meta.rating = get_decimal(root, "rating")
         return meta
 
     async def gen_items(self, lib: MediaLib, path: Path) -> list[MetaKeywords]:
