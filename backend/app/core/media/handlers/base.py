@@ -91,16 +91,21 @@ class MediaHandler(ABC):
         Returns:
             The filtered event or None if the event is not accepted.
         """
-        logger.info(f"Filtering file system event: {Colors.GREEN}%s{Colors.END}", event)
+        logger.debug(f"Filtering event: {Colors.CYAN}%s{Colors.END}", event)
+
+        result: FileSystemEvent | None = None
         if event.event_type == EVENT_TYPE_MODIFIED:
-            return self._filter_modified(event, base_path=base_path)
+            result = self._filter_modified(event, base_path=base_path)
         elif event.event_type == EVENT_TYPE_DELETED:
-            return self._filter_deleted(event, base_path=base_path)
+            result = self._filter_deleted(event, base_path=base_path)
         elif event.event_type == EVENT_TYPE_MOVED:
-            return self._filter_moved(event, base_path=base_path)
+            result = self._filter_moved(event, base_path=base_path)
         elif event.event_type == EVENT_TYPE_CREATED:
-            return self._filter_created(event, base_path=base_path)
-        return None
+            result = self._filter_created(event, base_path=base_path)
+
+        if result is not None:
+            logger.info(f"Accepted event: {Colors.GREEN}%s{Colors.END}", result)
+        return result
 
     def is_target(
         self,

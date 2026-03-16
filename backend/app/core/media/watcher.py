@@ -8,7 +8,7 @@ from pathlib import Path
 from queue import Queue
 
 from sanic import Sanic
-from sanic.log import logger
+from sanic.log import Colors, logger
 from send2trash import send2trash
 from tortoise.transactions import in_transaction
 from watchdog.events import (
@@ -170,6 +170,7 @@ class LibWatcher:
             events: The queue to store media events.
             initialize: Whether this is the first time to scan the directory.
         """
+        logger.info(f"Scanning directory: {Colors.GREEN}%s{Colors.END}", lib.dir)
 
         async def _create_media_event(sys_event: FileSystemEvent):
             """Create a media event from a system event.
