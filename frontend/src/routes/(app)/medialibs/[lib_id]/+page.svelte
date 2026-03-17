@@ -9,6 +9,7 @@
     DataView,
     Image,
     Paginator,
+    Rating,
     Search,
     type PaginatorProps
   } from '$lib/components';
@@ -183,6 +184,7 @@
         class="group relative"
         onmouseenter={() => (backdrop = item.backdrop ?? item.poster ?? backdrop)}
       >
+        <Rating score={item.rating} class="absolute top-1 left-1 z-1" />
         <div class="absolute top-0 right-0 z-1 flex gap-2 p-1 opacity-0 group-hover:opacity-100 {transClass}">
           <Button icon={icons.play} class={btnClass} onclick={() => goto(`${page.url.pathname}/${item.id}`)} />
         </div>
@@ -195,7 +197,7 @@
         />
       </div>
       <div class="flex-col-center gap-1 p-1">
-        <div class="line-clamp-1 text-lg font-semibold sm:text-[clamp(0.75rem,2vw,1rem)]">
+        <div class="line-clamp-1 text-[clamp(0.875rem,2vw,1rem)] font-semibold">
           {item.title ?? item.name}
         </div>
         <div class="text-sm opacity-50">{item.year}</div>
