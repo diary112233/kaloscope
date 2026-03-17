@@ -398,10 +398,19 @@ async def _handle_deleted(event: MediaEvent):
     Args:
         event: The media event.
     """
+
+    def _trash_nfo(path: str | None):
+        if not path:
+            return
+        # move the NFO file to the trash if it exists
+        nfo = Path(path)
+        if nfo.exists() and nfo.is_file():
+            send2trash(nfo)
+
     lib_id = event.lib_id
     src_path = event.src_path
     if event.is_directory:
-        # delete the media items in the directory
+        # delete all media items under the deleted directory
         await MediaItem.filter(lib_id=lib_id, dir=src_path).delete()
     elif is_nfo(src_path):
         # update the media item to remove the NFO metadata
@@ -413,11 +422,14 @@ async def _handle_deleted(event: MediaEvent):
         item = await MediaItem.filter(lib_id=lib_id, path=src_path).get_or_none()
         if item is not None:
             await item.delete()
-            # delete the NFO file if it exists
-            if item.nfo_path:
-                nfo_path = Path(item.nfo_path)
-                if nfo_path.exists() and nfo_path.is_file():
-                    send2trash(nfo_path)
+            _trash_nfo(item.nfo_path)
+            # delete the parent item if it has no more children
+            if (pid := item.parent_id) is not None:
+                siblings = await MediaItem.filter(lib_id=lib_id, parent_id=pid).count()
+                if siblings == 0:
+                    parent_item = await MediaItem.filter(id=pid).get()
+                    await parent_item.delete()
+                    _trash_nfo(parent_item.nfo_path)
 
 
 async def _handle_moved(event: MediaEvent) -> list[MetaKeywords] | None:

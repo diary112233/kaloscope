@@ -191,10 +191,11 @@ class MediaHandler(ABC):
         Returns:
             The filtered event or None if the event is not accepted.
         """
+        if event.is_directory:
+            return None
         if self.is_target(
             base_path,
             event.src_path,
-            check_dir=event.is_directory,
             check_exists=True,
         ):
             return event
