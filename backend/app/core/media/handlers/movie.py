@@ -4,6 +4,7 @@ from lxml import etree
 
 from app.core.media.handlers.base import (
     _HANDLERS,
+    Actor,
     MediaHandler,
     MediaMeta,
     MetaKeywords,
@@ -11,7 +12,7 @@ from app.core.media.handlers.base import (
 from app.models.media import LibType, MediaLib, NFOType
 from app.services.media import MediaItemService
 from app.utils.extractor import extract_title, extract_year
-from app.utils.xml import get_decimal, get_integer, get_text
+from app.utils.xml import get_all_text, get_decimal, get_integer, get_text
 
 
 class MovieMediaHandler(MediaHandler):
@@ -54,11 +55,36 @@ class MovieMediaHandler(MediaHandler):
         meta = MediaMeta()
         root = data.getroot()
         meta.title = get_text(root, "title")
+        meta.originaltitle = get_text(root, "originaltitle")
+        meta.tagline = get_text(root, "tagline")
+        meta.plot = get_text(root, "plot")
+        meta.rating = get_decimal(root, "rating")
         meta.year = get_integer(root, "year")
+        meta.premiered = get_text(root, "premiered")
+        meta.country = get_text(root, "country")
+        meta.mpaa = get_text(root, "mpaa")
+        # multiple
+        meta.tags = get_all_text(root, "tag")
+        meta.genres = get_all_text(root, "genre")
+        meta.studios = get_all_text(root, "studio")
+        meta.directors = get_all_text(root, "director")
+        meta.writers = get_all_text(root, "writer")
+        meta.credits = get_all_text(root, "credits")
+        # actors
+        actors: list[Actor] = []
+        for el in root.findall("actor"):
+            actors.append(
+                Actor(
+                    name=get_text(el, "name"),
+                    role=get_text(el, "role"),
+                    thumb=get_text(el, "thumb"),
+                )
+            )
+        meta.actors = actors or None
+        # images
         art = root.find("art")
         meta.poster = get_text(art, "poster")
         meta.backdrop = get_text(art, "fanart")
-        meta.rating = get_decimal(root, "rating")
         return meta
 
     async def gen_items(self, lib: MediaLib, path: Path) -> list[MetaKeywords]:

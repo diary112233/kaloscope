@@ -23,6 +23,22 @@ def get_text(element: etree._Element | None, tag_name: str) -> str | None:
     return None
 
 
+def get_all_text(element: etree._Element | None, tag_name: str) -> list[str] | None:
+    """Get the text content of all matching sub-elements.
+
+    Args:
+        element: The parent XML element.
+        tag_name: The tag name of the sub-elements.
+
+    Returns:
+        The list of text content of the sub-elements, or None if not found.
+    """
+    if element is None:
+        return None
+    texts = [tag.text.strip() for tag in element.findall(tag_name) if tag.text]
+    return texts or None
+
+
 def get_integer(element: etree._Element | None, tag_name: str) -> int | None:
     """Get the integer content of the first matching sub-element.
 

@@ -47,17 +47,40 @@ class MetaKeywords:
 
 
 @dataclass(kw_only=True)
+class Actor:
+    """The metadata of an actor parsed from an NFO file."""
+
+    name: str | None = None
+    role: str | None = None
+    thumb: str | None = None
+
+
+@dataclass(kw_only=True)
 class MediaMeta:
     """The metadata of a media item parsed from an NFO file."""
 
     nfo_path: str = field(init=False)
     title: str | None = None
+    originaltitle: str | None = None
+    tagline: str | None = None
+    plot: str | None = None
+    rating: Decimal | None = None
     year: int | None = None
+    aired: str | None = None
     season: int | None = None
     episode: int | None = None
+    premiered: str | None = None
+    country: str | None = None
+    mpaa: str | None = None
+    tags: list[str] | None = None
+    genres: list[str] | None = None
+    studios: list[str] | None = None
+    directors: list[str] | None = None
+    writers: list[str] | None = None
+    credits: list[str] | None = None
+    actors: list[Actor] | None = None
     poster: str | None = None
     backdrop: str | None = None
-    rating: Decimal | None = None
 
 
 class MediaHandler(ABC):
