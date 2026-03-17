@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<episodedetails>
+  <lockdata>{{ lockdata|default(false)|lower }}</lockdata>
+  <title>{{ title }}</title>
+  <plot>{{ plot }}</plot>
+  <rating>{{ rating }}</rating>
+  <aired>{{ aired }}</aired>
+  <season>{{ season }}</season>
+  <episode>{{ episode }}</episode>
+  <art>
+    <poster>{{ poster }}</poster>
+  </art>
+</episodedetails>
