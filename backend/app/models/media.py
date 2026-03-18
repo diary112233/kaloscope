@@ -93,9 +93,6 @@ class MediaItem(TortoiseModel):
         ordering = ["-created_at"]
         unique_together = (("lib", "path"),)
 
-    class PydanticMeta:
-        exclude = ("lib",)
-
 
 class MediaEvent(TortoiseModel):
     lib_id: int

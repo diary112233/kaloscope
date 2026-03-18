@@ -85,7 +85,7 @@ async def gen_nfo(context: Context, tmpl: NFOType):
         await f.write(render(template, context=retval[0]))
 
 
-async def parse_nfo(lib_type: LibType, path: Path | str) -> MediaMeta | None:
+def parse_nfo(lib_type: LibType, path: Path | str) -> MediaMeta | None:
     """Parse the NFO file at the given path.
 
     Args:
@@ -127,7 +127,7 @@ async def update_metadata(lib: MediaLib, path: Path | str):
     """
     if not isinstance(path, Path):
         path = Path(path)
-    meta = await parse_nfo(lib.lib_type, path)
+    meta = parse_nfo(lib.lib_type, path)
     if meta is not None:
         await MediaItem.filter(
             lib_id=lib.id,

@@ -8,6 +8,7 @@ from sanic.response import ResponseStream, file_stream
 from sanic_ext import validate
 from tortoise.expressions import Q, RawSQL
 
+from app.core.media.shelver import parse_nfo
 from app.models.base import IDs, Range
 from app.models.flow import GraphCategory
 from app.models.media import (
@@ -79,14 +80,16 @@ async def list_items(_, query: MediaQuery) -> HTTPResponse:
         **query.page_params,
         annotations={"keyword": RawSQL("IFNULL(title, name)")},
     )
-    return json(await MediaItemService.dump_page(page))
+    return json(await MediaItemService.dump_page(page, exclude=("lib",)))
 
 
 @media.get("/<id:int>")
 async def get_item_detail(_, id: int) -> HTTPResponse:
     """Get the detail of the media item."""
-    item = await MediaItem.get(id=id)
-    return json(await MediaItemService.dump(item))
+    item = await MediaItemService.dump(await MediaItem.get(id=id))
+    if nfo_path := item["nfo_path"]:
+        item["metadata"] = parse_nfo(item["lib"]["lib_type"], nfo_path)
+    return json(item)
 
 
 @media.get("/stream")
