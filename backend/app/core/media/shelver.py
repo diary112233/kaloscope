@@ -10,7 +10,7 @@ from app.core.constants import ENCODING, NFO_MIME_TYPE
 from app.core.flow.context import RETVAL_KEY, Context
 from app.core.media.handlers.base import MediaMeta, get_handler
 from app.core.renderer import render
-from app.models.media import MediaItem, MediaLib, NFOType
+from app.models.media import LibType, MediaItem, MediaLib, NFOType
 
 # the path to the NFO templates
 TEMPLATES_PATH = Path(__file__).resolve().parents[3] / "static/templates"
@@ -85,11 +85,11 @@ async def gen_nfo(context: Context, tmpl: NFOType):
         await f.write(render(template, context=retval[0]))
 
 
-async def parse_nfo(lib: MediaLib, path: Path | str) -> MediaMeta | None:
+async def parse_nfo(lib_type: LibType, path: Path | str) -> MediaMeta | None:
     """Parse the NFO file at the given path.
 
     Args:
-        lib: The media library instance.
+        lib_type: The media library type.
         path: The path to the NFO file.
 
     Returns:
@@ -111,11 +111,23 @@ async def parse_nfo(lib: MediaLib, path: Path | str) -> MediaMeta | None:
     # extract metadata from the NFO file
     meta = None
     if data is not None:
-        handler = get_handler(lib.lib_type)
+        handler = get_handler(lib_type)
         meta = handler.extract_meta(data)
         meta.nfo_path = str(path.resolve())
 
-    # update the media item with the metadata
+    return meta
+
+
+async def update_metadata(lib: MediaLib, path: Path | str):
+    """Update the metadata of the media item corresponding to the given NFO file.
+
+    Args:
+        lib: The media library instance.
+        path: The path to the NFO file.
+    """
+    if not isinstance(path, Path):
+        path = Path(path)
+    meta = await parse_nfo(lib.lib_type, path)
     if meta is not None:
         await MediaItem.filter(
             lib_id=lib.id,
@@ -132,5 +144,3 @@ async def parse_nfo(lib: MediaLib, path: Path | str) -> MediaMeta | None:
             backdrop=meta.backdrop,
             rating=meta.rating,
         )
-
-    return meta

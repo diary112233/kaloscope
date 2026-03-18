@@ -31,7 +31,7 @@ from watchdog.observers import Observer
 from watchdog.observers.api import BaseObserver
 
 from app.core.media.handlers.base import MetaKeywords, get_handler
-from app.core.media.shelver import is_nfo, parse_nfo
+from app.core.media.shelver import is_nfo, update_metadata
 from app.models.flow import GraphCategory
 from app.models.media import MediaEvent, MediaItem, MediaLib
 from app.services.flow import FlowTriggerService
@@ -359,7 +359,7 @@ async def consume_event(event: MediaEvent):
             # parse the NFO file if it exists
             nfo_path = keywords.nfo_path
             if nfo_path is not None:
-                await parse_nfo(event.lib, nfo_path)
+                await update_metadata(event.lib, nfo_path)
 
             # fire the flow triggers
             await FlowTriggerService.fire(
@@ -389,7 +389,7 @@ async def _handle_modified(event: MediaEvent):
     """
     src_path = Path(event.src_path)
     if is_nfo(src_path):
-        await parse_nfo(event.lib, src_path)
+        await update_metadata(event.lib, src_path)
 
 
 async def _handle_deleted(event: MediaEvent):
@@ -457,7 +457,7 @@ async def _handle_created(event: MediaEvent) -> list[MetaKeywords] | None:
 
     # check if the destination path is an NFO file
     if is_nfo(path):
-        await parse_nfo(event.lib, path)
+        await update_metadata(event.lib, path)
         return None
 
     # generate media items
