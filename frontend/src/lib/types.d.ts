@@ -196,6 +196,45 @@ export type MediaItem = {
   poster: string | null;
   backdrop: string | null;
   rating: number | null;
+  children?: MediaItem[];
+  metadata?: MediaMeta | null;
+};
+
+/**
+ * The type of the actor.
+ */
+export type Actor = {
+  name: string | null;
+  role: string | null;
+  thumb: string | null;
+};
+
+/**
+ * The type of the media metadata.
+ */
+export type MediaMeta = {
+  nfo_path: string;
+  title: string | null;
+  originaltitle: string | null;
+  tagline: string | null;
+  plot: string | null;
+  rating: number | null;
+  year: number | null;
+  aired: string | null;
+  season: number | null;
+  episode: number | null;
+  premiered: string | null;
+  country: string | null;
+  mpaa: string | null;
+  tags: string[] | null;
+  genres: string[] | null;
+  studios: string[] | null;
+  directors: string[] | null;
+  writers: string[] | null;
+  credits: string[] | null;
+  actors: Actor[] | null;
+  poster: string | null;
+  backdrop: string | null;
 };
 
 /**
