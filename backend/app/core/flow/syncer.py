@@ -98,7 +98,7 @@ async def sync_repo(repo: FlowRepository):
             # if the path is not a valid git repository, clone it
             Repo.clone_from(repo.repo_url, to_path=repo_path)
             logger.info(
-                f"Cloned repository from %s to {Colors.GREEN}%s{Colors.END}",
+                f"Cloned repository from %s to: {Colors.GREEN}%s{Colors.END}",
                 repo.repo_url,
                 repo_path,
             )
