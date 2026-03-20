@@ -259,6 +259,13 @@
     "delete_local": "Also delete the local files"
   },
   "media": {
+    "director": "Director",
+    "writer": "Writer",
+    "cast": "Cast",
+    "studio": "Studio",
+    "episodes": "Episodes",
+    "parts": "Parts",
+    "tags": "Tags",
     "video": {
       "tab": "Video",
       "speed": "Speed",

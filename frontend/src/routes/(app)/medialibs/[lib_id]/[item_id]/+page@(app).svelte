@@ -3,6 +3,7 @@
   import { api } from '$lib/api';
   import { Backdrop, Button, Container, Image, Rating, VideoPlayer } from '$lib/components';
   import { createLoading } from '$lib/helpers';
+  import { _ } from '$lib/i18n';
   import { icons } from '$lib/icons';
   import { historyBack } from '$lib/stores';
   import type { MediaItem, MediaMeta, Resp } from '$lib/types';
@@ -204,19 +205,19 @@
         <div class="mt-6 grid gap-3 max-sm:grid-cols-1!" style="grid-template-columns: repeat({cols}, minmax(0, 1fr))">
           {#if meta?.directors?.length}
             <div>
-              <span class="font-semibold text-primary/60">Director</span>
+              <span class="font-semibold text-primary/80">{$_('media.director')}</span>
               <p class="text-sm opacity-70">{meta.directors.join(', ')}</p>
             </div>
           {/if}
           {#if meta?.writers?.length}
             <div>
-              <span class="font-semibold text-primary/60">Writer</span>
+              <span class="font-semibold text-primary/80">{$_('media.writer')}</span>
               <p class="text-sm opacity-70">{meta.writers.join(', ')}</p>
             </div>
           {/if}
           {#if meta?.studios?.length}
             <div>
-              <span class="font-semibold text-primary/60">Studio</span>
+              <span class="font-semibold text-primary/80">{$_('media.studio')}</span>
               <p class="text-sm opacity-70">{meta.studios.join(', ')}</p>
             </div>
           {/if}
@@ -226,8 +227,14 @@
       <!-- actors -->
       {#if meta?.actors?.length}
         <div class="mt-6">
-          <h2 class="mb-3 text-lg font-semibold">Cast</h2>
-          <div class="flex gap-3 overflow-x-auto">
+          <h2 class="mb-3 text-lg font-semibold">{$_('media.cast')}</h2>
+          <div
+            class="flex gap-3 overflow-x-auto pb-3"
+            onwheel={(event) => {
+              event.preventDefault();
+              event.currentTarget.scrollLeft += event.deltaY;
+            }}
+          >
             {#each meta.actors as actor, i (i)}
               <div class="flex w-24 shrink-0 flex-col items-center gap-1 text-center">
                 <Image proxy="store" src={actor.thumb} text={actor.name} width="4.5rem" circle />
@@ -242,11 +249,13 @@
       <!-- parts -->
       {#if media.children?.length}
         <div class="mt-6">
-          <h2 class="mb-3 text-lg font-semibold">{media.lib.lib_type === 'tv_show' ? 'Episodes' : 'Parts'}</h2>
+          <h2 class="mb-3 text-lg font-semibold">
+            {media.lib.lib_type === 'tv_show' ? $_('media.episodes') : $_('media.parts')}
+          </h2>
           <div class="flex flex-col gap-2">
             {#each media.children as part (part.id)}
               {@const active = _media?.id === part.id}
-              {@const activeClass = active ? 'bg-primary/15' : 'hover:bg-base-content/5'}
+              {@const activeClass = active ? 'bg-primary/15' : 'bg-gradient hover:bg-base-content/15'}
               <button
                 class="media-part flex items-center gap-3 rounded-lg px-3 py-2 text-left transition-colors {activeClass}"
                 onclick={() => selectMedia(part)}
@@ -257,6 +266,7 @@
                   <span class="text-xs opacity-50">{part.aired}</span>
                 </div>
                 <Button
+                  shadow
                   icon={icons.play}
                   class="btn-circle btn-enlarge"
                   onclick={(event) => {
@@ -273,10 +283,10 @@
       <!-- tags -->
       {#if meta?.tags?.length}
         <div class="mt-6">
-          <h2 class="mb-3 text-lg font-semibold">Tags</h2>
+          <h2 class="mb-3 text-lg font-semibold">{$_('media.tags')}</h2>
           <div class="flex flex-wrap gap-1.5">
             {#each meta.tags as tag, i (i)}
-              <span class="badge badge-soft badge-sm text-inactive">{tag}</span>
+              <span class="badge badge-soft badge-sm text-base-content/70">{tag}</span>
             {/each}
           </div>
         </div>

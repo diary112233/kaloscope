@@ -259,6 +259,13 @@
     "delete_local": "同时删除本地文件"
   },
   "media": {
+    "director": "导演",
+    "writer": "编剧",
+    "cast": "演员阵容",
+    "studio": "制片公司",
+    "episodes": "剧集",
+    "parts": "分段",
+    "tags": "标签",
     "video": {
       "tab": "视频",
       "speed": "倍速",

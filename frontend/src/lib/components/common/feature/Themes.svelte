@@ -90,10 +90,12 @@
     const root = document.documentElement;
     root.setAttribute('data-theme', theme);
     // synchronize the PWA theme color with the specified theme color variable
-    const colorElement = document.getElementById(pwaThemeColor);
+    const colorElement = document.getElementById('pwa-theme-color');
     const themeColor = colorElement && getComputedStyle(colorElement).backgroundColor;
     const metaTag = document.querySelector('meta[name="theme-color"]');
     if (metaTag && themeColor) {
+      // https://caniuse.com/meta-theme-color
+      // Safari on iOS >= 26.0 doesn't support the `theme-color` meta tag anymore
       metaTag.setAttribute('content', themeColor);
     }
   }
@@ -158,4 +160,4 @@
 </Modal>
 
 <!-- This div is used to set the PWA theme color dynamically based on the selected theme. -->
-<div id={pwaThemeColor} style="background-color: var({pwaThemeColor}); display: none;"></div>
+<div id="pwa-theme-color" style="background-color: var({pwaThemeColor}); display: none;"></div>
