@@ -186,7 +186,7 @@
 }
 
 @utility btn-enlarge {
-  @apply border-0 transition-all hover:scale-110 hover:backdrop-blur-sm;
+  @apply border-0 transition-all duration-200 hover:scale-110 hover:backdrop-blur-sm;
 }
 
 @utility btn-subtle {

@@ -125,7 +125,7 @@
 
   {#if showFilters}
     {@const filtered = filters && filters !== '{}'}
-    <button class={btnClass} aria-label="Filter" onclick={() => filtersModal?.showModal()}>
+    <button class={btnClass} aria-label="Show Filters" onclick={() => filtersModal?.showModal()}>
       <iconify-icon
         icon={icons.adjustmentsHorizontal}
         width="1.5rem"

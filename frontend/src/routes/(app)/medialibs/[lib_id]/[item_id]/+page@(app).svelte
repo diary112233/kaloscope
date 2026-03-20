@@ -1,7 +1,7 @@
 <script lang="ts">
   import { page } from '$app/state';
   import { api } from '$lib/api';
-  import { Backdrop, Button, Container, Image, Rating, VideoPlayer } from '$lib/components';
+  import { Backdrop, Container, Image, Rating, VideoPlayer } from '$lib/components';
   import { createLoading } from '$lib/helpers';
   import { _ } from '$lib/i18n';
   import { icons } from '$lib/icons';
@@ -252,7 +252,7 @@
           <h2 class="mb-3 text-lg font-semibold">
             {media.lib.lib_type === 'tv_show' ? $_('media.episodes') : $_('media.parts')}
           </h2>
-          <div class="flex flex-col gap-2">
+          <div class="flex max-h-144 flex-col gap-2 overflow-y-scroll pr-3">
             {#each media.children as part (part.id)}
               {@const active = _media?.id === part.id}
               {@const activeClass = active ? 'bg-primary/15' : 'bg-gradient hover:bg-base-content/15'}
@@ -265,15 +265,18 @@
                   <span class="text-sm font-medium {active ? 'text-primary' : ''}">{formatTitle(part)}</span>
                   <span class="text-xs opacity-50">{part.aired}</span>
                 </div>
-                <Button
-                  shadow
-                  icon={icons.play}
-                  class="btn-circle btn-enlarge"
+                <!-- svelte-ignore a11y_click_events_have_key_events -->
+                <div
+                  tabindex="0"
+                  role="button"
+                  class="btn btn-circle btn-enlarge shadow-sm btn-sm {active ? 'btn-active' : 'btn-subtle'}"
                   onclick={(event) => {
                     event.stopPropagation();
                     selectMedia(part).then(play);
                   }}
-                />
+                >
+                  <iconify-icon icon={icons.play} width="1.25rem"></iconify-icon>
+                </div>
               </button>
             {/each}
           </div>
