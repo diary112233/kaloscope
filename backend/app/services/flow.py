@@ -343,6 +343,22 @@ class FlowGraphService(BaseService[FlowGraph], model=FlowGraph):
         return graph
 
     @classmethod
+    @atomic()
+    async def retract_graph(cls, id: int):
+        """Retract the flow graph and pause all running associated jobs.
+
+        Args:
+            id: The flow graph ID.
+        """
+        state = GraphState.DRAFTING
+        if await FlowGraph.filter(id=id, state__not=state).update(state=state) == 1:
+            running_jobs = await FlowJob.filter(graph_id=id, state=JobState.RUNNING)
+            if running_jobs:
+                engine = cls.app_ctx().engine
+                for job in running_jobs:
+                    await engine.pause_job(job.id)
+
+    @classmethod
     async def export_graphs(cls, ids: list) -> bytes | None:
         """Export the published flow graphs as a zip file.
 

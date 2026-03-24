@@ -18,9 +18,6 @@ health_url_prefix = "/_api/health"
 oas_ui_default = "swagger"
 oas_ui_redoc = false
 
-# https://sanic.dev/en/plugins/sanic-ext/logger.html
-logging = true
-
 [workspace]
 database = "{root}/workspace/database"
 images = "{root}/workspace/images"

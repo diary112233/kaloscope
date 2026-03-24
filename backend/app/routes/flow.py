@@ -182,9 +182,7 @@ async def update_graph(request: Request, id: int) -> HTTPResponse:
 @flow.post("/graph/<id:int>/retract")
 async def retract_graph(_, id: int) -> HTTPResponse:
     """Retract the flow graph."""
-    await FlowGraph.filter(id=id, state__not=GraphState.DRAFTING).update(
-        state=GraphState.DRAFTING
-    )
+    await FlowGraphService.retract_graph(id)
     return empty()
 
 
