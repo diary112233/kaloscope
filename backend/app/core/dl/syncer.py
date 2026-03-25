@@ -1,5 +1,5 @@
 import asyncio
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from datetime import datetime
 from functools import cached_property
 from itertools import groupby
@@ -148,6 +148,7 @@ async def sync_tasks(downloader: Downloader, tasks: list[DownloadTask]):
     result = await adapter.call("list", variables)
     if not isinstance(result, list):
         return
+
     # construct a dict of unique id to item
     matched = {}
     for item in result:
@@ -158,15 +159,12 @@ async def sync_tasks(downloader: Downloader, tasks: list[DownloadTask]):
                 hash_v2=str(item.get("info_hash_v2", "")),
             )
             matched[unique] = item
+
     # update the download tasks
     for task in tasks:
-        item = matched.get(
-            Unique(
-                id=task.unique_id,
-                hash=task.info_hash,
-                hash_v2=task.info_hash_v2,
-            )
-        )
+        unique = Unique.from_task(task)
+        item = matched.get(unique)
+
         # continue the loop if the task is not matched
         if not item:
             await DownloadTask.filter(id=task.id).update(
@@ -174,16 +172,19 @@ async def sync_tasks(downloader: Downloader, tasks: list[DownloadTask]):
                 dl_speed=0 if task.dl_speed is not None else None,
             )
             continue
+
         # update the state to `DOWNLOADING` if the download speed is greater than 0
         state = task.state
         up_speed = int(item.get("up_speed", task.up_speed) or 0)
         dl_speed = int(item.get("dl_speed", task.dl_speed) or 0)
         if state == DownloadState.PAUSED and task.dl_speed == 0 and dl_speed > 0:
             state = DownloadState.DOWNLOADING
+
         # update the state to `ERROR` if the error message is not empty
         error_msg = str(item.get("error_msg", ""))
         if error_msg:
             state = DownloadState.ERROR
+
         # update the state to `COMPLETED` if the percentage has reached 100
         percentage = float(item.get("percentage", 0.0))
         total_size = int(item.get("total_size", task.total_size) or 0)
@@ -195,6 +196,16 @@ async def sync_tasks(downloader: Downloader, tasks: list[DownloadTask]):
             dl_speed = 0
             completed_at = timezone.now()
             state = DownloadState.COMPLETED
+
+        # get the files if the method is supported
+        files = item.get("files")
+        if files is None and "files" in adapter.methods:
+            result = await adapter.call("files", asdict(unique))
+            if isinstance(result, dict):
+                files = result.get("files")
+        if isinstance(files, list):
+            files = [str(f).removeprefix(f"{task.dir}/") for f in files if f]
+
         # update the download task
         await DownloadTask.filter(id=task.id).update(
             name=str(item.get("name", task.name) or ""),
