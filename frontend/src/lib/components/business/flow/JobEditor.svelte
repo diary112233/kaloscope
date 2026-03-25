@@ -62,15 +62,21 @@
    * Save or update the flow job.
    */
   function upsert() {
-    loading.start();
-    const jsonData: Record<string, unknown> = { id, graph_id, trigger };
+    // validate the boot parameters
+    let params = null;
     try {
-      jsonData.bootparams = JSON.parse(bootparams);
-    } catch {
+      params = JSON.parse(bootparams);
+    } catch (error) {
+      console.error(error);
+    }
+    if (typeof params !== 'object' || Array.isArray(params) || params === null) {
       alert({ level: 'error', message: 'invalid_boot_params' });
-      loading.end();
       return;
     }
+    // send the request
+    loading.start();
+    const jsonData: Record<string, unknown> = { id, graph_id, trigger };
+    jsonData.bootparams = params;
     if (trigger === 'date') {
       jsonData.run_date = run_date || null;
     } else if (trigger === 'cron') {
@@ -87,6 +93,7 @@
       .then((resp) => {
         modal.close();
         onsave?.(resp.data);
+        // reset the form
         setTimeout(() => {
           trigger = 'cron';
           bootparams = '{}';

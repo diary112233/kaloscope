@@ -51,6 +51,7 @@ class HTTPNode(Node):
     async def execute(cls, *, node_data: dict[str, Any], context: Context, **kwargs):
         method = str(cls.method.extract(node_data))
         url = cls.url.extract(node_data, context=context)
+
         # request headers
         headers = cls.headers.extract(node_data, context=context)
         headers = httpx.Headers(
@@ -60,6 +61,7 @@ class HTTPNode(Node):
                 if (k := h["key"].strip()) and (v := h["value"].strip())
             ]
         )
+
         # request body
         binary, form, json = None, None, None
         if body := cls.body.extract(node_data, context=context):
@@ -72,6 +74,7 @@ class HTTPNode(Node):
                     json = obj
             if json is None and form is None:
                 binary = body.encode(ENCODING)
+
         # make the request
         client: httpx.AsyncClient = Sanic.get_app().ctx.httpx
         try:

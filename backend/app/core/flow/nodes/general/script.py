@@ -16,8 +16,9 @@ class ScriptNode(Node):
         cls, *, node_id: str, node_data: dict[str, Any], context: Context, **kwargs
     ):
         script = cls.script.extract(node_data)
-        if (script_code := script["code"]) is None:
+        if not (script_code := script["code"]):
             return
+
         language = script["language"]
         if language == "python":
             # https://docs.python.org/3/library/functions.html#exec
