@@ -34,6 +34,7 @@ methods:
   add_link:
   add_torrent:
   list:
+  files:
   pause:
   start:
   delete:

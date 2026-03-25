@@ -58,6 +58,7 @@ methods:
           - sizeWhenDone
           - percentDone
           - status
+          - files
     response:
       each: $.arguments.torrents[*]
       mappings:
@@ -69,6 +70,7 @@ methods:
         completed_size: $.sizeWhenDone - $.leftUntilDone
         percentage: $.percentDone * 100
         raw_state: $.status
+        files: $.files[*].name
   pause:
     json:
       method: torrent-stop

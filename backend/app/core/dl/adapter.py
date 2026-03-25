@@ -17,7 +17,15 @@ from app.utils.json import JSONType, dumps, try_loads
 
 # the supported methods
 type Method = Literal[
-    "version", "login", "add_link", "add_torrent", "list", "pause", "start", "delete"
+    "version",
+    "login",
+    "add_link",
+    "add_torrent",
+    "list",
+    "files",
+    "pause",
+    "start",
+    "delete",
 ]
 
 
