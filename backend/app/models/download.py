@@ -197,6 +197,10 @@ class DownloadAdd(BaseModel, RequestFilesMixin):
     link: str | None = Field(pattern=r"^[^\n]*$", default=None)
     torrent: File | None = None
     pause: bool = False
+    transfer_lib_id: PositiveInt | None = None
+    transfer_method: TransferMethod | None = None
+    sub_pattern: str | None = Field(max_length=4096, default=None)
+    sub_repl: str | None = Field(max_length=4096, default=None)
 
     @model_validator(mode="after")
     def check_link_or_torrent(self) -> Self:

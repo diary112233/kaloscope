@@ -201,6 +201,10 @@ class DownloadTaskService(BaseService[DownloadTask], model=DownloadTask):
             info_hash_v2=info_hash_v2,
             magnet_link=magnet_link,
             state=DownloadState.PAUSED if add.pause else DownloadState.DOWNLOADING,
+            transfer_lib_id=add.transfer_lib_id,
+            transfer_method=add.transfer_method,
+            sub_pattern=add.sub_pattern,
+            sub_repl=add.sub_repl,
         )
 
     @classmethod

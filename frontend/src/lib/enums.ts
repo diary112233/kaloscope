@@ -86,6 +86,29 @@ export const DownloadState = createEnum({
   }
 });
 
+export const TransferMethod = createEnum({
+  hardlink: {
+    label: 'enum.transfer_method.hardlink',
+    icon: null,
+    iconColor: null
+  },
+  symlink: {
+    label: 'enum.transfer_method.symlink',
+    icon: null,
+    iconColor: null
+  },
+  move: {
+    label: 'enum.transfer_method.move',
+    icon: null,
+    iconColor: null
+  },
+  copy: {
+    label: 'enum.transfer_method.copy',
+    icon: null,
+    iconColor: null
+  }
+});
+
 export const GraphCategory = createEnum({
   indexer: {
     label: 'enum.graph_category.indexer',
