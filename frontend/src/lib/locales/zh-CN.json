@@ -91,6 +91,12 @@
       "completed": "已完成",
       "error": "异常"
     },
+    "transfer_method": {
+      "hardlink": "硬链接",
+      "symlink": "软链接",
+      "move": "移动",
+      "copy": "复制"
+    },
     "graph_category": {
       "indexer": "网络搜索",
       "ingest": "资源入库",
@@ -280,7 +286,15 @@
     "start": "立即开始",
     "prompt": "输入 URI 或选择种子文件",
     "supported": "支持磁力链接和哈希值",
-    "delete_local": "同时删除本地文件"
+    "delete_local": "同时删除本地文件",
+    "transfer": {
+      "title": "下载完成后转移",
+      "none": "不转移",
+      "method": "转移方式",
+      "substitution": "文件名替换",
+      "sub_pattern": "正则表达式",
+      "sub_repl": "替换字符串"
+    }
   },
   "media": {
     "director": "导演",

@@ -1,7 +1,8 @@
 <script lang="ts" module>
   import { api } from '$lib/api';
-  import { createLoading } from '$lib/helpers';
-  import type { DownloadDir, Downloader, Resp } from '$lib/types';
+  import { createFormSchema, createLoading } from '$lib/helpers';
+  import type { DownloadDir, Downloader, MediaLib, Resp } from '$lib/types';
+  import { TransferMethod } from '$lib/enums';
 
   // the modal dialog and file tree instance
   let modal: Modal;
@@ -12,6 +13,14 @@
   let directory: DownloadDir | null = $state(null);
   let downloaders: Downloader[] = $state([]);
   let downloader: number = $state(0);
+
+  // the media libraries and transfer settings
+  let mediaLibs: MediaLib[] = $state([]);
+  let transferLibId: number = $state(0);
+  let transferMethod: keyof typeof TransferMethod = $state('hardlink');
+  let supportsHardlink: boolean = $state(true);
+  let subPattern: string = $state('');
+  let subRepl: string = $state('');
 
   // the torrent input and magnet link
   let files: FileList | null = $state(null);
@@ -25,8 +34,12 @@
     return link.trim() !== '';
   });
 
-  // the loading state
+  // the loading state and form schema
   const loading = createLoading();
+  const schema = createFormSchema(({ text }) => ({
+    sub_pattern: text().maxlength(512).required(false),
+    sub_repl: text().maxlength(512).required(false)
+  }));
 
   // the oncreate callback
   let oncreate: (() => void) | null;
@@ -46,6 +59,10 @@
       oncreate = callback ?? null;
       files = null;
       link = uri || '';
+      transferLibId = 0;
+      transferMethod = supportsHardlink ? 'hardlink' : 'symlink';
+      subPattern = '';
+      subRepl = '';
       if (!link && navigator.clipboard) {
         navigator.clipboard
           .readText()
@@ -61,11 +78,19 @@
    * Initialize the component.
    */
   async function init() {
-    const [_directories, _downloaders] = await Promise.all([getDirectories(), getDownloaders()]);
+    const [_directories, _downloaders, _mediaLibs, _platform] = await Promise.all([
+      getDirectories(),
+      getDownloaders(),
+      getMediaLibs(),
+      getPlatform()
+    ]);
     directories = _directories;
     directory = directories[0] || null;
     downloaders = _downloaders;
     downloader = downloaders.find((d) => d.status !== 'down')?.id || 0;
+    mediaLibs = _mediaLibs;
+    supportsHardlink = _platform !== 'win32';
+    transferMethod = supportsHardlink ? 'hardlink' : 'symlink';
   }
 
   /**
@@ -95,6 +120,32 @@
   }
 
   /**
+   * Get the media libraries.
+   */
+  async function getMediaLibs(): Promise<MediaLib[]> {
+    try {
+      const resp = await api.get('media/lib/list').json<Resp<MediaLib[]>>();
+      return resp.data;
+    } catch (error) {
+      console.error(error);
+      return [];
+    }
+  }
+
+  /**
+   * Get the platform.
+   */
+  async function getPlatform(): Promise<string> {
+    try {
+      const resp = await api.get('system/platform').json<Resp<{ platform: string }>>();
+      return resp.data.platform;
+    } catch (error) {
+      console.error(error);
+      return '';
+    }
+  }
+
+  /**
    * Add a download task.
    *
    * @param form - The form element.
@@ -102,9 +153,16 @@
    */
   function addTask(form: HTMLFormElement, data: FormData) {
     loading.start();
-    // add the pause field
+    // append the pause field based on the start checkbox
     data.append('pause', (!data.get('start')).toString());
     data.delete('start');
+    // delete the transfer fields if no media library is selected
+    if (!transferLibId) {
+      data.delete('transfer_lib_id');
+      data.delete('transfer_method');
+      data.delete('sub_pattern');
+      data.delete('sub_repl');
+    }
     api
       .post('download/add', { body: data })
       .then(() => {
@@ -145,7 +203,7 @@
     }}
   >
     <fieldset class="fieldset">
-      <Label>{$_('download.downloader.title')}</Label>
+      <Label required>{$_('download.downloader.title')}</Label>
       <Select
         options={downloaders.map((d) => ({
           value: d.id,
@@ -156,7 +214,7 @@
         name="downloader_id"
         bind:value={downloader}
       />
-      <Label>{$_('download.dir')}</Label>
+      <Label required>{$_('download.dir')}</Label>
       {#if directory}
         <button type="button" class="input w-full cursor-pointer" onclick={() => fileTree.showModal()}>
           <iconify-icon icon={icons.folder} width="1.5rem" class="opacity-70"></iconify-icon>
@@ -176,9 +234,9 @@
           <input type="text" class="grow" name="dir" />
         </label>
       {/if}
-      <Label class="mt-6">{$_('download.prompt')}</Label>
+      <Label required class="mt-6">{$_('download.prompt')}</Label>
       <textarea
-        rows={5}
+        rows={3}
         placeholder={$_('download.supported')}
         class="textarea w-full"
         name="link"
@@ -190,6 +248,44 @@
         <input type="checkbox" class="checkbox" checked={true} name="start" />
         <span class="text-base text-base-content opacity-90">{$_('download.start')}</span>
       </label>
+      <Label class="mt-6">{$_('download.transfer.title')}</Label>
+      <Select
+        options={[
+          { value: 0, label: $_('download.transfer.none') },
+          ...mediaLibs.map((lib) => ({ value: lib.id, label: lib.name }))
+        ]}
+        class="w-full"
+        name="transfer_lib_id"
+        bind:value={transferLibId}
+      />
+      {#if transferLibId}
+        <Label required>{$_('download.transfer.method')}</Label>
+        <div class="flex gap-4">
+          {#each Object.entries(TransferMethod) as [value, method] (value)}
+            {#if value !== 'hardlink' || supportsHardlink}
+              <label class="flex cursor-pointer items-center gap-1.5">
+                <input type="radio" class="radio radio-sm" name="transfer_method" {value} bind:group={transferMethod} />
+                <span class="text-sm">{$_(method.label)}</span>
+              </label>
+            {/if}
+          {/each}
+        </div>
+        <Label>{$_('download.transfer.substitution')}</Label>
+        <div class="flex gap-2">
+          <input
+            placeholder={$_('download.transfer.sub_pattern')}
+            class="input w-full"
+            bind:value={subPattern}
+            {...schema.sub_pattern}
+          />
+          <input
+            placeholder={$_('download.transfer.sub_repl')}
+            class="input w-full"
+            bind:value={subRepl}
+            {...schema.sub_repl}
+          />
+        </div>
+      {/if}
     </fieldset>
     <div class="modal-action">
       <button type="button" class="btn" onclick={() => modal.close()}>

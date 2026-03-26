@@ -36,8 +36,8 @@
   // the loading state and form schema
   const loading = createLoading();
   const schema = createFormSchema(({ text, textarea }) => ({
-    name: text().maxlength(60),
-    description: textarea().maxlength(200).required(false)
+    name: text().maxlength(64),
+    description: textarea().maxlength(255).required(false)
   }));
 
   /**

@@ -91,6 +91,12 @@
       "completed": "Completed",
       "error": "Error"
     },
+    "transfer_method": {
+      "hardlink": "Hard Link",
+      "symlink": "Symbolic Link",
+      "move": "Move",
+      "copy": "Copy"
+    },
     "graph_category": {
       "indexer": "Indexer",
       "ingest": "Ingest",
@@ -280,7 +286,15 @@
     "start": "Start when added",
     "prompt": "Enter URI or choose a torrent file",
     "supported": "Magnet link and info-hash are supported",
-    "delete_local": "Also delete the local files"
+    "delete_local": "Also delete the local files",
+    "transfer": {
+      "title": "Transfer after download",
+      "none": "No transfer",
+      "method": "Transfer method",
+      "substitution": "Filename substitution",
+      "sub_pattern": "Regular expression",
+      "sub_repl": "Replacement string"
+    }
   },
   "media": {
     "director": "Director",
