@@ -1,5 +1,5 @@
 from enum import StrEnum, auto
-from typing import Self
+from typing import Any, Self
 
 from pydantic import BaseModel, Field, PositiveInt, field_serializer, model_validator
 from sanic.request.form import File
@@ -21,6 +21,7 @@ from tortoise.fields import (
 
 from app.core.renderer import duration
 from app.models.base import IDs, Pageable, RequestFilesMixin, TortoiseModel
+from app.models.flow import FlowGraph
 from app.models.media import MediaLib
 from app.utils.disk import format_bytes
 
@@ -50,6 +51,7 @@ class Downloader(TortoiseModel):
     version = CharField(max_length=32, null=True)
     priority = IntField(unique=True)
     # relational fields
+    plans: ReverseRelation["DownloadPlan"]
     tasks: ReverseRelation["DownloadTask"]
 
     class Meta:
@@ -57,7 +59,7 @@ class Downloader(TortoiseModel):
         ordering = ["priority"]
 
     class PydanticMeta:
-        exclude = ("tasks",)
+        exclude = ("plans", "tasks")
 
 
 class DownloadDir(TortoiseModel):
@@ -67,6 +69,45 @@ class DownloadDir(TortoiseModel):
     class Meta:
         table = "download_dir"
         ordering = ["-last_used"]
+
+
+class DownloadPlan(TortoiseModel):
+    graph_id: int
+    graph: ForeignKeyRelation[FlowGraph] = ForeignKeyField(
+        "models.FlowGraph", related_name="plans", db_index=True
+    )
+    downloader_id: int
+    downloader: ForeignKeyRelation[Downloader] = ForeignKeyField(
+        "models.Downloader", related_name="plans", db_index=True
+    )
+    dir = CharField(max_length=4096)
+    keyword = CharField(max_length=4096)
+    filters = JSONField[dict[str, Any] | None](null=True)
+    interval_num = IntField(default=1)
+    interval_start = DatetimeField(null=True)
+    interval_end = DatetimeField(null=True)
+    batch_limit = IntField(default=10)
+    total_limit = IntField(null=True)
+    total_count = IntField(default=0)
+    last_run = DatetimeField(null=True)
+    transfer_lib_id: int | None
+    transfer_lib: ForeignKeyNullableRelation[MediaLib] = ForeignKeyField(
+        "models.MediaLib",
+        related_name="plans",
+        db_index=True,
+        null=True,
+        on_delete=SET_NULL,
+    )
+    transfer_method = CharEnumField(max_length=16, enum_type=TransferMethod, null=True)
+    sub_pattern = CharField(max_length=4096, null=True)
+    sub_repl = CharField(max_length=4096, null=True)
+
+    class Meta:
+        table = "download_plan"
+        ordering = ["-created_at"]
+
+    class PydanticMeta:
+        exclude = ("graph", "downloader", "transfer_lib")
 
 
 class DownloadTask(TortoiseModel):
@@ -91,8 +132,8 @@ class DownloadTask(TortoiseModel):
     completed_size = BigIntField(null=True)
     completed_at = DatetimeField(null=True)
     files = JSONField[list[str] | None](null=True)
-    transfer_to_id: int | None
-    transfer_to: ForeignKeyNullableRelation[MediaLib] = ForeignKeyField(
+    transfer_lib_id: int | None
+    transfer_lib: ForeignKeyNullableRelation[MediaLib] = ForeignKeyField(
         "models.MediaLib",
         related_name="tasks",
         db_index=True,
@@ -100,6 +141,8 @@ class DownloadTask(TortoiseModel):
         on_delete=SET_NULL,
     )
     transfer_method = CharEnumField(max_length=16, enum_type=TransferMethod, null=True)
+    sub_pattern = CharField(max_length=4096, null=True)
+    sub_repl = CharField(max_length=4096, null=True)
 
     def ratio(self) -> str:
         """Calculate the ratio of completed size to total size."""
@@ -130,7 +173,7 @@ class DownloadTask(TortoiseModel):
         ordering = ["-created_at"]
 
     class PydanticMeta:
-        exclude = ("downloader",)
+        exclude = ("downloader", "transfer_lib")
         computed = ("ratio", "estimate")
 
 

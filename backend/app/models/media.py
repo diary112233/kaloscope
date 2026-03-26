@@ -54,6 +54,7 @@ class MediaLib(TortoiseModel):
     # relational fields
     items: ReverseRelation["MediaItem"]
     events: ReverseRelation["MediaEvent"]
+    plans: ReverseRelation
     tasks: ReverseRelation
 
     class Meta:
@@ -61,7 +62,7 @@ class MediaLib(TortoiseModel):
         ordering = ["priority"]
 
     class PydanticMeta:
-        exclude = ("items", "events", "tasks")
+        exclude = ("items", "events", "plans", "tasks")
 
 
 class MediaItem(TortoiseModel):

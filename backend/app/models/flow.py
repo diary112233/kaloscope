@@ -124,6 +124,7 @@ class FlowGraph(TortoiseModel):
     variables: ReverseRelation["FlowVariable"]
     instances: ReverseRelation["FlowInstance"]
     favorites: ReverseRelation
+    plans: ReverseRelation
 
     def success_rate(self) -> float | None:
         """Calculate the success rate of the graph executions."""
@@ -161,7 +162,7 @@ class FlowGraph(TortoiseModel):
         ordering = ["-created_at"]
 
     class PydanticMeta:
-        exclude = ("jobs", "triggers", "variables", "instances", "favorites")
+        exclude = ("jobs", "triggers", "variables", "instances", "favorites", "plans")
         computed = ("success_rate", "average_time", "last_execution", "node_types")
 
 

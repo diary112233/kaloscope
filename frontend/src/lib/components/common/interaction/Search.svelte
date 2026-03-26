@@ -115,6 +115,7 @@
   <input
     type="search"
     class="grow truncate"
+    maxlength="4096"
     {placeholder}
     bind:value={_value}
     bind:this={searchInput}

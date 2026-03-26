@@ -211,6 +211,7 @@ async def sync_tasks(downloader: Downloader, tasks: list[DownloadTask]):
             name=str(item.get("name", task.name) or ""),
             unique_id=str(item.get("unique_id", task.unique_id) or ""),
             raw_state=str(item.get("raw_state", task.raw_state) or ""),
+            files=files,
             state=state,
             error_msg=error_msg,
             up_speed=up_speed,
