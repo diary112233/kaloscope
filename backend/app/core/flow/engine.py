@@ -26,9 +26,9 @@ from tortoise.transactions import in_transaction
 
 from app.core.exceptions import ErrorCode, KaloscopeException, NotFoundException
 from app.core.flow.context import OUTPUT_KEY, RETVAL_KEY, START_KEY, Context
+from app.core.flow.fetcher import RepoFetcher
 from app.core.flow.handles import InputHandle
 from app.core.flow.nodes.base import CancellationSignal, Node, NodeGroup
-from app.core.flow.syncer import RepoSyncer
 from app.models.flow import (
     FlowFootprint,
     FlowGraph,
@@ -183,7 +183,7 @@ class FlowEngine:
             app: The Sanic application.
         """
         self._app = app
-        self._syncer = RepoSyncer(app)
+        self._fetcher = RepoFetcher(app)
         self._scheduler = AsyncIOScheduler(options={"event_loop": app.loop})
         self._num_workers = sum(1 for w in app.m.workers.values() if w.get("server"))
 
@@ -219,7 +219,7 @@ class FlowEngine:
     async def start(self):
         """Start the flow engine."""
         await self._reload()
-        await self._syncer.start()
+        await self._fetcher.start()
         self._scheduler.start()
         self._app.add_task(self._job_listener(), name=self._JOB_LISTENER)
         self._app.add_task(self._event_consumer(), name=self._EVENT_CONSUMER)
@@ -227,7 +227,7 @@ class FlowEngine:
     async def shutdown(self):
         """Shutdown the flow engine."""
         self._reload_flag.clear()
-        await self._syncer.shutdown()
+        await self._fetcher.shutdown()
         self._scheduler.shutdown()
         await self._app.cancel_task(self._JOB_LISTENER)
         await self._app.cancel_task(self._EVENT_CONSUMER)

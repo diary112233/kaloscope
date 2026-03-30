@@ -20,53 +20,53 @@ from app.models.flow import FlowRepository, FlowTemplate
 from app.utils import json
 
 
-class RepoSyncer:
-    """The GitHub repository synchronizer."""
+class RepoFetcher:
+    """The GitHub repository fetcher."""
 
-    _REPO_SYNCER = "repo_syncer"
+    _REPO_FETCHER = "repo_fetcher"
 
     def __init__(self, app: Sanic):
-        """Initialize the repository synchronizer.
+        """Initialize the repository fetcher.
 
         Args:
             app: The Sanic application.
         """
         self._app = app
         self._task = None
-        if self._syncer_lock.acquire(block=False):
+        if self._fetcher_lock.acquire(block=False):
             try:
-                if not self._syncer_flag.is_set():
-                    self._task = self._REPO_SYNCER
-                    self._syncer_flag.set()
+                if not self._fetcher_flag.is_set():
+                    self._task = self._REPO_FETCHER
+                    self._fetcher_flag.set()
             finally:
-                self._syncer_lock.release()
+                self._fetcher_lock.release()
 
     @cached_property
-    def _syncer_lock(self) -> Lock:
+    def _fetcher_lock(self) -> Lock:
         return self._app.shared_ctx.flow_lock
 
     @cached_property
-    def _syncer_flag(self) -> Event:
-        return self._app.shared_ctx.flow_syncer_flag
+    def _fetcher_flag(self) -> Event:
+        return self._app.shared_ctx.repo_fetcher_flag
 
     async def start(self):
-        """Start the repository synchronizer."""
+        """Start the repository fetcher."""
         if self._task:
-            self._app.add_task(self.sync(), name=self._task)
+            self._app.add_task(self.interval(), name=self._task)
 
     async def shutdown(self):
-        """Shutdown the repository synchronizer."""
+        """Shutdown the repository fetcher."""
         if self._task:
-            self._syncer_flag.clear()
+            self._fetcher_flag.clear()
             await self._app.cancel_task(self._task)
 
-    async def sync(self):
-        """Synchronize the repositories."""
+    async def interval(self):
+        """Synchronize the flow repositories."""
         while True:
             try:
                 repositories = await FlowRepository.all()
                 for repo in repositories:
-                    await sync_repo(repo)
+                    await fetch_origin(repo)
 
                 await asyncio.sleep(3600)
             except asyncio.CancelledError:
@@ -77,8 +77,8 @@ class RepoSyncer:
                 await asyncio.sleep(600)
 
 
-async def sync_repo(repo: FlowRepository):
-    """Synchronize a single repository.
+async def fetch_origin(repo: FlowRepository):
+    """Fetch the latest changes from the remote repository.
 
     Args:
         repo: The repository to synchronize.

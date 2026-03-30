@@ -17,8 +17,8 @@ from tortoise.transactions import atomic
 from app.core.config import KaloscopeConfig
 from app.core.constants import ENCODING
 from app.core.exceptions import ErrorCode, KaloscopeException, NotFoundException
+from app.core.flow.fetcher import fetch_origin, save_icon
 from app.core.flow.nodes.base import Node
-from app.core.flow.syncer import save_icon, sync_repo
 from app.models.flow import (
     FlowGraph,
     FlowJob,
@@ -88,7 +88,7 @@ class FlowRepositoryService(BaseService[FlowRepository], model=FlowRepository):
         if _repo := await FlowRepository.get_or_none(repo_name=repo_name):
             if not repo.repo_url:
                 # if the API request failed, return the existing repository
-                await sync_repo(_repo)
+                await fetch_origin(_repo)
                 return _repo
             repo.id = _repo.id
 
@@ -98,7 +98,7 @@ class FlowRepositoryService(BaseService[FlowRepository], model=FlowRepository):
 
         # save and synchronize the repository
         await repo.save(force_update=repo.id is not None)
-        await sync_repo(repo)
+        await fetch_origin(repo)
         return repo
 
 

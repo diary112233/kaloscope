@@ -66,7 +66,8 @@ class DLSyncer:
     """The download task synchronizer."""
 
     _DL_SYNCER = "dl_syncer"
-    _last_sync: datetime = datetime.now()
+    _last_sync_tasks: datetime = datetime.now()
+    _last_check_plans: datetime = datetime.now()
 
     def __init__(self, app: Sanic):
         """Initialize the download task synchronizer.
@@ -107,7 +108,7 @@ class DLSyncer:
     async def start(self):
         """Start the download synchronizer."""
         if self._task:
-            self._app.add_task(self.sync(), name=self._task)
+            self._app.add_task(self.interval(), name=self._task)
 
     async def shutdown(self):
         """Shutdown the download synchronizer."""
@@ -115,11 +116,11 @@ class DLSyncer:
             self._syncer_flag.clear()
             await self._app.cancel_task(self._task)
 
-    async def sync(self):
+    async def interval(self):
         """Synchronize the download tasks."""
         while True:
             try:
-                seconds = (datetime.now() - self._last_sync).total_seconds()
+                seconds = (datetime.now() - self._last_sync_tasks).total_seconds()
                 if not self._sync_fast.is_set() and seconds < 30:
                     # do not synchronize too frequently
                     await asyncio.sleep(1)
@@ -139,7 +140,7 @@ class DLSyncer:
                 logger.error("Failed to synchronize the download tasks!", exc_info=True)
                 await asyncio.sleep(1)
             finally:
-                self._last_sync = datetime.now()
+                self._last_sync_tasks = datetime.now()
 
 
 async def sync_tasks(downloader: Downloader, tasks: list[DownloadTask]):
@@ -235,7 +236,9 @@ async def sync_tasks(downloader: Downloader, tasks: list[DownloadTask]):
         # transfer files to media library after completion
         if state == DownloadState.COMPLETED:
             try:
-                await transfer(task, files if isinstance(files, list) else task.files)
+                await transfer_files(
+                    task, files if isinstance(files, list) else task.files
+                )
             except Exception:
                 logger.error(
                     "Failed to transfer files for task: %s",
@@ -244,7 +247,7 @@ async def sync_tasks(downloader: Downloader, tasks: list[DownloadTask]):
                 )
 
 
-async def transfer(task: DownloadTask, files: list[str] | None):
+async def transfer_files(task: DownloadTask, files: list[str] | None):
     """Transfer completed download files to the media library directory.
 
     Args:
