@@ -1,16 +1,26 @@
 import asyncio
+import os
+import re
+import shutil
 from dataclasses import asdict, dataclass
 from datetime import datetime
 from functools import cached_property
 from itertools import groupby
 from multiprocessing.synchronize import Event, Lock
+from pathlib import Path
 
 from sanic import Sanic
 from sanic.log import logger
 from tortoise import timezone
 
 from app.core.dl.adapter import load_config
-from app.models.download import Downloader, DownloadState, DownloadTask
+from app.models.download import (
+    Downloader,
+    DownloadState,
+    DownloadTask,
+    TransferMethod,
+)
+from app.models.media import MediaLib
 
 
 @dataclass(frozen=True)
@@ -221,3 +231,64 @@ async def sync_tasks(downloader: Downloader, tasks: list[DownloadTask]):
             completed_size=completed_size,
             completed_at=completed_at,
         )
+
+        # transfer files to media library after completion
+        if state == DownloadState.COMPLETED:
+            try:
+                await transfer(task, files if isinstance(files, list) else task.files)
+            except Exception:
+                logger.error(
+                    "Failed to transfer files for task: %s",
+                    task.id,
+                    exc_info=True,
+                )
+
+
+async def transfer(task: DownloadTask, files: list[str] | None):
+    """Transfer completed download files to the media library directory.
+
+    Args:
+        task: The download task.
+        files: The relative file paths within the download directory.
+    """
+    if not task.transfer_lib_id or not files:
+        return
+    lib = await MediaLib.get_or_none(id=task.transfer_lib_id)
+    if not lib:
+        return
+
+    src_dir = Path(task.dir)
+    dst_dir = Path(lib.dir)
+    if src_dir == dst_dir and not task.sub_pattern:
+        # no need to transfer if the source and destination are the same
+        # and no file name substitution is needed
+        return
+
+    # apply file name substitution if sub_pattern is specified
+    new_files = files
+    if task.sub_pattern:
+        repl = task.sub_repl or ""
+        replaced = [re.sub(task.sub_pattern, repl, f) for f in files]
+        # discard replacement if duplicate file names arise
+        if len(set(replaced)) == len(replaced):
+            new_files = replaced
+
+    for name, new_name in zip(files, new_files, strict=True):
+        src = src_dir / name
+        if not src.exists():
+            continue
+        dst = dst_dir / new_name
+        if dst.exists():
+            continue
+
+        # create parent directory if it doesn't exist
+        dst.parent.mkdir(parents=True, exist_ok=True)
+
+        if task.transfer_method == TransferMethod.HARDLINK:
+            os.link(src, dst)
+        elif task.transfer_method == TransferMethod.SYMLINK:
+            os.symlink(src, dst)
+        elif task.transfer_method == TransferMethod.MOVE:
+            shutil.move(src, dst)
+        elif task.transfer_method == TransferMethod.COPY:
+            shutil.copy2(src, dst)

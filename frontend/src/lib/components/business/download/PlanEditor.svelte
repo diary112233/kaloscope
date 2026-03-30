@@ -448,6 +448,7 @@
             class="input w-full"
             bind:value={sub_repl}
             {...schema.sub_repl}
+            disabled={!sub_pattern}
           />
         </div>
       {/if}
