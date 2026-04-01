@@ -14,7 +14,6 @@
   import { page } from '$app/state';
   import { _ } from '$lib/i18n';
   import { subroutes } from '$lib/stores';
-  import { scale } from 'svelte/transition';
 
   let { navs, shadow = true }: DockProps = $props();
   // box shadow class
@@ -26,7 +25,7 @@
     {@const active = page.url.pathname.startsWith(nav.path)}
     <a
       href={nav.path}
-      class="mt-4 mb-0 justify-start duration-0 {active ? 'pointer-events-none text-surface' : ''}"
+      class="mt-4 mb-0 justify-start duration-300 {active ? 'pointer-events-none text-surface' : ''}"
       onclick={(event) => {
         if (active) {
           event.preventDefault();
@@ -40,14 +39,8 @@
         }
       }}
     >
-      <div class="size-5">
-        {#if active}
-          <iconify-icon icon={nav.iconFilled} width="1.25rem" in:scale={{ duration: 200 }}></iconify-icon>
-        {:else}
-          <iconify-icon icon={nav.icon} width="1.25rem" class="opacity-70"></iconify-icon>
-        {/if}
-      </div>
-      <span class="dock-label font-title {active ? '' : 'opacity-70'}">
+      <iconify-icon icon={active ? nav.iconFilled : nav.icon} width="1.25rem" class:opacity-70={!active}></iconify-icon>
+      <span class="dock-label font-title" class:opacity-70={!active}>
         {$_(nav.title)}
       </span>
     </a>
