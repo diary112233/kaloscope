@@ -144,6 +144,10 @@ class TestExtractTitle:
         result = extract_title("[SubGroup][Studio] Some Anime S01E01 [BD 1080p HEVC]")
         assert "some anime" in result.lower()
 
+    def test_tv_show_all_brackets_format(self):
+        result = extract_title("[Nekomoe kissaten][Sousou no Frieren][01][1080p][JPSC]")
+        assert result == "Sousou no Frieren"
+
     # --- Edge cases ---
 
     def test_title_with_multiple_separators(self):

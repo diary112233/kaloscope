@@ -3,8 +3,8 @@ import re
 # pattern to match common separators: dot, underscore, hyphen, space
 _SEPARATOR_PATTERN = re.compile(r"[._\-\s]+")
 
-# pattern to match common leading noise like [SubGroup], (SiteName), 【字幕组】 etc.
-_PREFIX_PATTERN = re.compile(r"^(?:[\[\(【][^\]\)】]*[\]\)】]\s*)+")
+# pattern to match the leading noise prefix like [SubGroup], (SiteName), 【字幕组】 etc.
+_PREFIX_PATTERN = re.compile(r"^[\[\(【][^\]\)】]*[\]\)】]\s*")
 
 # year pattern: a 4-digit year between 1900 and 2099
 _YEAR_PATTERN = re.compile(r"(?<!\d)(19|20)\d{2}(?!\d)")
@@ -135,7 +135,7 @@ def extract_title(name: str, ext: bool = False) -> str:
     # remove file extension if present
     stem = re.sub(r"\.[a-zA-Z0-9]{2,4}$", "", name) if ext else name
 
-    # strip leading bracketed prefixes
+    # strip the leading bracketed prefix (sub-group / site label)
     title = _PREFIX_PATTERN.sub("", stem).strip()
 
     # remove standalone year token before video tags
@@ -150,6 +150,9 @@ def extract_title(name: str, ext: bool = False) -> str:
 
     # replace common separators with spaces and collapse whitespace
     title = _SEPARATOR_PATTERN.sub(" ", title).strip()
+
+    # unwrap a single surrounding bracket pair left after stripping the prefix
+    title = re.sub(r"^[\[\(【](.*?)[\]\)】]$", r"\1", title).strip()
 
     # fallback to original name if nothing survives
     if not title:
