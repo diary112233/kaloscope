@@ -9,6 +9,7 @@ from tortoise.fields import (
     CharField,
     ForeignKeyField,
     ForeignKeyRelation,
+    IntField,
     JSONField,
     ReverseRelation,
 )
@@ -23,6 +24,11 @@ class UserRole(StrEnum):
     ADMIN = auto()
 
 
+class RelType(StrEnum):
+    INDEXER = auto()
+    MEDIA_LIB = auto()
+
+
 # -------------------- ORM Models --------------------
 class User(TortoiseModel):
     username = CharField(max_length=64, unique=True)
@@ -33,13 +39,14 @@ class User(TortoiseModel):
     # relational fields
     favorites: ReverseRelation["UserFavorite"]
     histories: ReverseRelation["UserHistory"]
+    permissions: ReverseRelation["UserPermission"]
 
     class Meta:
         table = "user"
         ordering = ["role", "-created_at"]
 
     class PydanticMeta:
-        exclude = ("password", "favorites", "histories")
+        exclude = ("password", "favorites", "histories", "permissions")
 
 
 class UserSession(TortoiseModel):
@@ -79,6 +86,22 @@ class UserHistory(TortoiseModel):
 
     class Meta:
         table = "user_history"
+        ordering = ["-created_at"]
+
+    class PydanticMeta:
+        exclude = ("user",)
+
+
+class UserPermission(TortoiseModel):
+    user_id: int
+    user: ForeignKeyRelation[User] = ForeignKeyField(
+        "models.User", related_name="permissions", db_index=True
+    )
+    rel_type = CharEnumField(max_length=16, enum_type=RelType)
+    rel_id = IntField()
+
+    class Meta:
+        table = "user_permission"
         ordering = ["-created_at"]
 
     class PydanticMeta:

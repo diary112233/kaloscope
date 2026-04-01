@@ -3,7 +3,7 @@ from tortoise.migrations import operations as ops
 from app.models.download import DownloadState, TransferMethod
 from app.models.flow import GraphCategory, GraphState, IntervalUnit, JobState, JobTrigger
 from app.models.media import Language, LibType
-from app.models.user import UserRole
+from app.models.user import RelType, UserRole
 from orjson import loads
 from tortoise.fields.base import OnDelete
 from tortoise.fields.data import JSON_DUMPS
@@ -179,13 +179,13 @@ class Migration(migrations.Migration):
                 ('id', fields.IntField(generated=True, primary_key=True, unique=True, db_index=True)),
                 ('created_at', fields.DatetimeField(null=True, auto_now=False, auto_now_add=True)),
                 ('updated_at', fields.DatetimeField(null=True, auto_now=True, auto_now_add=False)),
-                ('graph', fields.ForeignKeyField('models.FlowGraph', source_field='graph_id', db_index=True, db_constraint=True, to_field='id', related_name='triggers', on_delete=OnDelete.CASCADE)),
                 ('category', fields.CharEnumField(description='INDEXER: indexer\nINGEST: ingest\nSCHEDULE: schedule', enum_type=GraphCategory, max_length=16)),
                 ('rel_id', fields.IntField()),
                 ('priority', fields.IntField()),
                 ('asynchronous', fields.BooleanField(default=False)),
+                ('graph', fields.ForeignKeyField('models.FlowGraph', source_field='graph_id', db_index=True, db_constraint=True, to_field='id', related_name='triggers', on_delete=OnDelete.CASCADE)),
             ],
-            options={'table': 'flow_trigger', 'app': 'models', 'unique_together': (('graph', 'rel_id'), ('rel_id', 'priority')), 'pk_attr': 'id'},
+            options={'table': 'flow_trigger', 'app': 'models', 'unique_together': (('rel_id', 'graph'), ('rel_id', 'priority')), 'pk_attr': 'id'},
             bases=['TortoiseModel'],
         ),
         ops.CreateModel(
@@ -383,6 +383,19 @@ class Migration(migrations.Migration):
                 ('user', fields.ForeignKeyField('models.User', source_field='user_id', db_index=True, db_constraint=True, to_field='id', related_name='histories', on_delete=OnDelete.CASCADE)),
             ],
             options={'table': 'user_history', 'app': 'models', 'pk_attr': 'id'},
+            bases=['TortoiseModel'],
+        ),
+        ops.CreateModel(
+            name='UserPermission',
+            fields=[
+                ('id', fields.IntField(generated=True, primary_key=True, unique=True, db_index=True)),
+                ('created_at', fields.DatetimeField(null=True, auto_now=False, auto_now_add=True)),
+                ('updated_at', fields.DatetimeField(null=True, auto_now=True, auto_now_add=False)),
+                ('user', fields.ForeignKeyField('models.User', source_field='user_id', db_index=True, db_constraint=True, to_field='id', related_name='permissions', on_delete=OnDelete.CASCADE)),
+                ('rel_type', fields.CharEnumField(description='INDEXER: indexer\nMEDIA_LIB: media_lib', enum_type=RelType, max_length=16)),
+                ('rel_id', fields.IntField()),
+            ],
+            options={'table': 'user_permission', 'app': 'models', 'pk_attr': 'id'},
             bases=['TortoiseModel'],
         ),
         ops.CreateModel(

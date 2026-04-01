@@ -215,19 +215,19 @@ class FlowJob(TortoiseModel):
 
 
 class FlowTrigger(TortoiseModel):
-    graph_id: int
-    graph: ForeignKeyRelation[FlowGraph] = ForeignKeyField(
-        "models.FlowGraph", related_name="triggers", db_index=True
-    )
     category = CharEnumField(max_length=16, enum_type=GraphCategory)
     rel_id = IntField()
     priority = IntField()
     asynchronous = BooleanField(default=False)
+    graph_id: int
+    graph: ForeignKeyRelation[FlowGraph] = ForeignKeyField(
+        "models.FlowGraph", related_name="triggers", db_index=True
+    )
 
     class Meta:
         table = "flow_trigger"
         ordering = ["priority"]
-        unique_together = (("graph", "rel_id"), ("rel_id", "priority"))
+        unique_together = (("rel_id", "graph"), ("rel_id", "priority"))
 
 
 class FlowVariable(TortoiseModel):
