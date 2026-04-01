@@ -76,7 +76,7 @@
           <span class="font-semibold">{triggerText}</span>
         {/if}
         {#if triggerIcon}
-          <iconify-icon icon={triggerIcon} width="1.5rem" class="opacity-90"></iconify-icon>
+          <iconify-icon icon={triggerIcon} width="1.5rem" class="size-6 opacity-90"></iconify-icon>
         {/if}
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="size-4 opacity-60">
           <path

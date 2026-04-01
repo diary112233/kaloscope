@@ -6,16 +6,19 @@ from app.core.middleware import SessionHolder
 from app.models.base import IDs, KVPair
 from app.models.user import (
     FavoriteQuery,
+    HistoryEntry,
+    HistoryQuery,
     User,
     UserAvatar,
     UserCreate,
     UserFavorite,
+    UserHistory,
     UserInfo,
     UserPwd,
     UserQuery,
     UserRole,
 )
-from app.services.user import UserFavoriteService, UserService
+from app.services.user import UserFavoriteService, UserHistoryService, UserService
 
 # subroutes for all user related operations
 user = Blueprint("user", url_prefix="/user")
@@ -111,3 +114,24 @@ async def list_favorites(request: Request, body: FavoriteQuery) -> HTTPResponse:
         queries.append(Q(rsrc_id__in=body.rsrc_ids))
     page = await UserFavorite.page(*queries, **body.page_params)
     return json(await UserFavoriteService.dump_page(page))
+
+
+@user.post("/record_history")
+@validate(json=HistoryEntry)
+async def record_history(request: Request, body: HistoryEntry) -> HTTPResponse:
+    """Record a user history entry."""
+    user: UserInfo = request.ctx.user
+    await UserHistoryService.record(user.id, body)
+    return empty()
+
+
+@user.get("/histories")
+@validate(query=HistoryQuery)
+async def list_histories(request: Request, query: HistoryQuery) -> HTTPResponse:
+    """List the current user's histories."""
+    user: UserInfo = request.ctx.user
+    queries = [Q(user_id=user.id)]
+    if query.rel_type:
+        queries.append(Q(rel_type=query.rel_type))
+    page = await UserHistory.page(*queries, **query.page_params)
+    return json(await UserHistoryService.dump_page(page))

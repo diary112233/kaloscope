@@ -32,7 +32,7 @@ class DiskUsage:
         return self._format(self.free)
 
 
-def disk_usage(path: str) -> DiskUsage:
+def disk_usage(path: Path | str) -> DiskUsage:
     """Get the disk usage of a directory.
 
     Args:
@@ -51,7 +51,7 @@ def disk_usage(path: str) -> DiskUsage:
         return DiskUsage()
 
 
-def is_directory(path: str) -> bool:
+def is_directory(path: Path | str) -> bool:
     """Check if a path is a directory.
 
     Args:
@@ -61,7 +61,9 @@ def is_directory(path: str) -> bool:
         True if the path is a directory, False otherwise.
     """
     try:
-        return Path(path).is_dir()
+        if not isinstance(path, Path):
+            path = Path(path)
+        return path.is_dir()
     except OSError:
         return False
 

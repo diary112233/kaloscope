@@ -61,26 +61,26 @@ async def list_files(_, query: ListRequest) -> HTTPResponse:
         return p.name.startswith(".")
 
     # recursively build the file entry
-    def build_entry(file: Path) -> dict:
-        resolved = str(file.resolve())
-        is_dir = file.is_dir()
-        empty_dir = is_empty(file) if is_dir else None
+    def build_entry(p: Path) -> dict:
+        absolute_path = str(p.resolve())
+        is_dir = p.is_dir()
+        empty_dir = is_empty(p) if is_dir else None
         entry = {
-            "name": file.name,
-            "path": resolved,
+            "name": p.name,
+            "path": absolute_path,
             "is_dir": is_dir,
             "is_empty": empty_dir,
-            "is_hidden": is_hidden(file),
-            "file_type": guess_file_type(file)[0] if file.is_file() else None,
+            "is_hidden": is_hidden(p),
+            "file_type": guess_file_type(p)[0] if p.is_file() else None,
             "open": False,
         }
         # expand children along the expand_to path
         if expand_to is not None:
             if empty_dir is None or empty_dir:
                 return entry
-            if expand_to.is_relative_to(resolved):
+            if expand_to.is_relative_to(absolute_path):
                 children = sorted(
-                    filter(readable, file.iterdir()),
+                    filter(readable, p.iterdir()),
                     key=lambda f: (not f.is_dir(), f.name),
                 )
                 entry["children"] = [build_entry(f) for f in children]

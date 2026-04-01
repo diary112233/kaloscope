@@ -95,27 +95,66 @@ def compile_regex(expr: str) -> re.Pattern[str]:
 
 
 def trim(obj: Any, chars: str | None = None) -> Any:
-    """Strip leading and trailing characters."""
+    """Strip leading and trailing characters.
+
+    Args:
+        obj: The object to strip.
+        chars: The characters to strip. Defaults to whitespace.
+
+    Returns:
+        The stripped object.
+    """
     return deep_strip(obj, chars=chars)
 
 
 def ltrim(obj: Any, chars: str | None = None) -> Any:
-    """Strip leading characters."""
+    """Strip leading characters.
+
+    Args:
+        obj: The object to strip.
+        chars: The characters to strip. Defaults to whitespace.
+
+    Returns:
+        The stripped object.
+    """
     return deep_strip(obj, "left", chars)
 
 
 def rtrim(obj: Any, chars: str | None = None) -> Any:
-    """Strip trailing characters."""
+    """Strip trailing characters.
+
+    Args:
+        obj: The object to strip.
+        chars: The characters to strip. Defaults to whitespace.
+
+    Returns:
+        The stripped object.
+    """
     return deep_strip(obj, "right", chars)
 
 
 def json_escape(string: str) -> str:
-    """Escape a string for JSON."""
+    """Escape a string for JSON.
+
+    Args:
+        string: The string to escape.
+
+    Returns:
+        The escaped string.
+    """
     return json.escape(string)
 
 
 def jsonpath_first(obj: Any, expr: str) -> Any:
-    """Find first match in a JSON string or object using a JSONPath expression."""
+    """Find first match in a JSON string or object using a JSONPath expression.
+
+    Args:
+        obj: The JSON string or object to search.
+        expr: The JSONPath expression.
+
+    Returns:
+        The first matched value, or None if not found.
+    """
     jsonpath = compile_jsonpath(expr)
     if isinstance(obj, str):
         obj = json.try_loads(obj, with_comments=True)
@@ -124,7 +163,15 @@ def jsonpath_first(obj: Any, expr: str) -> Any:
 
 
 def jsonpath_all(obj: Any, expr: str) -> list:
-    """Find all matches in a JSON string or object using a JSONPath expression."""
+    """Find all matches in a JSON string or object using a JSONPath expression.
+
+    Args:
+        obj: The JSON string or object to search.
+        expr: The JSONPath expression.
+
+    Returns:
+        A list of all matched values.
+    """
     jsonpath = compile_jsonpath(expr)
     if isinstance(obj, str):
         obj = json.try_loads(obj, with_comments=True)
@@ -133,7 +180,15 @@ def jsonpath_all(obj: Any, expr: str) -> list:
 
 
 def xpath_first(obj: Any, expr: str) -> Any:
-    """Find first match in an HTML string or object using an XPath expression."""
+    """Find first match in an HTML string or object using an XPath expression.
+
+    Args:
+        obj: The HTML string or object to search.
+        expr: The XPath expression.
+
+    Returns:
+        The first matched value, or None if not found.
+    """
     xpath = compile_xpath(expr)
     if isinstance(obj, str):
         obj = etree.fromstring(obj, parser=etree.HTMLParser())
@@ -144,7 +199,15 @@ def xpath_first(obj: Any, expr: str) -> Any:
 
 
 def xpath_all(obj: Any, expr: str) -> list:
-    """Find all matches in an HTML string or object using an XPath expression."""
+    """Find all matches in an HTML string or object using an XPath expression.
+
+    Args:
+        obj: The HTML string or object to search.
+        expr: The XPath expression.
+
+    Returns:
+        A list of all matched values.
+    """
     xpath = compile_xpath(expr)
     if isinstance(obj, str):
         obj = etree.fromstring(obj, parser=etree.HTMLParser())
@@ -155,14 +218,30 @@ def xpath_all(obj: Any, expr: str) -> list:
 
 
 def regex_first(string: str, expr: str) -> Any:
-    """Find first match in a string using a regular expression."""
+    """Find first match in a string using a regular expression.
+
+    Args:
+        string: The string to search.
+        expr: The regular expression.
+
+    Returns:
+        The first captured group, or None if not found.
+    """
     pattern = compile_regex(expr)
     match = pattern.search(string)
     return match.group(1) if match else None
 
 
 def regex_all(string: str, expr: str) -> list:
-    """Find all matches in a string using a regular expression."""
+    """Find all matches in a string using a regular expression.
+
+    Args:
+        string: The string to search.
+        expr: The regular expression.
+
+    Returns:
+        A list of all matched groups.
+    """
     pattern = compile_regex(expr)
     return pattern.findall(string)
 
@@ -229,19 +308,41 @@ def _find(
 
 
 def s2t(string: str) -> str:
-    """Convert a string from simplified to traditional Chinese."""
+    """Convert a string from simplified to traditional Chinese.
+
+    Args:
+        string: The simplified Chinese string.
+
+    Returns:
+        The traditional Chinese string.
+    """
     return S2T_CONVERTER.convert(string)
 
 
 def t2s(string: str) -> str:
-    """Convert a string from traditional to simplified Chinese."""
+    """Convert a string from traditional to simplified Chinese.
+
+    Args:
+        string: The traditional Chinese string.
+
+    Returns:
+        The simplified Chinese string.
+    """
     return T2S_CONVERTER.convert(string)
 
 
 def duration(
     value: float, unit: Literal["milliseconds", "seconds", "minutes"] = "milliseconds"
 ) -> str:
-    """Convert a duration to a human-readable format."""
+    """Convert a duration to a human-readable format.
+
+    Args:
+        value: The duration value.
+        unit: The unit of the duration value.
+
+    Returns:
+        The human-readable duration string, e.g. "01:23:45".
+    """
     match unit:
         case "milliseconds":
             d = datetime.timedelta(milliseconds=value)
@@ -256,27 +357,59 @@ def duration(
 
 
 def b64decode(s: str | bytes) -> str:
-    """Decode the Base64 encoded bytes or string."""
+    """Decode the Base64 encoded bytes or string.
+
+    Args:
+        s: The Base64 encoded bytes or string.
+
+    Returns:
+        The decoded string.
+    """
     return base64.b64decode(s).decode(ENCODING)
 
 
 def b64encode(s: str | bytes) -> str:
-    """Encode the bytes or string to Base64."""
+    """Encode the bytes or string to Base64.
+
+    Args:
+        s: The bytes or string to encode.
+
+    Returns:
+        The Base64 encoded string.
+    """
     if isinstance(s, str):
         s = s.encode(ENCODING)
     return base64.b64encode(s).decode(ENCODING)
 
 
-def parent_path(path: str, levels: int = 1) -> str:
-    """Return the parent directory of a path, resolved to an absolute path."""
-    p = Path(path).resolve()
+def parent_path(path: str, levels: int = 1, resolve: bool = False) -> str:
+    """Return the parent directory of a path.
+
+    Args:
+        path: The path to get the parent of.
+        levels: The number of levels to go up.
+        resolve: Whether to resolve to an absolute path first.
+
+    Returns:
+        The parent directory path string.
+    """
+    p = Path(path).resolve() if resolve else Path(path)
     for _ in range(levels):
         p = p.parent
     return str(p)
 
 
 def ternary[V](value: V, v1: V, v2: V) -> V:
-    """Return v1 if value is truthy, otherwise return v2."""
+    """Return v1 if value is truthy, otherwise return v2.
+
+    Args:
+        value: The condition value.
+        v1: The value to return if truthy.
+        v2: The value to return if falsy.
+
+    Returns:
+        v1 if value is truthy, otherwise v2.
+    """
     return v1 if value else v2
 
 
@@ -297,7 +430,14 @@ _DATE_FORMATS = [
 
 
 def year(value: Any) -> int | None:
-    """Extract the 4-digit year from a timestamp or date string."""
+    """Extract the 4-digit year from a timestamp or date string.
+
+    Args:
+        value: The value to extract the year from (datetime, date, int, float, or str).
+
+    Returns:
+        The 4-digit year as an integer, or None if not found.
+    """
     if value is None:
         return None
     if isinstance(value, (datetime.datetime, datetime.date)):

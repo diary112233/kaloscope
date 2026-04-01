@@ -6,6 +6,7 @@ from pydantic import (
     BaseModel,
     Field,
     FutureDatetime,
+    NonNegativeInt,
     PositiveInt,
     field_serializer,
     model_validator,
@@ -203,7 +204,7 @@ class DownloaderUpsert(BaseModel):
 
 
 class DownloadQuery(Pageable):
-    downloader_id: int | None = None
+    downloader_id: NonNegativeInt | None = None
     name: str | None = None
     state: DownloadState | None = None
     states: list[DownloadState] | None = None
@@ -256,7 +257,7 @@ class DownloadStats(BaseModel):
 
 
 class DownloadPlanQuery(Pageable):
-    graph_id: int | None = None
+    graph_id: NonNegativeInt | None = None
     keyword: str | None = None
 
 

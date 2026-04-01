@@ -13,7 +13,15 @@ from app.core.exceptions import ErrorCode, KaloscopeException
 from app.core.middleware import SessionHolder
 from app.models.base import KVPair
 from app.models.flow import IndexerResource
-from app.models.user import User, UserFavorite, UserInfo, UserRole
+from app.models.user import (
+    HistoryEntry,
+    HistoryType,
+    User,
+    UserFavorite,
+    UserHistory,
+    UserInfo,
+    UserRole,
+)
 from app.services.base import BaseService
 from app.utils.crypto import encrypt
 from app.utils.dict import entries, remove
@@ -206,3 +214,49 @@ class UserFavoriteService(BaseService[UserFavorite], model=UserFavorite):
         await UserFavorite.filter(
             user_id=user_id, indexer_id=indexer_id, rsrc_id=rsrc_id
         ).delete()
+
+
+class UserHistoryService(BaseService[UserHistory], model=UserHistory):
+    """The service class for all user history related operations."""
+
+    @classmethod
+    async def record(cls, user_id: int, obj: HistoryEntry) -> UserHistory | None:
+        """Record a user history entry, incrementing repetitions on duplicate.
+
+        Args:
+            user_id: The user ID.
+            obj: The history entry data.
+
+        Returns:
+            The user history instance, or None if the entry is invalid.
+        """
+        history = None
+        created = False
+
+        if obj.rel_type == HistoryType.VIDEO:
+            # record video watch history
+            history, created = await UserHistory.update_or_create(
+                user_id=user_id,
+                rel_type=obj.rel_type,
+                rel_id=obj.rel_id,
+                defaults={
+                    "position": obj.position or 0,
+                    "percentage": obj.percentage or 0,
+                },
+            )
+        elif obj.rel_type == HistoryType.SEARCH:
+            # record web search history
+            keyword = (obj.keyword or "").strip()
+            if keyword:
+                history, created = await UserHistory.get_or_create(
+                    user_id=user_id,
+                    rel_type=obj.rel_type,
+                    rel_id=obj.rel_id,
+                    keyword=keyword,
+                )
+
+        if history is not None and not created:
+            history.repetitions += 1
+            await history.save(update_fields=["repetitions", "updated_at"])
+
+        return history

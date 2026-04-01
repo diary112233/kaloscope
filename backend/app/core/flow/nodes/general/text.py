@@ -26,11 +26,11 @@ class TextNode(Node):
 
     @classmethod
     async def execute(cls, *, node_data: dict[str, Any], context: Context, **kwargs):
-        path = Path(cls.path.extract(node_data, context=context)).resolve()
+        path = Path(cls.path.extract(node_data, context=context))
 
         # security: path must be under one of the MediaLib dirs
         lib_dirs: list = await MediaLib.all().values_list("dir", flat=True)
-        if not any(path.is_relative_to(Path(dir).resolve()) for dir in lib_dirs):
+        if not any(path.is_relative_to(Path(dir)) for dir in lib_dirs):
             return
 
         # create parent directory if it doesn't exist

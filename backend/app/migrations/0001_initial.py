@@ -382,7 +382,7 @@ class Migration(migrations.Migration):
                 ('updated_at', fields.DatetimeField(null=True, auto_now=True, auto_now_add=False)),
                 ('user', fields.ForeignKeyField('models.User', source_field='user_id', db_index=True, db_constraint=True, to_field='id', related_name='histories', on_delete=OnDelete.CASCADE)),
                 ('rel_type', fields.CharEnumField(description='SEARCH: search\nVIDEO: video', enum_type=HistoryType, max_length=16)),
-                ('rel_id', fields.IntField(null=True)),
+                ('rel_id', fields.IntField()),
                 ('repetitions', fields.IntField(default=0)),
                 ('keyword', fields.CharField(null=True, max_length=4096)),
                 ('position', fields.IntField(null=True)),

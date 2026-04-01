@@ -13,7 +13,7 @@ type Language = Literal["yaml", "json", "jsonc", "jinja2", "python", "javascript
 class CodeField(Field[str]):
     """A control for code editing."""
 
-    default: str | Path = ""
+    default: Path | str = ""
     template: str | None = None
     placeholder: str | None = None
     language: Language | None = None

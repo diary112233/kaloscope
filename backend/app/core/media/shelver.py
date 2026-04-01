@@ -148,6 +148,6 @@ async def update_metadata(lib: MediaLib, path: Path | str):
         # match the media item by library, directory and name
         await MediaItem.filter(
             lib_id=lib.id,
-            dir=str(path.parent.resolve()),
+            dir=str(path.parent),
             name=path.stem,
         ).update(**data)

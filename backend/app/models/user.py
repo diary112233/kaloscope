@@ -2,7 +2,7 @@ from datetime import datetime
 from enum import StrEnum, auto
 from typing import Any
 
-from pydantic import BaseModel, Field, PositiveInt
+from pydantic import BaseModel, Field, NonNegativeInt, PositiveInt
 from sanic.request.form import File
 from tortoise.fields import (
     CharEnumField,
@@ -89,7 +89,7 @@ class UserHistory(TortoiseModel):
         "models.User", related_name="histories", db_index=True
     )
     rel_type = CharEnumField(max_length=16, enum_type=HistoryType)
-    rel_id = IntField(null=True)
+    rel_id = IntField()
     repetitions = IntField(default=0)
     keyword = CharField(max_length=4096, null=True)
     position = IntField(null=True)
@@ -162,3 +162,15 @@ class UserAvatar(BaseModel, RequestFilesMixin):
 class FavoriteQuery(Pageable):
     indexer_id: PositiveInt | None = None
     rsrc_ids: list[str] | None = Field(min_length=1, max_length=999, default=None)
+
+
+class HistoryEntry(BaseModel):
+    rel_type: HistoryType
+    rel_id: NonNegativeInt
+    keyword: str | None = Field(max_length=4096, default=None)
+    position: NonNegativeInt | None = None
+    percentage: int | None = Field(ge=0, le=100, default=None)
+
+
+class HistoryQuery(Pageable):
+    rel_type: HistoryType | None = None

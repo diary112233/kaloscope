@@ -368,7 +368,7 @@ async def consume_event(event: MediaEvent):
                 bootparams={
                     "item_path": keywords.item_path,
                     "item_name": keywords.item_name,
-                    "nfo_path": str(nfo_path.resolve()) if nfo_path else None,
+                    "nfo_path": str(nfo_path) if nfo_path else None,
                     "nfo_type": keywords.nfo_type,
                     "language": keywords.language,
                     "title": keywords.title,
