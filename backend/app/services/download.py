@@ -9,7 +9,7 @@ from tortoise.transactions import atomic
 
 from app.core.constants import ENCODING
 from app.core.dl.adapter import load_config
-from app.core.dl.syncer import Unique
+from app.core.dl.syncer import Unique, execute_download_plan
 from app.core.exceptions import ErrorCode, KaloscopeException
 from app.models.download import (
     DownloadAdd,
@@ -303,4 +303,5 @@ class DownloadPlanService(BaseService[DownloadPlan], model=DownloadPlan):
             plan = await DownloadPlan.get(id=obj.id)
         else:
             plan = await DownloadPlan.create(**data)
+            await execute_download_plan(plan)
         return plan

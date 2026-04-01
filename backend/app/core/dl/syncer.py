@@ -347,7 +347,7 @@ async def check_download_plans():
             logger.error("Failed to execute download plan: %s", plan.id, exc_info=True)
 
 
-async def execute_download_plan(plan: DownloadPlan, adapter: Adapter | None):
+async def execute_download_plan(plan: DownloadPlan, adapter: Adapter | None = None):
     """Execute a single download plan.
 
     Args:
