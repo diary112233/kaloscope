@@ -118,6 +118,9 @@ class MediaItemService(BaseService[MediaItem], model=MediaItem):
                 "dir": m.item_dir,
                 "name": m.item_name,
                 "parent_id": parent_id,
+                "year": m.year,
+                "season": m.season,
+                "episode": m.episode,
                 # only top-level items are visible
                 "visible": parent_id is None,
             },

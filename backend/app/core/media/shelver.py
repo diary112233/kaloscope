@@ -113,7 +113,7 @@ def parse_nfo(lib_type: LibType, path: Path | str) -> MediaMeta | None:
     if data is not None:
         handler = get_handler(lib_type)
         meta = handler.extract_meta(data)
-        meta.nfo_path = str(path.resolve())
+        meta.nfo_path = str(path)
 
     return meta
 
@@ -129,19 +129,25 @@ async def update_metadata(lib: MediaLib, path: Path | str):
         path = Path(path)
     meta = parse_nfo(lib.lib_type, path)
     if meta is not None:
+        data = {
+            "nfo_path": meta.nfo_path,
+            "nfo_mtime": datetime.fromtimestamp(path.stat().st_mtime, tz=UTC),
+            "title": meta.title,
+            "aired": meta.aired,
+            "poster": meta.poster,
+            "backdrop": meta.backdrop,
+            "rating": meta.rating,
+        }
+        if meta.year is not None:
+            data["year"] = meta.year
+        if meta.season is not None:
+            data["season"] = meta.season
+        if meta.episode is not None:
+            data["episode"] = meta.episode
+
+        # match the media item by library, directory and name
         await MediaItem.filter(
             lib_id=lib.id,
             dir=str(path.parent.resolve()),
             name=path.stem,
-        ).update(
-            nfo_path=meta.nfo_path,
-            nfo_mtime=datetime.fromtimestamp(path.stat().st_mtime, tz=UTC),
-            title=meta.title,
-            year=meta.year,
-            aired=meta.aired,
-            season=meta.season,
-            episode=meta.episode,
-            poster=meta.poster,
-            backdrop=meta.backdrop,
-            rating=meta.rating,
-        )
+        ).update(**data)

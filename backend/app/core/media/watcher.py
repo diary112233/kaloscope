@@ -208,7 +208,7 @@ class LibWatcher:
                     continue
 
                 # skip files that are not accepted by the handler
-                src_path = str(file.resolve())
+                src_path = str(file)
                 sys_event = handler.filter_event(
                     FileCreatedEvent(src_path), base_path=lib.dir
                 )

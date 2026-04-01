@@ -33,17 +33,16 @@ class MetaKeywords:
     episode: int | None = None
 
     @property
+    def item_dir(self) -> str:
+        return str(self.path if self.path.is_dir() else self.path.parent)
+
+    @property
     def item_path(self) -> str:
-        return str(self.path.resolve())
+        return str(self.path)
 
     @property
     def item_name(self) -> str:
         return self.path.name if self.path.is_dir() else self.path.stem
-
-    @property
-    def item_dir(self) -> str:
-        dir = self.path if self.path.is_dir() else self.path.parent
-        return str(dir.resolve())
 
 
 @dataclass(kw_only=True)
