@@ -24,7 +24,12 @@ class UserRole(StrEnum):
     ADMIN = auto()
 
 
-class RelType(StrEnum):
+class HistoryType(StrEnum):
+    SEARCH = auto()
+    VIDEO = auto()
+
+
+class PermissionType(StrEnum):
     INDEXER = auto()
     MEDIA_LIB = auto()
 
@@ -83,10 +88,16 @@ class UserHistory(TortoiseModel):
     user: ForeignKeyRelation[User] = ForeignKeyField(
         "models.User", related_name="histories", db_index=True
     )
+    rel_type = CharEnumField(max_length=16, enum_type=HistoryType)
+    rel_id = IntField(null=True)
+    repetitions = IntField(default=0)
+    keyword = CharField(max_length=4096, null=True)
+    position = IntField(null=True)
+    percentage = IntField(null=True)
 
     class Meta:
         table = "user_history"
-        ordering = ["-created_at"]
+        ordering = ["-updated_at"]
 
     class PydanticMeta:
         exclude = ("user",)
@@ -97,7 +108,7 @@ class UserPermission(TortoiseModel):
     user: ForeignKeyRelation[User] = ForeignKeyField(
         "models.User", related_name="permissions", db_index=True
     )
-    rel_type = CharEnumField(max_length=16, enum_type=RelType)
+    rel_type = CharEnumField(max_length=16, enum_type=PermissionType)
     rel_id = IntField()
 
     class Meta:

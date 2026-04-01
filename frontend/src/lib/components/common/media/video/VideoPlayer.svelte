@@ -430,6 +430,7 @@
 <!-- The video player container. -->
 <div bind:this={container} class="relative" style:width style:height>
   <div {id}></div>
+
   <!-- The danmaku container. -->
   <div
     bind:this={danmakuContainer}
@@ -438,6 +439,7 @@
     style:right={rotateFullscreen ? '32px' : '0'}
   ></div>
 </div>
+
 <!-- The video settings component. -->
 <VideoSettings bind:this={videoSettings} {player} />
 

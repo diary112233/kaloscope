@@ -158,6 +158,7 @@
   hidden={navbarHidden}
   shadow={navbarShadow || scrollY > 0 || frozenScrollY > 0}
 />
+
 <!-- The loading spinner for the pull-to-refresh feature. -->
 <div
   class="max-h-48 justify-center bg-base-125 {refresherH.current ? 'flex' : 'hidden'}"
@@ -169,6 +170,7 @@
   >
   </span>
 </div>
+
 <!-- The main content of the page. -->
 {#key refreshKey}
   <main
@@ -196,10 +198,12 @@
     </SvelteFlowProvider>
   </main>
 {/key}
+
 <!-- The overscroll effect at the bottom of the page. -->
 <div
   class="max-h-24 bg-base-125 {overscrollH.current ? 'flex' : 'hidden'}"
   style:height={`${overscrollH.current | 0}px`}
 ></div>
+
 <!-- The bottom navigation dock. -->
 <Dock navs={data.navs} />
