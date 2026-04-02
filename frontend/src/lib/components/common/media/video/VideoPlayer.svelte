@@ -76,7 +76,7 @@
         .json<Resp<Page<MediaItem>>>()
         .then((resp) => {
           for (const item of resp.data.items) {
-            api.post('user/record_history', {
+            api.post('user/history/record', {
               json: {
                 rel_type: 'video',
                 rel_id: item.id,

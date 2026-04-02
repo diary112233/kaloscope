@@ -195,7 +195,7 @@
         }
         // record search history
         if (query.keyword) {
-          api.post('user/record_history', {
+          api.post('user/history/record', {
             json: { rel_type: 'search', rel_id: indexerId, keyword: query.keyword }
           });
         }

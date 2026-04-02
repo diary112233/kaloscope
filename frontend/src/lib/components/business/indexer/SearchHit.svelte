@@ -45,7 +45,7 @@
     const rsrcIds = rsrcs.map((r) => r.id).filter((id) => !!id);
     if (indexerId && rsrcIds.length > 0) {
       await api
-        .post('user/favorites', {
+        .post('user/favorite/list', {
           json: {
             page_num: 1,
             page_size: rsrcs.length,

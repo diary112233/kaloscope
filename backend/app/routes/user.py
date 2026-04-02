@@ -107,7 +107,7 @@ async def update_pref(request: Request, body: KVPair) -> HTTPResponse:
     return json(body.model_dump())
 
 
-@user.post("/favorites")
+@user.post("/favorite/list")
 @validate(json=FavoriteQuery)
 async def list_favorites(request: Request, body: FavoriteQuery) -> HTTPResponse:
     """List the current user's favorites."""
@@ -121,16 +121,7 @@ async def list_favorites(request: Request, body: FavoriteQuery) -> HTTPResponse:
     return json(await UserFavoriteService.dump_page(page))
 
 
-@user.post("/record_history")
-@validate(json=HistoryEntry)
-async def record_history(request: Request, body: HistoryEntry) -> HTTPResponse:
-    """Record a user history entry."""
-    user: UserInfo = request.ctx.user
-    await UserHistoryService.record(user.id, body)
-    return empty()
-
-
-@user.get("/histories")
+@user.get("/history/list")
 @validate(query=HistoryQuery)
 async def list_histories(request: Request, query: HistoryQuery) -> HTTPResponse:
     """List the current user's histories."""
@@ -153,3 +144,21 @@ async def list_histories(request: Request, query: HistoryQuery) -> HTTPResponse:
                 media = await MediaItem.get_or_none(id=rel_id)
                 his["media"] = await MediaItemService.dump(media) if media else None
     return json(result)
+
+
+@user.post("/history/record")
+@validate(json=HistoryEntry)
+async def record_history(request: Request, body: HistoryEntry) -> HTTPResponse:
+    """Record a user history entry."""
+    user: UserInfo = request.ctx.user
+    await UserHistoryService.record(user.id, body)
+    return empty()
+
+
+@user.post("/history/delete")
+@validate(json=IDs)
+async def delete_histories(request: Request, body: IDs) -> HTTPResponse:
+    """Delete the current user's histories."""
+    user: UserInfo = request.ctx.user
+    await UserHistory.filter(user_id=user.id, id__in=body.ids).delete()
+    return empty()

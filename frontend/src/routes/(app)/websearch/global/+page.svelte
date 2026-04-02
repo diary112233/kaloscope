@@ -61,7 +61,7 @@
       load(id, route.title);
     }
     // record search history
-    api.post('user/record_history', {
+    api.post('user/history/record', {
       json: { rel_type: 'search', rel_id: 0, keyword: query.keyword }
     });
   }

@@ -35,7 +35,7 @@
   function search(toTop: boolean = false) {
     loading.start();
     api
-      .post('user/favorites', {
+      .post('user/favorite/list', {
         json: {
           page_num: query.page_num,
           page_size: query.page_size
