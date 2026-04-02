@@ -12,3 +12,8 @@ export const EMPTY_SIGN = '--';
  * The tag to mark the start and end of a loop node.
  */
 export const LOOP_TAG = '$loop';
+
+/**
+ * The prefix of the media stream URL.
+ */
+export const MEDIA_STREAM_PREFIX = '/_api/media/stream?path=';

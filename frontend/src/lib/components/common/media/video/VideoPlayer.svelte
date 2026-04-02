@@ -1,5 +1,7 @@
 <script lang="ts" module>
-  import type { Chapter, Danmaku, Definition, Optional } from '$lib/types';
+  import { api } from '$lib/api';
+  import { MEDIA_STREAM_PREFIX } from '$lib/constants';
+  import type { Chapter, Danmaku, Definition, MediaItem, Optional, Page, Resp } from '$lib/types';
   import type { IUrl } from 'xgplayer/es/defaultConfig';
   import type OptionsPlugin from 'xgplayer/es/plugins/common/optionsIcon';
   import type DanmakuPlugin from 'xgplayer/es/plugins/danmu';
@@ -45,6 +47,47 @@
     uploader: string;
     uploadedAt: string;
   }>;
+
+  /**
+   * Records the user's watch history when the player is destroyed.
+   *
+   * @param player - The player instance.
+   */
+  function recordHistory(player: Player | null) {
+    if (!player) {
+      return;
+    }
+    const url = player.config.url;
+    if (typeof url === 'string' && url.startsWith(MEDIA_STREAM_PREFIX)) {
+      const path = decodeURIComponent(url.slice(MEDIA_STREAM_PREFIX.length));
+      let position = player.currentTime;
+      let duration = player.duration;
+      if (isNaN(position) || isNaN(duration) || position < 0 || duration <= 0) {
+        return;
+      }
+      position = Math.floor(position);
+      duration = Math.ceil(duration);
+      if (position > duration) {
+        position = duration;
+      }
+      const percentage = Math.floor((position / duration) * 100);
+      api
+        .get('media/list', { searchParams: { page_num: 0, path } })
+        .json<Resp<Page<MediaItem>>>()
+        .then((resp) => {
+          for (const item of resp.data.items) {
+            api.post('user/record_history', {
+              json: {
+                rel_type: 'video',
+                rel_id: item.id,
+                position: position,
+                percentage: percentage
+              }
+            });
+          }
+        });
+    }
+  }
 </script>
 
 <script lang="ts">
@@ -410,6 +453,7 @@
     }
     return () => {
       // destroy the player instance
+      recordHistory(player);
       player?.destroy();
       // remove the event listener
       if (isMobile) {

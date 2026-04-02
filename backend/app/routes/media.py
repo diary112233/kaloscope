@@ -74,6 +74,8 @@ async def list_items(_, query: MediaQuery) -> HTTPResponse:
     queries = [Q(visible=True)]
     if query.lib_id:
         queries.append(Q(lib_id=query.lib_id))
+    if query.path:
+        queries.append(Q(path=query.path))
     if query.keyword:
         queries.append(Q(keyword__icontains=query.keyword))
     page = await MediaItem.page(

@@ -2,6 +2,7 @@
   import { page } from '$app/state';
   import { api } from '$lib/api';
   import { Backdrop, Container, Image, Rating, VideoPlayer } from '$lib/components';
+  import { MEDIA_STREAM_PREFIX } from '$lib/constants';
   import { createLoading } from '$lib/helpers';
   import { _ } from '$lib/i18n';
   import { icons } from '$lib/icons';
@@ -38,13 +39,13 @@
       if (media?.children?.length) {
         for (const part of media.children) {
           chapters.push({
-            url: `/_api/media/stream?path=${encodeURIComponent(part.path)}`,
+            url: `${MEDIA_STREAM_PREFIX}${encodeURIComponent(part.path)}`,
             title: formatTitle(part)
           });
         }
       }
       player?.mount({
-        url: `/_api/media/stream?path=${encodeURIComponent(target.path)}`,
+        url: `${MEDIA_STREAM_PREFIX}${encodeURIComponent(target.path)}`,
         back: () => (playing = false),
         title: formatTitle(target),
         chapters: chapters

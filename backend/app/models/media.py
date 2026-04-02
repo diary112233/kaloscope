@@ -129,7 +129,8 @@ class MediaLibUpsert(BaseModel):
 
 
 class MediaQuery(Pageable):
-    lib_id: PositiveInt
+    lib_id: PositiveInt | None = None
+    path: str | None = None
     keyword: str | None = None
 
 
