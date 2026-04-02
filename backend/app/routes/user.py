@@ -4,6 +4,8 @@ from tortoise.expressions import Q
 
 from app.core.middleware import SessionHolder
 from app.models.base import IDs, KVPair
+from app.models.flow import FlowGraph
+from app.models.media import MediaItem
 from app.models.user import (
     FavoriteQuery,
     HistoryEntry,
@@ -19,6 +21,8 @@ from app.models.user import (
     UserQuery,
     UserRole,
 )
+from app.services.flow import FlowGraphService
+from app.services.media import MediaItemService
 from app.services.user import UserFavoriteService, UserHistoryService, UserService
 
 # subroutes for all user related operations
@@ -132,14 +136,20 @@ async def list_histories(request: Request, query: HistoryQuery) -> HTTPResponse:
     """List the current user's histories."""
     user: UserInfo = request.ctx.user
     # clean expired history records
-    if query.rel_type:
-        await UserHistoryService.clean_expired(user.id, query.rel_type)
-    else:
-        for rel_type in HistoryType:
-            await UserHistoryService.clean_expired(user.id, rel_type)
+    rel_type = query.rel_type
+    await UserHistoryService.clean_expired(user.id, rel_type)
     # list histories with pagination
-    queries = [Q(user_id=user.id)]
-    if query.rel_type:
-        queries.append(Q(rel_type=query.rel_type))
-    page = await UserHistory.page(*queries, **query.page_params)
-    return json(await UserHistoryService.dump_page(page))
+    page = await UserHistory.page(
+        user_id=user.id, rel_type=rel_type, **query.page_params
+    )
+    result = await UserHistoryService.dump_page(page)
+    # attach related data based on the history type
+    for his in result["items"]:
+        if rel_id := his["rel_id"]:
+            if rel_type == HistoryType.SEARCH:
+                graph = await FlowGraph.get_or_none(id=rel_id)
+                his["graph"] = await FlowGraphService.dump(graph) if graph else None
+            elif rel_type == HistoryType.VIDEO:
+                media = await MediaItem.get_or_none(id=rel_id)
+                his["media"] = await MediaItemService.dump(media) if media else None
+    return json(result)

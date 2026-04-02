@@ -173,4 +173,4 @@ class HistoryEntry(BaseModel):
 
 
 class HistoryQuery(Pageable):
-    rel_type: HistoryType | None = None
+    rel_type: HistoryType
