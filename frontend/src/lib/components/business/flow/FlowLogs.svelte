@@ -85,7 +85,7 @@
             {@const start = log.type === 'start'}
             {@const title = $_(`flow.exec.${start ? 'bootparams' : end ? 'retval' : 'exc_info'}`)}
 
-            <li class="list-row items-center gap-2 p-2 opacity-80 hover:bg-base-200">
+            <li class="list-row items-center gap-2 rounded-none p-2 opacity-80 hover:bg-base-200">
               <span class="w-2 text-base font-thin opacity-50">{j === 0 ? i + 1 : ''}</span>
               <iconify-icon icon={start ? icons.arrowRouting : end ? icons.record : icons.warning}></iconify-icon>
               <span class="max-sm:w-24">{formatDate(log.at)}</span>

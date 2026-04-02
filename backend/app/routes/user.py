@@ -139,10 +139,18 @@ async def list_histories(request: Request, query: HistoryQuery) -> HTTPResponse:
         if rel_id := his["rel_id"]:
             if rel_type == HistoryType.SEARCH:
                 graph = await FlowGraph.get_or_none(id=rel_id)
-                his["graph"] = await FlowGraphService.dump(graph) if graph else None
+                if graph is not None:
+                    graph = await FlowGraphService.dump(
+                        graph, exclude={"draft", "definition", "logs"}
+                    )
+                his["graph"] = graph
             elif rel_type == HistoryType.VIDEO:
                 media = await MediaItem.get_or_none(id=rel_id)
-                his["media"] = await MediaItemService.dump(media) if media else None
+                if media is not None:
+                    media = await MediaItemService.dump(
+                        media, exclude={"lib", "children"}
+                    )
+                his["media"] = media
     return json(result)
 
 

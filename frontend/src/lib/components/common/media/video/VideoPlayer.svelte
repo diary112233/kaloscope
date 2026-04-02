@@ -27,6 +27,7 @@
     width: string | number;
     height: string | number;
     autoplay: boolean;
+    startTime: number;
     /** The type of the video source, e.g., 'mp4', 'flv', 'hls', etc. */
     videoType: string;
     /** The danmakus (video comments) to be displayed on the video. */
@@ -47,6 +48,22 @@
     uploader: string;
     uploadedAt: string;
   }>;
+
+  /**
+   * Format the media title with season and episode if available.
+   *
+   * @param item - The media item.
+   */
+  export function mediaTitle(item: MediaItem | null | undefined): string {
+    if (!item) {
+      return '';
+    }
+    const title = item.title ?? item.name;
+    if (item.season != null && item.episode != null) {
+      return `S${item.season}E${item.episode} - ${title}`;
+    }
+    return title;
+  }
 
   /**
    * Records the user's watch history when the player is destroyed.
@@ -290,6 +307,7 @@
       width: options.width ?? width,
       height: options.height ?? height,
       autoplay: options.autoplay ?? true,
+      startTime: options.startTime ?? undefined,
       videoType: options.videoType,
       // bind the video settings component to the player config
       settings: videoSettings,

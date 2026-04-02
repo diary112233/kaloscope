@@ -565,6 +565,10 @@
     "leave": {
       "title": "Do you want to leave?",
       "content": "Changes you made may not be saved."
+    },
+    "clear": {
+      "title": "Clear All",
+      "content": "Are you sure you want to delete all records?"
     }
   }
 }

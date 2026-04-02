@@ -152,9 +152,10 @@
    * @param toTop - Whether to scroll to the top of the page after the search.
    */
   function search(toTop: boolean = false) {
-    let aborted = false;
     // abort the previous request
+    let aborted = false;
     abortController?.abort();
+
     // check if the keyword is required but not provided, or the user is not logged in
     if ((keyword?.required && !query.keyword) || (loginConfig?.required && loggedUser === null)) {
       resources = [];
@@ -163,6 +164,7 @@
       outerLoading.end();
       return;
     }
+
     // execute the search request
     abortController = new AbortController();
     innerLoading.start();
@@ -193,12 +195,6 @@
           pagination.total = resp.data.total;
           pagination.simpleMode = false;
         }
-        // record search history
-        if (query.keyword) {
-          api.post('user/history/record', {
-            json: { rel_type: 'search', rel_id: indexerId, keyword: query.keyword }
-          });
-        }
       })
       .catch((error) => {
         if (error.name === 'AbortError') {
@@ -217,6 +213,13 @@
           });
         }
       });
+
+    // record search history
+    if (query.keyword && indexerId) {
+      api.post('user/history/record', {
+        json: { rel_type: 'search', rel_id: indexerId, keyword: query.keyword }
+      });
+    }
   }
 
   let _indexerId: string | null = null;

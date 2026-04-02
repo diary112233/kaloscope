@@ -26,6 +26,8 @@
     disabled: boolean;
     /** The class names for the button. */
     class: string;
+    iconClass: string;
+    textClass: string;
     /** The click event handler for the button. */
     onclick: MouseEventHandler<HTMLButtonElement>;
   }>;
@@ -68,6 +70,8 @@
     loading = false,
     disabled = false,
     class: _class,
+    iconClass,
+    textClass,
     onclick
   }: ButtonProps = $props();
 
@@ -101,8 +105,8 @@
     {#if loading}
       <span class="loading loading-spinner" style:width={preset.iconSize}></span>
     {:else}
-      <iconify-icon {icon} width={preset.iconSize}></iconify-icon>
+      <iconify-icon {icon} width={preset.iconSize} class={iconClass}></iconify-icon>
     {/if}
-    <span class="truncate {square ? 'sr-only' : preset.textClass}" title={text}>{text}</span>
+    <span class="truncate {textClass} {square ? 'sr-only' : preset.textClass}" title={text}>{text}</span>
   {/if}
 </button>

@@ -71,11 +71,9 @@ async def delete_libraries(_, body: IDs) -> HTTPResponse:
 @validate(query=MediaQuery)
 async def list_items(_, query: MediaQuery) -> HTTPResponse:
     """List the media items."""
-    queries = [Q(visible=True)]
+    queries = [Q(path=query.path) if query.path else Q(visible=True)]
     if query.lib_id:
         queries.append(Q(lib_id=query.lib_id))
-    if query.path:
-        queries.append(Q(path=query.path))
     if query.keyword:
         queries.append(Q(keyword__icontains=query.keyword))
     page = await MediaItem.page(

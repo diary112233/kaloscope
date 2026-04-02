@@ -1,7 +1,7 @@
 <script lang="ts">
   import { page } from '$app/state';
   import { api } from '$lib/api';
-  import { Backdrop, Container, Image, Rating, VideoPlayer } from '$lib/components';
+  import { Backdrop, Container, Image, Rating, VideoPlayer, mediaTitle } from '$lib/components';
   import { MEDIA_STREAM_PREFIX } from '$lib/constants';
   import { createLoading } from '$lib/helpers';
   import { _ } from '$lib/i18n';
@@ -40,29 +40,17 @@
         for (const part of media.children) {
           chapters.push({
             url: `${MEDIA_STREAM_PREFIX}${encodeURIComponent(part.path)}`,
-            title: formatTitle(part)
+            title: mediaTitle(part)
           });
         }
       }
       player?.mount({
         url: `${MEDIA_STREAM_PREFIX}${encodeURIComponent(target.path)}`,
         back: () => (playing = false),
-        title: formatTitle(target),
+        title: mediaTitle(target),
         chapters: chapters
       });
     });
-  }
-
-  /**
-   * Format the media title with season and episode if available.
-   *
-   * @param item - The media item.
-   */
-  function formatTitle(item: MediaItem) {
-    if (item.season != null && item.episode != null) {
-      return `S${item.season}E${item.episode} - ${item.title ?? item.name}`;
-    }
-    return item.title ?? item.name;
   }
 
   /**
@@ -193,7 +181,7 @@
           <!-- plot -->
           {#if _media && _meta?.plot}
             <div class="mt-2 font-semibold text-surface">
-              {formatTitle(_media)}
+              {mediaTitle(_media)}
             </div>
           {/if}
           <p class="mt-1 text-sm leading-relaxed opacity-80">{_meta?.plot ?? meta?.plot}</p>
@@ -263,7 +251,7 @@
               >
                 <Image proxy="store" src={part.poster} text={part.name} width="5rem" ratio="16/9" />
                 <div class="flex min-w-0 flex-1 flex-col gap-0.5">
-                  <span class="text-sm font-medium {active ? 'text-primary' : ''}">{formatTitle(part)}</span>
+                  <span class="truncate text-sm font-medium {active ? 'text-primary' : ''}">{mediaTitle(part)}</span>
                   <span class="text-xs opacity-50">{part.aired}</span>
                 </div>
                 <!-- svelte-ignore a11y_click_events_have_key_events -->
