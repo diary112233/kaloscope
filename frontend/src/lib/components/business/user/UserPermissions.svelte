@@ -94,8 +94,8 @@
 )}
   {@const checked = items.length > 0 && items.length === ids.length}
   {@const indeterminate = ids.length > 0 && ids.length < items.length}
-  <div class="mt-4">
-    <label class="flex cursor-pointer items-center gap-2 py-1">
+  <div class="my-2">
+    <label class="label w-fit {items.length > 0 ? 'cursor-pointer' : 'cursor-not-allowed'}">
       <input
         type="checkbox"
         class="checkbox checkbox-sm"
@@ -104,18 +104,18 @@
         disabled={items.length === 0}
         onchange={(event) => onToggleAll(event.currentTarget.checked)}
       />
-      <span class="font-semibold">{title}</span>
+      <span class="font-semibold text-base-content">{title}</span>
     </label>
-    <div class="ml-6 flex flex-col">
+    <div class="mt-2 ml-6 flex flex-col gap-2.5">
       {#each items as item (item.id)}
-        <label class="flex cursor-pointer items-center gap-2 py-1">
+        <label class="label max-w-fit">
           <input
             type="checkbox"
             class="checkbox checkbox-sm"
             checked={ids.includes(item.id)}
             onchange={() => onToggleOne(item.id)}
           />
-          <span class="text-sm opacity-80">{item.name}</span>
+          <span class="truncate text-sm text-base-content/80">{item.name}</span>
         </label>
       {/each}
     </div>

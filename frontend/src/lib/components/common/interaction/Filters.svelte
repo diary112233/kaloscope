@@ -65,7 +65,7 @@
 {#snippet text(key: string, filter: Filter)}
   <input
     type="search"
-    class="input w-full"
+    class="input input-sm w-full"
     value={values[key]}
     oninput={(event) => {
       values[key] = event.currentTarget.value;
@@ -84,7 +84,7 @@
         <label class="label">
           <input
             type="radio"
-            class="radio"
+            class="radio radio-sm"
             {name}
             checked={values[key] === name}
             onclick={() => {
@@ -95,7 +95,7 @@
               }
             }}
           />
-          {value}
+          <span class="text-sm text-base-content/80">{value}</span>
         </label>
       {/each}
     </div>
@@ -110,7 +110,7 @@
         <label class="label">
           <input
             type="checkbox"
-            class="checkbox"
+            class="checkbox checkbox-sm"
             {name}
             checked={values[key]?.includes(name)}
             onclick={() => {
@@ -125,7 +125,7 @@
               }
             }}
           />
-          {value}
+          <span class="text-sm text-base-content/80">{value}</span>
         </label>
       {/each}
     </div>
@@ -141,7 +141,7 @@
     id={callyId}
     popovertarget={callyPopoverId}
     type="button"
-    class="input w-full"
+    class="input input-sm w-full"
     style="anchor-name:--{callyId}"
     onclick={() => {
       setTimeout(() => {

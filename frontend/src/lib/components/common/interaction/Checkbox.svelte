@@ -85,7 +85,7 @@
 
 <input
   type="checkbox"
-  class="checkbox border checkbox-sm {key ? subClass : ''}"
+  class="checkbox checkbox-sm {key ? subClass : ''}"
   name={key}
   bind:checked
   {disabled}
@@ -106,16 +106,3 @@
     onchange?.(event);
   }}
 />
-
-<style>
-  .checkbox {
-    color: var(--color-neutral-content);
-    --input-color: color-mix(in oklab, var(--color-neutral) 80%, transparent);
-    &:indeterminate {
-      background-color: var(--input-color);
-    }
-    &:disabled {
-      background-color: var(--color-base-300);
-    }
-  }
-</style>

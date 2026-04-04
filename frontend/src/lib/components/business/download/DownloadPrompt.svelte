@@ -260,7 +260,7 @@
       ></textarea>
       <input type="file" accept=".torrent" class="file-input w-full file-input-sm" name="torrent" bind:files />
       <label class="mt-2 fieldset-label w-fit">
-        <input type="checkbox" class="checkbox" checked={true} name="start" />
+        <input type="checkbox" class="checkbox checkbox-sm" checked={true} name="start" />
         <span class="text-base text-base-content opacity-90">{$_('download.start')}</span>
       </label>
       <Label class="mt-6">{$_('download.transfer.title')}</Label>

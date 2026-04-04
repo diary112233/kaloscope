@@ -144,7 +144,7 @@
     }
   }
 
-  /* base menu active color */
+  /* base menu color */
   .menu {
     :where(li) {
       & > *:not(ul, .menu-title, details, .btn):active,
@@ -152,6 +152,23 @@
       & > details > summary:active {
         @apply bg-emphasis!;
       }
+    }
+  }
+
+  /* base radio color */
+  .radio {
+    &:checked {
+      --input-color: color-mix(in oklab, var(--color-neutral) 80%, transparent);
+    }
+  }
+
+  /* base checkbox color */
+  .checkbox {
+    @apply border-border!;
+    color: var(--color-neutral-content) !important;
+    --input-color: color-mix(in oklab, var(--color-neutral) 80%, transparent);
+    &:disabled {
+      background-color: color-mix(in oklab, var(--color-inactive) 50%, transparent);
     }
   }
 
