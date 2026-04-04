@@ -59,14 +59,16 @@
       if (uri) {
         link = uri;
         files = null;
+        modal.show();
+        return;
       }
-      if (!link && navigator.clipboard) {
-        // if no URI is provided and clipboard is supported, try to read a link from the clipboard
+      // if no URI is provided, try to read a link from the clipboard
+      if (navigator.clipboard) {
         navigator.clipboard
           .readText()
           .then((text) => {
             text = text.trim();
-            if (text) {
+            if (text && link !== text) {
               link = text;
               files = null;
             }
