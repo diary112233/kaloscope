@@ -2,6 +2,7 @@
   import { goto } from '$app/navigation';
   import { api } from '$lib/api';
   import type { Favorite, IndexerConfig, Page, Resource, Resp, ViewMode } from '$lib/types';
+  import { aspectRatio } from '$lib/utils';
 
   type SearchHitProps = {
     indexerId?: string | number;
@@ -18,10 +19,8 @@
    * @param ratio - A CSS aspect-ratio string, e.g. "16/9", "9/16", "0.75", "auto".
    */
   function coverHeight(ratio: string): string {
-    const [w, h = '1'] = ratio.split('/');
-    const r = Number(w) / Number(h);
-    if (Number.isNaN(r) || r >= 1) return '3.5rem';
-    return `${(3.5 / r).toFixed(4)}rem`;
+    const r = aspectRatio(ratio);
+    return !r || r >= 1 ? '3.5rem' : `${(3.5 / r).toFixed(4)}rem`;
   }
 
   /**

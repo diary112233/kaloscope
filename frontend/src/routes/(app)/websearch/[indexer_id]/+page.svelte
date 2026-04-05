@@ -26,6 +26,7 @@
   import { MediaQuery } from 'svelte/reactivity';
   import { queryParameters, ssp } from 'sveltekit-search-params';
   import type { PageData } from './$types';
+  import { aspectRatio } from '$lib/utils';
 
   // the indexer configurations
   let { data }: { data: PageData } = $props();
@@ -265,7 +266,7 @@
     loading={$innerLoading}
     hideOnScroll={standaloneMode.current}
     filtersClass="sm:justify-center"
-    gridClass="grid-cols-2 grid-cols-sparse"
+    gridClass="grid-cols-2 {aspectRatio(display?.cover_ratio) > 1 ? 'grid-cols-sparse' : 'grid-cols-compact'}"
     itemClass="rounded-sm bg-base-100 shadow-sm lg:hover:shadow-lg lg:mb-4"
   >
     {#snippet filters()}

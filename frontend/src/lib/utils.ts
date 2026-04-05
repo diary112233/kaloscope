@@ -269,3 +269,23 @@ export function toDatetimeLocal(value: string | null | undefined): string {
     `T${pad(date.getHours())}:${pad(date.getMinutes())}`
   );
 }
+
+/**
+ * Calculate the aspect ratio from a string.
+ *
+ * @param ratio - A CSS aspect-ratio string, e.g. "16/9", "9/16", "0.75", "auto".
+ */
+export function aspectRatio(ratio: number | string | null | undefined): number {
+  if (typeof ratio === 'number') {
+    return Math.max(0, ratio);
+  }
+  if (!ratio || ratio.trim().toLowerCase() === 'auto') {
+    return 0;
+  }
+  try {
+    const [w, h = '1'] = ratio.split('/');
+    return Math.max(0, Number(w) / Number(h));
+  } catch {
+    return 0;
+  }
+}

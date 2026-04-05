@@ -8,10 +8,10 @@
     DataView,
     HCell,
     Image,
+    mediaTitle,
     SearchHit,
     VideoPlayer,
-    ViewSwitcher,
-    mediaTitle
+    ViewSwitcher
   } from '$lib/components';
   import { MEDIA_STREAM_PREFIX } from '$lib/constants';
   import { _, dateTime } from '$lib/i18n';
@@ -27,6 +27,7 @@
     ViewMode,
     ViewModes
   } from '$lib/types';
+  import { aspectRatio } from '$lib/utils';
   import { onMount, tick, untrack } from 'svelte';
   import { fade } from 'svelte/transition';
   import type { PageData } from './$types';
@@ -95,20 +96,6 @@
   // the player instance and playing state
   let player: VideoPlayer | null = $state(null);
   let playing = $state(false);
-
-  /**
-   * Calculate the aspect ratio from a string.
-   *
-   * @param ratio - A CSS aspect-ratio string, e.g. "16/9", "9/16", "0.75", "auto".
-   */
-  function ratio(ratio: string): number {
-    try {
-      const [w, h = '1'] = ratio.split('/');
-      return Number(w) / Number(h);
-    } catch {
-      return 0;
-    }
-  }
 
   /**
    * Load board resources for a given flow graph.
@@ -416,7 +403,7 @@
                 loading={board.loading}
                 class="px-0!"
                 tableClass="[&_thead_tr]:border-0"
-                gridClass="grid-cols-2 {ratio(board.coverRatio) > 1 ? 'grid-cols-sparse' : 'grid-cols-compact'}"
+                gridClass="grid-cols-2 {aspectRatio(board.coverRatio) > 1 ? 'grid-cols-sparse' : 'grid-cols-compact'}"
                 itemClass="rounded-sm bg-base-100 shadow-sm lg:hover:shadow-lg lg:mb-4"
               >
                 <!-- table view -->
