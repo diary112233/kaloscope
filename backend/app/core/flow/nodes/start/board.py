@@ -6,9 +6,9 @@ from app.models.flow import GraphCategory
 BOARD_CONFIG = """
 display:
   view_modes:
-    - table
     - grid
-  cover_ratio: 16/9
+    - table
+  cover_ratio: 2/3
 
 calendar:
   week: false

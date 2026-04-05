@@ -194,6 +194,7 @@
   {@const pointerClass = detailsConfig ? 'cursor-pointer transition-colors hover:text-primary' : ''}
   {@const transClass = 'transition-opacity duration-300'}
   {@const btnClass = 'hover:bg-base-300 hover:text-base-content border-0 bg-black/60 text-white'}
+  {@const ratio = coverRatio ?? '16/9'}
   <!-- svelte-ignore a11y_click_events_have_key_events -->
   <div tabindex="0" role="button" class="group relative {pointerClass}" onclick={() => gotoDetails(rsrc)}>
     <Rating score={rsrc.rating} class="absolute top-1 left-1 z-1" />
@@ -229,12 +230,7 @@
         />
       {/if}
     </div>
-    <Image
-      src={rsrc.cover}
-      width="100%"
-      ratio={coverRatio ?? '16/9'}
-      class="rounded-b-none group-hover:opacity-80 {transClass}"
-    />
+    <Image src={rsrc.cover} width="100%" {ratio} class="rounded-b-none group-hover:opacity-80 {transClass}" />
     {#if rsrc.category || rsrc.misc}
       <div class="absolute bottom-0 h-8 w-full bg-linear-to-t from-black/50 to-transparent">
         <div class="flex h-full items-end justify-between gap-4 px-2 pb-1 text-xs text-white">

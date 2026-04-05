@@ -123,7 +123,7 @@
 
         // create a new board object
         const modes = display?.view_modes ?? [];
-        const viewModes = (Array.isArray(modes) && modes.length > 0 ? modes : ['table']) as ViewModes;
+        const viewModes = (Array.isArray(modes) && modes.length > 0 ? modes : ['grid']) as ViewModes;
         board = {
           id: id,
           name: name,
@@ -131,7 +131,7 @@
           loading: null,
           activeId: 0,
           resources: [],
-          coverRatio: display?.cover_ratio ?? '16/9',
+          coverRatio: display?.cover_ratio ?? '2/3',
           viewModes: viewModes,
           viewMode: viewModes[0],
           config: config
