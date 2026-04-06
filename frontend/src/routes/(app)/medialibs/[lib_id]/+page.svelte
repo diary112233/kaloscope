@@ -173,28 +173,46 @@
 
     <!-- grid view -->
     {#snippet item(item)}
+      {@const pointerClass = 'cursor-pointer transition-colors hover:text-primary'}
       {@const transClass = 'transition-all duration-300'}
-      {@const btnClass = 'hover:bg-base-300 hover:text-base-content border-0 bg-black/60 text-white'}
+      {@const btnClass = 'rounded-full border-0 text-white hover:bg-base-300 hover:text-base-content'}
+      <!-- svelte-ignore a11y_click_events_have_key_events -->
       <div
         tabindex="0"
         role="button"
-        class="group relative"
+        class="group relative cursor-pointer"
         onmouseenter={() => (backdrop = item.backdrop ?? item.poster ?? backdrop)}
+        onclick={() => goto(`${page.url.pathname}/${item.id}`)}
       >
         <Rating score={item.rating} class="absolute top-1 left-1 z-1" />
-        <div class="absolute top-0 right-0 z-1 flex gap-2 p-1 opacity-0 group-hover:opacity-100 {transClass}">
-          <Button icon={icons.play} class={btnClass} onclick={() => goto(`${page.url.pathname}/${item.id}`)} />
+        <div class="absolute right-0 bottom-0 z-1 p-1 opacity-0 group-hover:opacity-100 {transClass}">
+          <Button
+            size="md"
+            icon={icons.moreVertical}
+            class={btnClass}
+            onclick={(event) => {
+              event.stopPropagation();
+              // TODO: show more actions
+            }}
+          />
         </div>
         <Image
           proxy="store"
           src={item.poster}
           width="100%"
           ratio="2/3"
-          class="shadow-sm hover:opacity-80 hover:shadow-lg {transClass}"
+          class="shadow-sm group-hover:brightness-60 hover:shadow-lg {transClass}"
         />
       </div>
       <div class="flex-col-center gap-1 p-1">
-        <div class="line-clamp-1 text-[clamp(0.875rem,2vw,1rem)] font-semibold">
+        <!-- svelte-ignore a11y_click_events_have_key_events -->
+        <div
+          tabindex="0"
+          role="button"
+          class="line-clamp-1 text-[clamp(0.875rem,2vw,1rem)] font-semibold {pointerClass}"
+          title={item.title ?? item.name}
+          onclick={() => goto(`${page.url.pathname}/${item.id}`)}
+        >
           {item.title ?? item.name}
         </div>
         <div class="text-sm opacity-50">{item.year}</div>
