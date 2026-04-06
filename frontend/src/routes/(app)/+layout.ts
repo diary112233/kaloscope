@@ -1,8 +1,9 @@
+import { getCurrentRole } from '$lib/api';
 import { icons } from '$lib/icons';
 import type { Nav } from '$lib/types';
 import type { LayoutLoad } from './$types';
 
-export const load: LayoutLoad = () => {
+export const load: LayoutLoad = async () => {
   const navs: Nav[] = [
     {
       title: 'nav.dashboard.title',
@@ -28,14 +29,6 @@ export const load: LayoutLoad = () => {
       drawerStyle: 'menu'
     },
     {
-      title: 'nav.downloads.title',
-      path: '/downloads',
-      icon: icons.box3dDownload,
-      iconFilled: icons.box3dDownloadFill,
-      mobile: true,
-      drawerStyle: 'menu'
-    },
-    {
       title: 'nav.settings.title',
       path: '/settings',
       icon: icons.settings,
@@ -44,5 +37,17 @@ export const load: LayoutLoad = () => {
       drawerStyle: 'menu'
     }
   ];
+
+  if ((await getCurrentRole()) === 'admin') {
+    navs.splice(navs.length - 1, 0, {
+      title: 'nav.downloads.title',
+      path: '/downloads',
+      icon: icons.box3dDownload,
+      iconFilled: icons.box3dDownloadFill,
+      mobile: true,
+      drawerStyle: 'menu'
+    });
+  }
+
   return { navs };
 };

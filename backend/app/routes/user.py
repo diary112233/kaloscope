@@ -11,7 +11,7 @@ from app.models.user import (
     HistoryEntry,
     HistoryQuery,
     HistoryType,
-    PermsUpdate,
+    Permissions,
     User,
     UserAvatar,
     UserCreate,
@@ -51,7 +51,7 @@ async def list_users(_, query: UserQuery) -> HTTPResponse:
         queries.append(Q(username__icontains=query.username))
     page = await User.page(*queries, **query.page_params)
     result = await UserService.dump_page(page)
-    # get the last activity of the online users
+    # attach the last activity for each online user
     sessions = SessionHolder.get_sessions()
     activities = {
         u.id: u.last_activity
@@ -136,7 +136,7 @@ async def list_histories(request: Request, query: HistoryQuery) -> HTTPResponse:
     # clean expired history records
     rel_type = query.rel_type
     await UserHistoryService.clean_expired(user.id, rel_type)
-    # list histories with pagination
+    # list the histories with pagination
     page = await UserHistory.page(
         user_id=user.id, rel_type=rel_type, **query.page_params
     )
@@ -187,8 +187,8 @@ async def get_permissions(_, user_id: int) -> HTTPResponse:
 
 
 @user.post("/<user_id:int>/permissions")
-@validate(json=PermsUpdate)
-async def update_permissions(_, user_id: int, body: PermsUpdate) -> HTTPResponse:
+@validate(json=Permissions)
+async def update_permissions(_, user_id: int, body: Permissions) -> HTTPResponse:
     """Update the user's permissions."""
     await UserPermissionService.update_permissions(user_id, body)
     return empty()

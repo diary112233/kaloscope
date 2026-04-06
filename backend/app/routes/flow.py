@@ -8,6 +8,7 @@ from tortoise.expressions import Q
 
 from app.core.constants import APP_NAME
 from app.core.cookiejar import SQLiteCookieJar
+from app.core.decorators import authorize
 from app.core.exceptions import ErrorCode, KaloscopeException
 from app.core.flow.context import AUTH_KEY
 from app.core.flow.engine import FlowEngine
@@ -112,8 +113,9 @@ async def gen_graph_name(_, query: GraphQuery) -> HTTPResponse:
 
 
 @flow.get("/graph/list")
+@authorize()
 @validate(query=GraphQuery)
-async def list_graphs(_, query: GraphQuery) -> HTTPResponse:
+async def list_graphs(request: Request, query: GraphQuery) -> HTTPResponse:
     """List the flow graphs."""
     queries = []
     if query.name:
@@ -124,11 +126,16 @@ async def list_graphs(_, query: GraphQuery) -> HTTPResponse:
         queries.append(Q(state__in=query.states))
     if query.category:
         queries.append(Q(category=query.category))
+    # filter the graphs by the user's permissions
+    user: UserInfo = request.ctx.user
+    if user.perms is not None:
+        queries.append(Q(id__in=user.perms.indexer_ids))
+    # list the graphs with pagination
     page = await FlowGraph.page(*queries, **query.page_params)
     result = await FlowGraphService.dump_page(
         page, exclude={"draft", "definition", "logs"}
     )
-    # get the newest template for each graph if the template exists
+    # attach the newest template for each graph
     for graph in result["items"]:
         if tmpl := graph["tmpl"]:
             graph["newest_tmpl"] = await FlowTemplateService.get_newest(tmpl)
@@ -354,7 +361,7 @@ async def list_jobs(_, query: JobQuery) -> HTTPResponse:
         queries.append(Q(trigger=query.trigger))
     page = await FlowJob.page(*queries, **query.page_params)
     result = await FlowJobService.dump_page(page)
-    # attach the graph name to the result
+    # attach the graph name for each job
     graph_ids = {job.graph_id for job in page.items}
     graphs = {g.id: g.name for g in await FlowGraph.filter(id__in=graph_ids)}
     for job in result["items"]:

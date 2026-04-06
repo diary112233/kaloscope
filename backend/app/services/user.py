@@ -17,7 +17,7 @@ from app.models.flow import IndexerResource
 from app.models.user import (
     HistoryEntry,
     HistoryType,
-    PermsUpdate,
+    Permissions,
     PermType,
     User,
     UserFavorite,
@@ -332,7 +332,7 @@ class UserPermissionService(BaseService[UserPermission], model=UserPermission):
 
     @classmethod
     @atomic()
-    async def update_permissions(cls, user_id: int, obj: PermsUpdate):
+    async def update_permissions(cls, user_id: int, obj: Permissions):
         """Update the user's permissions by replacing existing ones.
 
         Args:

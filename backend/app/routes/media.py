@@ -8,6 +8,7 @@ from sanic.response import ResponseStream, file_stream
 from sanic_ext import validate
 from tortoise.expressions import Q, RawSQL
 
+from app.core.decorators import authorize
 from app.core.media.shelver import parse_nfo
 from app.models.base import IDs, Range
 from app.models.flow import GraphCategory
@@ -18,6 +19,7 @@ from app.models.media import (
     MediaQuery,
     MediaStream,
 )
+from app.models.user import UserInfo
 from app.services.flow import FlowTriggerService
 from app.services.media import MediaItemService, MediaLibService
 
@@ -26,11 +28,18 @@ media = Blueprint("media", url_prefix="/media")
 
 
 @media.get("/lib/list")
-async def list_libraries(_) -> HTTPResponse:
+@authorize()
+async def list_libraries(request: Request) -> HTTPResponse:
     """List the media libraries."""
-    media_libs = await MediaLibService.dump_list(await MediaLib.all())
+    queries = []
+    # filter the libraries by the user's permissions
+    user: UserInfo = request.ctx.user
+    if user.perms is not None:
+        queries.append(Q(id__in=user.perms.media_lib_ids))
+    # list the libraries without pagination
+    media_libs = await MediaLibService.dump_list(await MediaLib.filter(*queries))
+    # attach the list of flow triggers
     for media_lib in media_libs:
-        # attach the list of flow triggers
         media_lib["triggers"] = await FlowTriggerService.get_triggers(
             GraphCategory.INGEST, media_lib["id"]
         )

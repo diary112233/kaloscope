@@ -1,7 +1,8 @@
 import { goto } from '$app/navigation';
 import { alert } from '$lib/components';
-import { token } from '$lib/stores';
-import type { BaseResp } from '$lib/types';
+import { UserRole } from '$lib/enums';
+import { token, user } from '$lib/stores';
+import type { BaseResp, Resp, User } from '$lib/types';
 import ky from 'ky';
 import { get } from 'svelte/store';
 
@@ -80,4 +81,22 @@ export function proxyImage(url: string | null, policy: boolean | 'store' = false
   }
   // return the original URL
   return url;
+}
+
+/**
+ * Get the current user's role, either from the store or by making an API call.
+ *
+ * @returns The current user's role.
+ */
+export async function getCurrentRole(): Promise<keyof typeof UserRole | null> {
+  const role = get(user)?.role;
+  if (role) {
+    return role;
+  }
+  try {
+    const resp = await api.get('auth/current').json<Resp<User>>();
+    return resp.data.role ?? null;
+  } catch {
+    return null;
+  }
 }

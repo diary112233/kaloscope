@@ -120,6 +120,11 @@ class UserPermission(TortoiseModel):
 
 
 # -------------------- Pydantic Models --------------------
+class Permissions(BaseModel):
+    indexer_ids: list[PositiveInt] = Field(max_length=999, default_factory=list)
+    media_lib_ids: list[PositiveInt] = Field(max_length=999, default_factory=list)
+
+
 class UserInfo(BaseModel):
     id: PositiveInt
     login_id: str
@@ -132,6 +137,7 @@ class UserInfo(BaseModel):
     login_at: datetime
     expire_at: datetime
     last_activity: datetime
+    perms: Permissions | None = None
 
 
 class UserLogin(BaseModel):
@@ -164,18 +170,13 @@ class FavoriteQuery(Pageable):
     rsrc_ids: list[str] | None = Field(min_length=1, max_length=999, default=None)
 
 
+class HistoryQuery(Pageable):
+    rel_type: HistoryType
+
+
 class HistoryEntry(BaseModel):
     rel_type: HistoryType
     rel_id: NonNegativeInt
     keyword: str | None = Field(max_length=4096, default=None)
     position: NonNegativeInt | None = None
     percentage: int | None = Field(ge=0, le=100, default=None)
-
-
-class HistoryQuery(Pageable):
-    rel_type: HistoryType
-
-
-class PermsUpdate(BaseModel):
-    indexer_ids: list[PositiveInt] = Field(max_length=999, default_factory=list)
-    media_lib_ids: list[PositiveInt] = Field(max_length=999, default_factory=list)

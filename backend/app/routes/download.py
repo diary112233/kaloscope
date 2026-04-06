@@ -95,7 +95,7 @@ async def list_plans(_, query: DownloadPlanQuery) -> HTTPResponse:
         queries.append(Q(keyword__icontains=query.keyword))
     page = await DownloadPlan.page(*queries, **query.page_params)
     result = await DownloadPlanService.dump_page(page)
-    # attach the graph name and running status to the result
+    # attach the graph name and running status for each plan
     graph_ids = {job.graph_id for job in page.items}
     graphs = {g.id: g for g in await FlowGraph.filter(id__in=graph_ids)}
     for plan in result["items"]:
