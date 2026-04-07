@@ -8,6 +8,7 @@ from tortoise.expressions import Q
 
 from app.core.config import KaloscopeConfig
 from app.core.constants import ENCODING
+from app.core.decorators import authorize
 from app.core.dl.adapter import load_config
 from app.core.dl.syncer import DLSyncer
 from app.models.base import IDs
@@ -24,6 +25,7 @@ from app.models.download import (
     DownloadTask,
 )
 from app.models.flow import FlowGraph, GraphState
+from app.models.user import UserRole
 from app.services.download import (
     DownloaderService,
     DownloadPlanService,
@@ -69,6 +71,7 @@ async def get_downloader_presets(_) -> HTTPResponse:
 
 
 @download.post("/manager/upsert")
+@authorize(role=UserRole.ADMIN)
 @validate(json=DownloaderUpsert)
 async def upsert_downloader(_, body: DownloaderUpsert) -> HTTPResponse:
     """Create or update a downloader."""
@@ -77,6 +80,7 @@ async def upsert_downloader(_, body: DownloaderUpsert) -> HTTPResponse:
 
 
 @download.post("/manager/delete")
+@authorize(role=UserRole.ADMIN)
 @validate(json=IDs)
 async def delete_downloaders(_, body: IDs) -> HTTPResponse:
     """Delete the downloaders."""
@@ -107,6 +111,7 @@ async def list_plans(_, query: DownloadPlanQuery) -> HTTPResponse:
 
 
 @download.post("/plan/upsert")
+@authorize(role=UserRole.ADMIN)
 @validate(json=DownloadPlanUpsert)
 async def upsert_plan(_, body: DownloadPlanUpsert) -> HTTPResponse:
     """Create or update a download plan."""
@@ -115,6 +120,7 @@ async def upsert_plan(_, body: DownloadPlanUpsert) -> HTTPResponse:
 
 
 @download.post("/plan/delete")
+@authorize(role=UserRole.ADMIN)
 @validate(json=IDs)
 async def delete_plans(_, body: IDs) -> HTTPResponse:
     """Delete the download plans."""
@@ -158,6 +164,7 @@ async def valid_magnet_link(request: Request) -> HTTPResponse:
 
 
 @download.post("/add")
+@authorize(role=UserRole.ADMIN)
 @validate(form=DownloadAdd)
 async def add_task(_, body: DownloadAdd) -> HTTPResponse:
     """Add a download task."""
@@ -194,6 +201,7 @@ async def start_tasks(_, body: IDs) -> HTTPResponse:
 
 
 @download.post("/delete")
+@authorize(role=UserRole.ADMIN)
 @validate(json=DownloadDel)
 async def delete_tasks(_, body: DownloadDel) -> HTTPResponse:
     """Delete the download tasks."""

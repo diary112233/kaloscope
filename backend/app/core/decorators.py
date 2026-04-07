@@ -3,7 +3,7 @@ from inspect import isawaitable
 
 from sanic import Request
 
-from app.core.exceptions import UnauthorizedException
+from app.core.exceptions import ForbiddenException, UnauthorizedException
 from app.models.user import Permissions, PermType, UserInfo, UserPermission, UserRole
 
 
@@ -24,7 +24,7 @@ def authorize(role: UserRole | None = None):
             if role is not None:
                 # valid user role if role is specified
                 if user.role != role:
-                    raise UnauthorizedException
+                    raise ForbiddenException
             elif user.role != UserRole.ADMIN:
                 # attach permissions to the user info if no specific role is required
                 indexer_ids = []

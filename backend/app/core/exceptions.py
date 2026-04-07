@@ -12,24 +12,28 @@ ROOT_PATH = Path(__file__).resolve().parents[3]
 class ErrorCode(StrEnum):
     """The error codes for Kaloscope application."""
 
+    # HTTP error codes
     INTERNAL_SERVER_ERROR = auto()
-    BAD_REQUEST = auto()
     UNAUTHORIZED = auto()
+    BAD_REQUEST = auto()
+    FORBIDDEN = auto()
     NOT_FOUND = auto()
+
+    # custom error codes
+    LOGIN_FAILED = auto()
+    LOGIN_EXPIRED = auto()
     USER_NOT_FOUND = auto()
     FLOW_NOT_FOUND = auto()
     FLOW_NOT_PUBLISHED = auto()
-    LOGIN_FAILED = auto()
-    LOGIN_EXPIRED = auto()
+    FLOW_ALREADY_RUNNING = auto()
     NAME_ALREADY_EXISTS = auto()
     USERNAME_ALREADY_EXISTS = auto()
-    DUPLICATE_DIRECTORY = auto()
     INCORRECT_PASSWORD = auto()
+    DUPLICATE_DIRECTORY = auto()
     INVALID_YAML_CONFIG = auto()
-    GET_INFO_HASH_FAILED = auto()
     INFO_HASH_COLLISION = auto()
+    GET_INFO_HASH_FAILED = auto()
     HTTP_REQUEST_FAILED = auto()
-    FLOW_ALREADY_RUNNING = auto()
     IMPORT_GRAPHS_FAILED = auto()
 
 
@@ -55,11 +59,20 @@ class UnauthorizedException(KaloscopeException):
     quiet = True
 
 
+class ForbiddenException(KaloscopeException):
+    """The exception class for forbidden access."""
+
+    status_code = 403
+    message = ErrorCode.FORBIDDEN
+    quiet = True
+
+
 class NotFoundException(KaloscopeException):
     """The exception class for not found resources."""
 
     status_code = 404
     message = ErrorCode.NOT_FOUND
+    quiet = True
 
 
 async def error_handler(request: Request, exception: Exception):
