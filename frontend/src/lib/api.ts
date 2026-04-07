@@ -3,18 +3,18 @@ import { alert } from '$lib/components';
 import { UserRole } from '$lib/enums';
 import { token, user } from '$lib/stores';
 import type { BaseResp, Resp, User } from '$lib/types';
-import ky from 'ky';
+import ky, { isHTTPError } from 'ky';
 import { get } from 'svelte/store';
 
 /**
  * The API client for the application.
  */
 export const api = ky.create({
-  prefixUrl: '/_api',
+  prefix: '/_api',
   timeout: 60000,
   hooks: {
     beforeRequest: [
-      (request) => {
+      ({ request }) => {
         const _token = get(token);
         if (_token) {
           // authorization tokens in the form `Token <token>` or `Bearer <token>` are supported
@@ -24,7 +24,7 @@ export const api = ky.create({
       }
     ],
     afterResponse: [
-      async (request, options, response) => {
+      async ({ response }) => {
         if (response.ok && response.headers.get('Content-Type') === 'application/json') {
           const resp = await response.json<BaseResp>();
           if (resp.message) {
@@ -34,28 +34,30 @@ export const api = ky.create({
       }
     ],
     beforeError: [
-      async (error) => {
-        const resp = await error.response.json<BaseResp>();
+      async ({ error }) => {
+        if (isHTTPError(error)) {
+          const resp = error.data as BaseResp;
 
-        // goto login page if unauthorized
-        if (resp.status === 401) {
-          token.set(null);
-          goto('/login');
+          // goto login page if unauthorized
+          if (resp.status === 401) {
+            token.set(null);
+            goto('/login');
+          }
+
+          // alert error message
+          error.message = resp.message;
+          if (resp.message || resp.status === 500) {
+            alert({
+              level: 'error',
+              message: resp.message || 'internal_server_error',
+              unique: resp.status === 401
+            });
+            return error;
+          }
+
+          // log other errors
+          console.error(error);
         }
-
-        // alert error message
-        error.message = resp.message;
-        if (resp.message || resp.status === 500) {
-          alert({
-            level: 'error',
-            message: resp.message || 'internal_server_error',
-            unique: resp.status === 401
-          });
-          return error;
-        }
-
-        // log other errors
-        console.error(error);
         return error;
       }
     ]
