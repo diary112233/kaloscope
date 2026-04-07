@@ -186,11 +186,11 @@ async def publish_graph(request: Request, id: int) -> HTTPResponse:
     return json(await FlowGraphService.dump(graph))
 
 
-@flow.post("/graph/<id:int>/update")
+@flow.post("/graph/<id:int>/upgrade")
 @authorize(role=UserRole.ADMIN)
-async def update_graph(request: Request, id: int) -> HTTPResponse:
-    """Update the flow graph."""
-    graph = await FlowGraphService.update_graph(id, request.json)
+async def upgrade_graph(request: Request, id: int) -> HTTPResponse:
+    """Upgrade the flow graph."""
+    graph = await FlowGraphService.upgrade_graph(id, request.json)
     return json(await FlowGraphService.dump(graph))
 
 

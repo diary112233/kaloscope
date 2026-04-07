@@ -99,15 +99,15 @@
   }
 
   /**
-   * Update flow graph by ID.
+   * Upgrade flow graph by ID.
    *
    * @param id - The flow graph ID.
    * @param tmpl - The newest template to reference.
    */
-  function update(id: number, tmpl: FlowTemplate) {
+  function upgrade(id: number, tmpl: FlowTemplate) {
     loading.start();
     api
-      .post(`flow/graph/${id}/update`, { json: tmpl })
+      .post(`flow/graph/${id}/upgrade`, { json: tmpl })
       .then(() => search(pagination.current))
       .catch(() => loading.end());
   }
@@ -246,8 +246,8 @@
               }
               confirm({
                 icon: icons.arrowBigUp,
-                message: $_('flow.tmpl.confirm_update'),
-                onconfirm: () => update(graph.id, graph.newest_tmpl!)
+                message: $_('flow.tmpl.confirm_upgrade'),
+                onconfirm: () => upgrade(graph.id, graph.newest_tmpl!)
               });
             }}
           >

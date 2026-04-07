@@ -319,15 +319,15 @@ class FlowGraphService(BaseService[FlowGraph], model=FlowGraph):
         return graph
 
     @classmethod
-    async def update_graph(cls, id: int, tmpl: dict) -> FlowGraph:
-        """Update the flow graph by referencing a new template.
+    async def upgrade_graph(cls, id: int, tmpl: dict) -> FlowGraph:
+        """Upgrade the flow graph by referencing a new template.
 
         Args:
             id: The flow graph ID.
             tmpl: The serialized template dict to reference.
 
         Returns:
-            The updated flow graph instance.
+            The upgraded flow graph instance.
         """
         graph = await FlowGraph.get(id=id)
         # check if the graph is editable
