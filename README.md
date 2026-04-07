@@ -1,24 +1,25 @@
 <div align="center">
 
-<img src="frontend/static/logo.svg" alt="logo" width="128" height="128">
+<img src="frontend/static/logo.svg" alt="logo" width="128">
 
 # Kaloscope
 
 _以可视化工作流驱动的媒体库管理与自动追番工具_
 
+[![GitHub Stars](https://img.shields.io/github/stars/kaloscope/kaloscope?logo=github&label=Stars&style=flat&color=yellow)](https://github.com/kaloscope/kaloscope/stargazers)
 [![GPLv3 License](https://img.shields.io/badge/License-GPLv3-BD0000)](LICENSE)
 [![xyflow Version](https://img.shields.io/badge/xyflow-v1.5.2-1A192B?logo=xyflow)](https://xyflow.com/)
 [![Svelte Version](https://img.shields.io/badge/Svelte-v5.55.1-FF3E00?logo=svelte)](https://svelte.dev/)
 [![Sanic Version](https://img.shields.io/badge/Sanic-v25.12.0-FF0D68?logo=sanic)](https://sanic.dev/)
 [![Python Version](https://img.shields.io/badge/Python-3.13+-3776AB?logo=python)](https://www.python.org/)
 
-</div>
+<img src="screenshots/01.png" alt="preview" width="800">
 
----
+</div>
 
 ## 项目简介
 
-Kaloscope 是一款基于**可视化工作流引擎**的媒体库管理工具，资源搜索和元数据刮削均通过用户可自定义的工作流实现，而非硬编码逻辑，让你可以对接任意资源站点和元数据来源。
+Kaloscope 是一款基于可视化工作流引擎的本地媒体库管理工具。其资源搜索与元数据刮削等操作均通过用户自定义的工作流来实现，而非硬编码逻辑，可灵活对接任意资源站点与元数据来源。
 
 ## 免责声明
 
