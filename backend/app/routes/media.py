@@ -19,7 +19,7 @@ from app.models.media import (
     MediaQuery,
     MediaStream,
 )
-from app.models.user import UserInfo
+from app.models.user import UserInfo, UserRole
 from app.services.flow import FlowTriggerService
 from app.services.media import MediaItemService, MediaLibService
 
@@ -55,6 +55,7 @@ async def sort_libraries(_, body: IDs) -> HTTPResponse:
 
 
 @media.post("/lib/upsert")
+@authorize(role=UserRole.ADMIN)
 @validate(json=MediaLibUpsert)
 async def upsert_library(_, body: MediaLibUpsert) -> HTTPResponse:
     """Create or update a media library."""
@@ -63,6 +64,7 @@ async def upsert_library(_, body: MediaLibUpsert) -> HTTPResponse:
 
 
 @media.post("/lib/delete")
+@authorize(role=UserRole.ADMIN)
 @validate(json=IDs)
 async def delete_libraries(_, body: IDs) -> HTTPResponse:
     """Delete the media libraries."""

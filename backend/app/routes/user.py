@@ -2,6 +2,7 @@ from sanic import Blueprint, HTTPResponse, Request, empty, json
 from sanic_ext import validate
 from tortoise.expressions import Q
 
+from app.core.decorators import authorize
 from app.core.middleware import SessionHolder
 from app.models.base import IDs, KVPair
 from app.models.flow import FlowGraph
@@ -62,14 +63,6 @@ async def list_users(_, query: UserQuery) -> HTTPResponse:
     return json(result)
 
 
-@user.post("/create")
-@validate(form=UserCreate)
-async def create_user(_, body: UserCreate) -> HTTPResponse:
-    """Create a new user."""
-    await UserService.create(body.username, body.password)
-    return empty()
-
-
 @user.post("/create_admin")
 @validate(form=UserCreate)
 async def create_admin(_, body: UserCreate) -> HTTPResponse:
@@ -80,7 +73,17 @@ async def create_admin(_, body: UserCreate) -> HTTPResponse:
     return empty()
 
 
+@user.post("/create")
+@authorize(role=UserRole.ADMIN)
+@validate(form=UserCreate)
+async def create_user(_, body: UserCreate) -> HTTPResponse:
+    """Create a new user."""
+    await UserService.create(body.username, body.password)
+    return empty()
+
+
 @user.post("/delete")
+@authorize(role=UserRole.ADMIN)
 @validate(json=IDs)
 async def delete_users(_, body: IDs) -> HTTPResponse:
     """Delete the users."""
@@ -187,6 +190,7 @@ async def get_permissions(_, user_id: int) -> HTTPResponse:
 
 
 @user.post("/<user_id:int>/permissions")
+@authorize(role=UserRole.ADMIN)
 @validate(json=Permissions)
 async def update_permissions(_, user_id: int, body: Permissions) -> HTTPResponse:
     """Update the user's permissions."""

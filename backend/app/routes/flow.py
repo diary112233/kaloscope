@@ -31,7 +31,7 @@ from app.models.flow import (
     TmplQuery,
 )
 from app.models.general import GlobalCookie
-from app.models.user import UserInfo
+from app.models.user import UserInfo, UserRole
 from app.services.flow import (
     FlowGraphService,
     FlowJobService,
@@ -53,6 +53,7 @@ async def list_repositories(_) -> HTTPResponse:
 
 
 @flow.post("/repo/add")
+@authorize(role=UserRole.ADMIN)
 @validate(json=RepositoryAdd)
 async def add_repository(_, body: RepositoryAdd) -> HTTPResponse:
     """Add a flow repository."""
@@ -61,6 +62,7 @@ async def add_repository(_, body: RepositoryAdd) -> HTTPResponse:
 
 
 @flow.post("/repo/delete")
+@authorize(role=UserRole.ADMIN)
 @validate(json=IDs)
 async def delete_repositories(_, body: IDs) -> HTTPResponse:
     """Delete the flow repositories."""
@@ -143,6 +145,7 @@ async def list_graphs(request: Request, query: GraphQuery) -> HTTPResponse:
 
 
 @flow.post("/graph/upsert")
+@authorize(role=UserRole.ADMIN)
 @validate(form=GraphBasics)
 async def upsert_graph(_, body: GraphBasics) -> HTTPResponse:
     """Create or update a flow graph."""
@@ -168,6 +171,7 @@ async def get_graph_logs(_, id: int) -> HTTPResponse:
 
 
 @flow.post("/graph/<id:int>/save")
+@authorize(role=UserRole.ADMIN)
 async def save_graph(request: Request, id: int) -> HTTPResponse:
     """Save the flow graph."""
     graph = await FlowGraphService.save_graph(id, request.json)
@@ -175,6 +179,7 @@ async def save_graph(request: Request, id: int) -> HTTPResponse:
 
 
 @flow.post("/graph/<id:int>/publish")
+@authorize(role=UserRole.ADMIN)
 async def publish_graph(request: Request, id: int) -> HTTPResponse:
     """Publish the flow graph."""
     graph = await FlowGraphService.publish_graph(id, request.json)
@@ -182,6 +187,7 @@ async def publish_graph(request: Request, id: int) -> HTTPResponse:
 
 
 @flow.post("/graph/<id:int>/update")
+@authorize(role=UserRole.ADMIN)
 async def update_graph(request: Request, id: int) -> HTTPResponse:
     """Update the flow graph."""
     graph = await FlowGraphService.update_graph(id, request.json)
@@ -189,6 +195,7 @@ async def update_graph(request: Request, id: int) -> HTTPResponse:
 
 
 @flow.post("/graph/<id:int>/retract")
+@authorize(role=UserRole.ADMIN)
 async def retract_graph(_, id: int) -> HTTPResponse:
     """Retract the flow graph."""
     await FlowGraphService.retract_graph(id)
@@ -212,6 +219,7 @@ async def execute_graph(request: Request, id: int) -> HTTPResponse:
 
 
 @flow.post("/graph/delete")
+@authorize(role=UserRole.ADMIN)
 @validate(json=IDs)
 async def delete_graphs(_, body: IDs) -> HTTPResponse:
     """Delete the flow graphs."""
@@ -370,6 +378,7 @@ async def list_jobs(_, query: JobQuery) -> HTTPResponse:
 
 
 @flow.post("/job/upsert")
+@authorize(role=UserRole.ADMIN)
 @validate(json=JobUpsert)
 async def upsert_job(_, body: JobUpsert) -> HTTPResponse:
     """Create or update a flow job."""
@@ -398,6 +407,7 @@ async def resume_job(request: Request, id: int) -> HTTPResponse:
 
 
 @flow.post("/job/<id:int>/delete")
+@authorize(role=UserRole.ADMIN)
 async def delete_job(request: Request, id: int) -> HTTPResponse:
     """Delete the job."""
     engine: FlowEngine = request.app.ctx.flow_engine

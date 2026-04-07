@@ -6,6 +6,23 @@
   import { user } from '$lib/stores';
   import { onMount } from 'svelte';
 
+  // the loading state
+  const loading = createLoading();
+
+  // the homepage options
+  const homepageOptions = $derived.by(() => {
+    const options = [
+      { value: '/dashboard', label: 'nav.dashboard.title' },
+      { value: '/websearch', label: 'nav.websearch.title' },
+      { value: '/medialibs', label: 'nav.medialibs.title' },
+      { value: '/settings', label: 'nav.settings.title' }
+    ];
+    if ($user?.role === 'admin') {
+      options.splice(3, 0, { value: '/downloads', label: 'nav.downloads.title' });
+    }
+    return options;
+  });
+
   /**
    * Update the preference value.
    *
@@ -23,9 +40,6 @@
     }
   }
 
-  // the loading state
-  const loading = createLoading();
-
   onMount(() => {
     // refresh user info when mounted
     loading.start();
@@ -42,13 +56,7 @@
       <fieldset class="fieldset">
         <Label>{$_('preference.navigation.homepage')}</Label>
         <Select
-          options={[
-            { value: '/dashboard', label: 'nav.dashboard.title' },
-            { value: '/websearch', label: 'nav.websearch.title' },
-            { value: '/medialibs', label: 'nav.medialibs.title' },
-            { value: '/downloads', label: 'nav.downloads.title' },
-            { value: '/settings', label: 'nav.settings.title' }
-          ]}
+          options={homepageOptions}
           bind:value={$user.preferences.homepage}
           onchange={() => update('homepage')}
           class="w-full"

@@ -39,7 +39,7 @@ export const load: LayoutLoad = async () => {
   ];
 
   if ((await getCurrentRole()) === 'admin') {
-    navs.splice(navs.length - 1, 0, {
+    navs.splice(3, 0, {
       title: 'nav.downloads.title',
       path: '/downloads',
       icon: icons.box3dDownload,

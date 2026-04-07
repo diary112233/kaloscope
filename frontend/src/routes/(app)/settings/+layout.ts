@@ -1,8 +1,9 @@
+import { getCurrentRole } from '$lib/api';
 import { icons } from '$lib/icons';
 import type { Menu } from '$lib/types';
 import type { LayoutLoad } from './$types';
 
-export const load: LayoutLoad = () => {
+export const load: LayoutLoad = async () => {
   const menus: Menu[] = [
     {
       title: 'nav.settings.personal.title',
@@ -25,51 +26,6 @@ export const load: LayoutLoad = () => {
       ]
     },
     {
-      title: 'nav.settings.system.title',
-      routes: [
-        {
-          title: 'nav.settings.system.users',
-          path: '/settings/system/users',
-          icon: icons.peopleSettings
-        },
-        {
-          title: 'nav.settings.system.variables',
-          path: '/settings/system/variables',
-          icon: icons.bracesVariable
-        },
-        {
-          title: 'nav.settings.system.medialibs',
-          path: '/settings/system/medialibs',
-          icon: icons.videoClipMultiple
-        },
-        {
-          title: 'nav.settings.system.downloaders',
-          path: '/settings/system/downloaders',
-          icon: icons.box3dDownload
-        }
-      ]
-    },
-    {
-      title: 'nav.settings.workflows.title',
-      routes: [
-        {
-          title: 'nav.settings.workflows.templates',
-          path: '/settings/workflows/templates',
-          icon: icons.appStore
-        },
-        {
-          title: 'nav.settings.workflows.graphs',
-          path: '/settings/workflows/graphs',
-          icon: icons.documentFlowchart
-        },
-        {
-          title: 'nav.settings.workflows.schedule',
-          path: '/settings/workflows/schedule',
-          icon: icons.clock
-        }
-      ]
-    },
-    {
       title: 'nav.settings.help.title',
       routes: [
         {
@@ -85,5 +41,58 @@ export const load: LayoutLoad = () => {
       ]
     }
   ];
+
+  if ((await getCurrentRole()) === 'admin') {
+    menus.splice(
+      1,
+      0,
+      {
+        title: 'nav.settings.system.title',
+        routes: [
+          {
+            title: 'nav.settings.system.users',
+            path: '/settings/system/users',
+            icon: icons.peopleSettings
+          },
+          {
+            title: 'nav.settings.system.variables',
+            path: '/settings/system/variables',
+            icon: icons.bracesVariable
+          },
+          {
+            title: 'nav.settings.system.medialibs',
+            path: '/settings/system/medialibs',
+            icon: icons.videoClipMultiple
+          },
+          {
+            title: 'nav.settings.system.downloaders',
+            path: '/settings/system/downloaders',
+            icon: icons.box3dDownload
+          }
+        ]
+      },
+      {
+        title: 'nav.settings.workflows.title',
+        routes: [
+          {
+            title: 'nav.settings.workflows.templates',
+            path: '/settings/workflows/templates',
+            icon: icons.appStore
+          },
+          {
+            title: 'nav.settings.workflows.graphs',
+            path: '/settings/workflows/graphs',
+            icon: icons.documentFlowchart
+          },
+          {
+            title: 'nav.settings.workflows.schedule',
+            path: '/settings/workflows/schedule',
+            icon: icons.clock
+          }
+        ]
+      }
+    );
+  }
+
   return { menus };
 };
