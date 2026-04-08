@@ -547,7 +547,7 @@
     "duplicate_directory": "目标目录重复！",
     "invalid_boot_params": "无效的启动参数！",
     "invalid_yaml_config": "无效的 YAML 配置！",
-    "invalid_repo_url": "无效的 GitHub 仓库地址！",
+    "invalid_github_repo": "无效的 GitHub 仓库！",
     "invalid_flow_graph": "必填字段未填写完整！",
     "info_hash_collision": "下载任务已存在！",
     "get_info_hash_failed": "获取哈希值失败！",

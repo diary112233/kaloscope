@@ -49,7 +49,7 @@
     // validate the URL format
     const regex = /^(?:https:\/\/github\.com\/)?([\w.-]+)\/([\w.-]+)(?:\.git)?$/i;
     if (!regex.test(url)) {
-      alert({ level: 'error', message: 'invalid_repo_url' });
+      alert({ level: 'error', message: 'invalid_github_repo' });
       return;
     }
     loading.start();
