@@ -15,8 +15,10 @@
     shallow?: boolean;
     /** Whether to show a prompt dialog. */
     prompt: boolean;
-    /** The advice to display in the prompt dialog. */
+    /** The advice value to pre-fill in the prompt input. */
     advice?: string;
+    /** The placeholder text for the prompt input. */
+    placeholder?: string;
     /** The icon to display before the title. */
     icon?: string | IconifyIcon;
     /** The message title to display. */
@@ -35,7 +37,7 @@
     show({ ...msg, prompt: true });
   }
 
-  export function confirm(msg: Partial<Omit<Message, 'prompt' | 'advice' | 'explicit'>>) {
+  export function confirm(msg: Partial<Omit<Message, 'prompt' | 'advice' | 'placeholder' | 'explicit'>>) {
     show({ ...msg, prompt: false, title: msg.title ?? '' });
   }
 
@@ -144,7 +146,7 @@
         {msg.message || $_('message.default.content')}
       </p>
       {#if msg.prompt}
-        <input type="text" class="input w-full" value={msg.advice} />
+        <input type="text" class="input w-full" value={msg.advice} placeholder={msg.placeholder} />
       {/if}
       <!-- action buttons -->
       <div class="modal-action">

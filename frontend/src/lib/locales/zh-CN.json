@@ -514,7 +514,7 @@
     },
     "tmpl": {
       "last_sync": "上次同步：{0}",
-      "confirm_repo": "请输入 GitHub 仓库地址：",
+      "confirm_repo": "请输入 GitHub 仓库全称或地址：",
       "confirm_name": "请确认要使用的名称：",
       "confirm_upgrade": "是否更新到最新版本？"
     },

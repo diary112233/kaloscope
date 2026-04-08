@@ -514,7 +514,7 @@
     },
     "tmpl": {
       "last_sync": "Last sync: {0}",
-      "confirm_repo": "Please enter the GitHub repository URL:",
+      "confirm_repo": "Please enter the GitHub repository full name or URL:",
       "confirm_name": "Please confirm the name to use:",
       "confirm_upgrade": "Upgrade to the latest version?"
     },
