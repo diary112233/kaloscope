@@ -20,7 +20,7 @@ class ConditionNode(Node):
         cls, *, node_data: dict[str, Any], context: Context, **kwargs
     ) -> OutputHandle | None:
         var = cls.expression.extract(node_data, context=context, raw=True)
-        if var:
+        if var and str(var).lower() not in ("false", "0", "none", "null"):
             return cls.Handles.is_true
         else:
             return cls.Handles.is_false
