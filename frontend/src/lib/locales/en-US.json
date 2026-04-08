@@ -553,9 +553,10 @@
     "info_hash_collision": "Download already exists!",
     "get_info_hash_failed": "Failed to get info-hash!",
     "http_request_failed": "HTTP request failed!",
-    "import_graphs_failed": "Failed to import workflow definitions!",
-    "export_graphs_failed": "Failed to export workflow definitions!",
-    "select_export_data": "Please select at least one item to export."
+    "select_export_items": "Please select at least one item to export.",
+    "export_items_failed": "Failed to export the items!",
+    "import_items_failed": "Failed to import the items!",
+    "import_items_success": "Successfully imported {0} items!"
   },
   "message": {
     "cancel": "Cancel",

@@ -255,11 +255,10 @@ async def export_graphs(_, body: IDs) -> HTTPResponse:
 async def import_graphs(_, body: GraphImport) -> HTTPResponse:
     """Import the flow graphs from a zip file."""
     try:
-        await FlowGraphService.import_graphs(body.zip)
+        return json(await FlowGraphService.import_graphs(body.zip))
     except Exception as e:
         logger.error("Failed to import the flow graphs!", exc_info=True)
-        raise KaloscopeException(ErrorCode.IMPORT_GRAPHS_FAILED) from e
-    return empty()
+        raise KaloscopeException(ErrorCode.IMPORT_ITEMS_FAILED) from e
 
 
 @flow.get("/node/schemas")

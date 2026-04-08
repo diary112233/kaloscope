@@ -416,12 +416,16 @@ class FlowGraphService(BaseService[FlowGraph], model=FlowGraph):
 
     @classmethod
     @atomic()
-    async def import_graphs(cls, zip: File):
+    async def import_graphs(cls, zip: File) -> int:
         """Import flow graphs from a zip file.
 
         Args:
             zip: The zip file containing flow graph definitions.
+
+        Returns:
+            The number of created flow graphs.
         """
+        created = 0
         with zipfile.ZipFile(io.BytesIO(zip.body), mode="r") as zf:
             for filename in zf.namelist():
                 if not filename.endswith(".json"):
@@ -439,6 +443,7 @@ class FlowGraphService(BaseService[FlowGraph], model=FlowGraph):
                         revision=data.get("revision"),
                         state=GraphState.DRAFTING,
                     )
+                    created += 1
                 elif graph.category == data["category"]:
                     if graph.revision and graph.revision >= data.get("revision", 0):
                         # skip if the revision is not newer
@@ -451,6 +456,7 @@ class FlowGraphService(BaseService[FlowGraph], model=FlowGraph):
                     if graph.state != GraphState.DRAFTING:
                         graph.state = GraphState.MODIFIED
                     await graph.save()
+        return created
 
     @classmethod
     @atomic()

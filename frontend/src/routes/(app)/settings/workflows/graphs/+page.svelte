@@ -118,7 +118,7 @@
   function exportGraphs() {
     const selectedKeys = headerCheckbox.getSelectedKeys();
     if (selectedKeys.length === 0) {
-      alert({ message: 'select_export_data' });
+      alert({ message: 'select_export_items' });
       return;
     }
     loading.start();
@@ -127,7 +127,7 @@
       .blob()
       .then((blob) => {
         if (blob.size === 0) {
-          alert({ level: 'error', message: 'export_graphs_failed' });
+          alert({ level: 'error', message: 'export_items_failed' });
           return;
         }
         const url = URL.createObjectURL(blob);
@@ -157,11 +157,15 @@
     loading.start();
     api
       .post('flow/graph/import', { body: formData })
-      .then(() => {
+      .json<Resp<number>>()
+      .then((resp) => {
         graphName = '';
         graphState = null;
         graphCategory = null;
         search();
+        if (resp.data) {
+          alert({ level: 'success', message: $_('alert.import_items_success', resp.data) });
+        }
       })
       .catch(() => loading.end());
   }

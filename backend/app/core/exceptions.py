@@ -34,7 +34,7 @@ class ErrorCode(StrEnum):
     INFO_HASH_COLLISION = auto()
     GET_INFO_HASH_FAILED = auto()
     HTTP_REQUEST_FAILED = auto()
-    IMPORT_GRAPHS_FAILED = auto()
+    IMPORT_ITEMS_FAILED = auto()
 
 
 class KaloscopeException(SanicException):

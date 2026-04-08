@@ -553,9 +553,10 @@
     "info_hash_collision": "下载任务已存在！",
     "get_info_hash_failed": "获取哈希值失败！",
     "http_request_failed": "发送 HTTP 请求失败！",
-    "import_graphs_failed": "导入流程定义失败！",
-    "export_graphs_failed": "导出流程定义失败！",
-    "select_export_data": "请先选择要导出的数据。"
+    "select_export_items": "请先选择要导出的数据。",
+    "export_items_failed": "导出数据失败！",
+    "import_items_failed": "导入数据失败！",
+    "import_items_success": "成功导入 {0} 条数据！"
   },
   "message": {
     "cancel": "取 消",
