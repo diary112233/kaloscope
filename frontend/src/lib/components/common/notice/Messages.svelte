@@ -82,7 +82,7 @@
     }
     let msg = messages.get(id);
     if (msg) {
-      callback?.();
+      // close the message dialog
       msg.explicit = true;
       if (shallow) {
         history.back();
@@ -90,6 +90,8 @@
         messages.delete(id);
         freeze.set(false);
       }
+      // call the callback function if provided
+      callback?.();
     }
   }
 
@@ -146,7 +148,7 @@
         {msg.message || $_('message.default.content')}
       </p>
       {#if msg.prompt}
-        <input type="text" class="input w-full" value={msg.advice} placeholder={msg.placeholder} />
+        <input required type="text" class="input w-full" value={msg.advice} placeholder={msg.placeholder} />
       {/if}
       <!-- action buttons -->
       <div class="modal-action">
@@ -156,13 +158,16 @@
         <button
           class="btn btn-submit"
           onclick={() => {
+            let promptInput = null;
+            if (msg.prompt) {
+              promptInput = document.querySelector(`#${id} input`) as HTMLInputElement | null;
+              if (!promptInput?.reportValidity()) {
+                return;
+              }
+            }
             close(id, msg.shallow, () => {
               if (msg.onconfirm) {
-                if (msg.prompt) {
-                  msg.onconfirm((document.querySelector(`#${id} input`) as HTMLInputElement | null)?.value);
-                } else {
-                  msg.onconfirm();
-                }
+                msg.prompt ? msg.onconfirm(promptInput?.value) : msg.onconfirm();
               }
             });
           }}
