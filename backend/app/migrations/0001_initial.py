@@ -89,7 +89,7 @@ class Migration(migrations.Migration):
                 ('description', fields.CharField(null=True, max_length=255)),
                 ('category', fields.CharEnumField(description='INDEXER: indexer\nINGEST: ingest\nSCHEDULE: schedule', enum_type=GraphCategory, max_length=16)),
                 ('revision', fields.IntField(null=True)),
-                ('state', fields.CharEnumField(description='DRAFTING: drafting\nMODIFIED: modified\nPUBLISHED: published', enum_type=GraphState, max_length=16)),
+                ('state', fields.CharEnumField(description='DRAFT: draft\nMODIFIED: modified\nPUBLISHED: published', enum_type=GraphState, max_length=16)),
                 ('draft', fields.JSONField(null=True, encoder=JSON_DUMPS, decoder=loads)),
                 ('definition', fields.JSONField(null=True, encoder=JSON_DUMPS, decoder=loads)),
                 ('editable', fields.BooleanField(default=True)),

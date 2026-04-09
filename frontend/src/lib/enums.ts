@@ -128,8 +128,8 @@ export const GraphCategory = createEnum({
 });
 
 export const GraphState = createEnum({
-  drafting: {
-    label: 'enum.graph_state.drafting',
+  draft: {
+    label: 'enum.graph_state.draft',
     icon: icons.selectObjectSkewEdit,
     iconColor: null
   },

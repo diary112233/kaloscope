@@ -343,7 +343,7 @@
       <span class="overflow-hidden">
         <div class="truncate text-sm opacity-90">{graph.name}</div>
         <div class="mt-0.5 flex-center">
-          <Badge shadow={false} dashed={graph.state === 'drafting'}>
+          <Badge shadow={false} dashed={graph.state === 'draft'}>
             {@const state = GraphState[graph.state]}
             <span class="size-4">
               {#if autoSaveMode && autoSaveSignal}

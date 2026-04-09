@@ -30,7 +30,7 @@ class GraphCategory(StrEnum):
 
 
 class GraphState(StrEnum):
-    DRAFTING = auto()
+    DRAFT = auto()
     MODIFIED = auto()
     PUBLISHED = auto()
 

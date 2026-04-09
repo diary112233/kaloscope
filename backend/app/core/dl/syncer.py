@@ -329,7 +329,7 @@ async def check_download_plans():
         elapsed_hours=RawSQL(f"({now} - {last}) * 24")
     ).filter(
         elapsed_hours__gte=F("interval_num"),
-        graph__state__not=GraphState.DRAFTING,
+        graph__state__not=GraphState.DRAFT,
     )
     plans = [p for p in plans if not p.inactive()]
     if not plans:

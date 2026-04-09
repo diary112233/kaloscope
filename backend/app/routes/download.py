@@ -105,7 +105,7 @@ async def list_plans(_, query: DownloadPlanQuery) -> HTTPResponse:
     for plan in result["items"]:
         graph = graphs.get(plan["graph_id"])
         plan["graph_name"] = graph.name if graph else None
-        published = graph.state != GraphState.DRAFTING if graph else False
+        published = graph.state != GraphState.DRAFT if graph else False
         plan["running"] = published and not plan["inactive"]
     return json(result)
 

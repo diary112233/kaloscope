@@ -104,7 +104,7 @@
       "schedule": "Schedule"
     },
     "graph_state": {
-      "drafting": "Drafting",
+      "draft": "Draft",
       "modified": "Modified",
       "published": "Published"
     },

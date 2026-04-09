@@ -397,7 +397,7 @@ async def pause_job(request: Request, id: int) -> HTTPResponse:
 async def resume_job(request: Request, id: int) -> HTTPResponse:
     """Resume the job."""
     job = await FlowJob.get(id=id)
-    graph = await FlowGraph.get_or_none(id=job.graph_id, state__not=GraphState.DRAFTING)
+    graph = await FlowGraph.get_or_none(id=job.graph_id, state__not=GraphState.DRAFT)
     if graph is None:
         raise KaloscopeException(ErrorCode.FLOW_NOT_PUBLISHED)
     engine: FlowEngine = request.app.ctx.flow_engine

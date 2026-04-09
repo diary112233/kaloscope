@@ -104,7 +104,7 @@
       "schedule": "定时调度"
     },
     "graph_state": {
-      "drafting": "草稿",
+      "draft": "草稿",
       "modified": "有更新",
       "published": "已发布"
     },

@@ -136,7 +136,7 @@ class FlowTemplateService(BaseService[FlowTemplate], model=FlowTemplate):
             category=tmpl.category,
             revision=tmpl.revision,
             draft=tmpl.definition,
-            state=GraphState.DRAFTING,
+            state=GraphState.DRAFT,
             editable=False,
         )
 
@@ -165,7 +165,7 @@ class FlowTemplateService(BaseService[FlowTemplate], model=FlowTemplate):
             description=tmpl.description,
             category=tmpl.category,
             draft=tmpl.definition,
-            state=GraphState.DRAFTING,
+            state=GraphState.DRAFT,
             editable=True,
         )
 
@@ -254,7 +254,7 @@ class FlowGraphService(BaseService[FlowGraph], model=FlowGraph):
                 description=obj.description,
                 editable=True,
                 category=obj.category,
-                state=GraphState.DRAFTING,
+                state=GraphState.DRAFT,
                 draft={"nodes": [], "edges": []},
             )
 
@@ -278,7 +278,7 @@ class FlowGraphService(BaseService[FlowGraph], model=FlowGraph):
 
         graph.draft = Node.compress(draft)
         graph.updated_at = timezone.now()
-        if graph.state != GraphState.DRAFTING and draft != graph.definition:
+        if graph.state != GraphState.DRAFT and draft != graph.definition:
             graph.state = GraphState.MODIFIED
         await graph.save()
         return graph
@@ -344,7 +344,7 @@ class FlowGraphService(BaseService[FlowGraph], model=FlowGraph):
         graph.category = tmpl["category"]
         graph.revision = tmpl["revision"]
         graph.draft = tmpl["definition"]
-        graph.state = GraphState.DRAFTING
+        graph.state = GraphState.DRAFT
         await graph.save()
         return graph
 
@@ -356,7 +356,7 @@ class FlowGraphService(BaseService[FlowGraph], model=FlowGraph):
         Args:
             id: The flow graph ID.
         """
-        state = GraphState.DRAFTING
+        state = GraphState.DRAFT
         if await FlowGraph.filter(id=id, state__not=state).update(state=state) == 1:
             running_jobs = await FlowJob.filter(graph_id=id, state=JobState.RUNNING)
             if running_jobs:
@@ -377,7 +377,7 @@ class FlowGraphService(BaseService[FlowGraph], model=FlowGraph):
         if not ids:
             return None
 
-        graphs = await FlowGraph.filter(id__in=ids, state__not=GraphState.DRAFTING)
+        graphs = await FlowGraph.filter(id__in=ids, state__not=GraphState.DRAFT)
         if not graphs:
             return None
 
@@ -444,7 +444,7 @@ class FlowGraphService(BaseService[FlowGraph], model=FlowGraph):
                         category=data["category"],
                         draft=data.get("definition"),
                         revision=data.get("revision"),
-                        state=GraphState.DRAFTING,
+                        state=GraphState.DRAFT,
                     )
                     created += 1
                 elif graph.category == data["category"]:
@@ -456,7 +456,7 @@ class FlowGraphService(BaseService[FlowGraph], model=FlowGraph):
                     graph.description = data.get("description", graph.description)
                     graph.draft = data.get("definition", graph.draft)
                     graph.revision = data.get("revision", graph.revision)
-                    if graph.state != GraphState.DRAFTING:
+                    if graph.state != GraphState.DRAFT:
                         graph.state = GraphState.MODIFIED
                     await graph.save()
         return created
@@ -469,7 +469,7 @@ class FlowGraphService(BaseService[FlowGraph], model=FlowGraph):
         Args:
             id: The flow graph ID.
         """
-        if await FlowGraph.filter(id=id, state=GraphState.DRAFTING).delete() > 0:
+        if await FlowGraph.filter(id=id, state=GraphState.DRAFT).delete() > 0:
             # also delete the related user histories and permissions
             await UserHistory.filter(rel_type=HistoryType.SEARCH, rel_id=id).delete()
             await UserPermission.filter(rel_type=PermType.INDEXER, rel_id=id).delete()
@@ -581,7 +581,7 @@ class FlowTriggerService(BaseService[FlowTrigger], model=FlowTrigger):
             FROM flow_trigger t
             INNER JOIN flow_graph g ON g.id = t.graph_id
             WHERE
-                g.state != 'drafting'
+                g.state != 'draft'
             AND g.category = ?
             AND t.rel_id = ?
             ORDER BY t.priority ASC

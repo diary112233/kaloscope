@@ -222,7 +222,7 @@
   {/snippet}
   {#snippet header()}
     <HCell width="2rem">
-      <Checkbox batch={graphs.filter((g) => g.state !== 'drafting').length} bind:this={headerCheckbox} />
+      <Checkbox batch={graphs.filter((g) => g.state !== 'draft').length} bind:this={headerCheckbox} />
     </HCell>
     <HCell width={['30%', '55%']} text={$_('field.name')} sort={ordering.bind('name')} />
     <HCell width={['15%', '45%']} text={$_('field.category')} sort={ordering.bind('category')} />
@@ -232,9 +232,9 @@
     <HCell actions />
   {/snippet}
   {#snippet row(graph)}
-    {@const drafting = graph.state === 'drafting'}
+    {@const draft = graph.state === 'draft'}
     <Cell>
-      <Checkbox key={String(graph.id)} disabled={drafting} />
+      <Checkbox key={String(graph.id)} disabled={draft} />
     </Cell>
     <Cell>
       {@const nameClass = 'mb-2 flex max-w-fit items-center gap-1 **:-mb-1'}
@@ -286,7 +286,7 @@
     </Cell>
     <Cell>
       {@const state = GraphState[graph.state]}
-      <Badge icon={state.icon} iconColor={state.iconColor} dashed={drafting}>
+      <Badge icon={state.icon} iconColor={state.iconColor} dashed={draft}>
         <span class="max-xl:hidden">{$_(state.label)}</span>
       </Badge>
     </Cell>
@@ -298,7 +298,7 @@
           onclick: () => goto(`/settings/workflows/graphs/${graph.editable ? '' : 'r/'}${graph.id}`)
         },
         {
-          condition: !drafting,
+          condition: !draft,
           icon: icons.back,
           text: $_('action.retract', $_('entity.graph')),
           onclick: () => {
@@ -310,7 +310,7 @@
           }
         },
         {
-          condition: drafting,
+          condition: draft,
           icon: icons.deleteDismiss,
           text: $_('action.delete', $_('entity.graph')),
           onclick: () => {
