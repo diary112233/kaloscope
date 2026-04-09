@@ -138,9 +138,9 @@
         outerLoading.start();
         // initialize query parameters
         const params = page.url.searchParams;
+        query.keyword = params.get('keyword') || '';
         query.page_num = Number(params.get('page_num')) || 1;
         query.page_size = Number(params.get('page_size')) || 20;
-        query.keyword = params.get('keyword') || '';
         search();
         _libId = libId;
       });

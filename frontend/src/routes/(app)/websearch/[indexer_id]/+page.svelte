@@ -239,11 +239,15 @@
         viewModes = (Array.isArray(modes) && modes.length > 0 ? modes : ['table']) as ViewModes;
         // initialize query parameters
         const params = page.url.searchParams;
-        query.view_mode = params.get('view_mode') || viewModes[0];
-        query.page_num = Number(params.get('page_num')) || 1;
-        query.page_size = Number(params.get('page_size')) || (display?.page_size ?? 20);
         query.keyword = params.get('keyword') || '';
         query.filters = params.get('filters') || '';
+        query.page_num = Number(params.get('page_num')) || 1;
+        query.page_size = (display?.page_size ?? Number(params.get('page_size'))) || 20;
+        let viewMode = params.get('view_mode') as ViewMode | null;
+        if (!viewMode || !viewModes.includes(viewMode)) {
+          viewMode = viewModes[0];
+        }
+        query.view_mode = viewMode;
         // search for resources
         if (loginConfig?.required) {
           auth().then(() => search());
