@@ -1,0 +1,74 @@
+# ============================================================
+# stage 1: build the frontend
+# ============================================================
+FROM node:25-slim AS frontend
+
+# install pnpm via corepack
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
+WORKDIR /pages
+
+# copy dependency manifests first for better layer caching
+COPY frontend/.npmrc frontend/package.json frontend/pnpm-lock.yaml frontend/pnpm-workspace.yaml ./
+
+# install frontend dependencies
+RUN pnpm install --frozen-lockfile
+
+# copy the rest of the frontend source code
+COPY frontend/ ./
+
+# build the static pages for production
+RUN pnpm run build
+
+# ============================================================
+# stage 2: build the production image
+# ============================================================
+FROM python:3.13-slim AS production
+
+# install system dependencies required by native Python packages
+# - git: required by gitpython
+# - libxml2/libxslt: required by lxml
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
+    libxml2 \
+    libxslt1.1 \
+    && rm -rf /var/lib/apt/lists/*
+
+# install Poetry
+ENV POETRY_HOME="/opt/poetry" \
+    POETRY_NO_INTERACTION=1 \
+    POETRY_VIRTUALENVS_IN_PROJECT=true
+RUN python -m pip install --no-cache-dir poetry
+ENV PATH="$POETRY_HOME/bin:$PATH"
+
+WORKDIR /app
+
+# copy backend dependency manifests first for better layer caching
+COPY backend/pyproject.toml backend/poetry.lock backend/poetry.toml ./backend/
+
+# install backend dependencies
+WORKDIR /app/backend
+RUN poetry install --no-cache --no-root --only main
+
+WORKDIR /app
+
+# copy the backend source code
+COPY backend/ ./backend/
+
+# copy the built frontend from stage 1
+COPY --from=frontend /pages/build ./frontend/build/
+
+# copy static assets from the frontend
+COPY frontend/static ./frontend/static/
+
+# expose the Sanic server port
+EXPOSE 8000
+
+# declare volume for persistent runtime data
+VOLUME /app/workspace
+
+# set the working directory to backend for the entrypoint
+WORKDIR /app/backend
+
+# run Sanic with the production-ready --fast flag
+ENTRYPOINT ["poetry", "run", "sanic", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--fast"]
