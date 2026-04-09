@@ -303,5 +303,7 @@ class DownloadPlanService(BaseService[DownloadPlan], model=DownloadPlan):
             plan = await DownloadPlan.get(id=obj.id)
         else:
             plan = await DownloadPlan.create(**data)
-            await execute_download_plan(plan)
+            # execute the plan immediately if it's active
+            if not plan.inactive():
+                await execute_download_plan(plan)
         return plan

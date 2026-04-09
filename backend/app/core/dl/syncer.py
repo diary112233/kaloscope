@@ -331,7 +331,7 @@ async def check_download_plans():
         elapsed_hours__gte=F("interval_num"),
         graph__state__not=GraphState.DRAFTING,
     )
-    plans = [p for p in plans if p.inactive() is False]
+    plans = [p for p in plans if not p.inactive()]
     if not plans:
         return
 
