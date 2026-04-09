@@ -68,7 +68,7 @@
 </script>
 
 <script lang="ts">
-  import { Button, Cell, Image, Rating, Uploader, downloadPrompt } from '$lib/components';
+  import { Badge, Button, Cell, Image, Rating, Uploader, downloadPrompt } from '$lib/components';
   import { _ } from '$lib/i18n';
   import { icons } from '$lib/icons';
 
@@ -145,14 +145,18 @@
         <Image transparent src={rsrc.cover} height={coverHeight(ratio)} {ratio} />
         <div class="absolute inset-0 flex size-full flex-col">
           <Rating score={rsrc.rating} class="mt-0.5 ml-0.5 self-start px-1! text-xs" />
-          <span
-            class="mt-auto max-w-full self-center truncate px-0.5 text-white opacity-80 text-stroke"
-            style="font-size: clamp(0.5rem, calc(1rem - 0.05rem * {rsrc.category?.length || 0}), 0.75rem);"
-          >
-            {rsrc.category}
-          </span>
+          {#if rsrc.category}
+            <span
+              class="mt-auto max-w-full self-center truncate px-0.5 text-white opacity-80 text-stroke"
+              style="font-size: clamp(0.5rem, calc(1rem - 0.05rem * {rsrc.category?.length || 0}), 0.75rem);"
+            >
+              {rsrc.category}
+            </span>
+          {/if}
         </div>
       </div>
+    {:else if rsrc.category}
+      <Badge class="w-18">{rsrc.category}</Badge>
     {/if}
     <div class="flex w-full flex-col gap-4">
       <div class={detailsConfig ? 'transition-colors group-hover:text-primary' : ''}>
