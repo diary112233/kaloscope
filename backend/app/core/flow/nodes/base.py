@@ -331,7 +331,15 @@ async def start_config(graph_id: int, key: str, *keys: str) -> dict[str, Any]:
         try:
             yaml_config = yaml.load(config, Loader=yaml.SafeLoader)
             if isinstance(yaml_config, dict):
-                return yaml_config
+                # dict key must be str
+                def stringify_keys(obj: Any) -> Any:
+                    if isinstance(obj, dict):
+                        return {str(k): stringify_keys(v) for k, v in obj.items()}
+                    if isinstance(obj, list):
+                        return [stringify_keys(v) for v in obj]
+                    return obj
+
+                return stringify_keys(yaml_config)
         except yaml.YAMLError:
             logger.debug(
                 f"Failed to parse the YAML configuration:\n{Colors.RED}%s{Colors.END}",
