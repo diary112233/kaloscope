@@ -205,6 +205,7 @@
     "import": "Import {0}",
     "search": "Enter {0}",
     "select": "Select {0}",
+    "upgrade": "Upgrade {0}",
     "retract": "Retract {0}",
     "execute": "Execute {0}",
     "download": "Download {0}",

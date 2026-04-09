@@ -253,6 +253,7 @@
               }
               confirm({
                 icon: icons.arrowBigUp,
+                title: `${$_('action.upgrade', $_('entity.graph'))} [${graph.name}]`,
                 message: $_('flow.tmpl.confirm_upgrade'),
                 onconfirm: () => upgrade(graph.id, graph.newest_tmpl!)
               });
