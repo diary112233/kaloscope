@@ -417,6 +417,7 @@ async def _handle_deleted(event: MediaEvent):
         )
         if ids:
             await MediaItem.filter(lib_id=lib_id, id__in=ids).delete()
+            # delete the related user histories
             await UserHistory.filter(
                 rel_type=HistoryType.VIDEO, rel_id__in=ids
             ).delete()
@@ -431,7 +432,10 @@ async def _handle_deleted(event: MediaEvent):
         if item is not None:
             await item.delete()
             _trash_nfo(item.nfo_path)
-            await UserHistory.filter(rel_type=HistoryType.VIDEO, rel_id=id).delete()
+            # delete the related user histories
+            await UserHistory.filter(
+                rel_type=HistoryType.VIDEO, rel_id=item.id
+            ).delete()
             # delete the parent item if it has no more children
             if (pid := item.parent_id) is not None:
                 siblings = await MediaItem.filter(lib_id=lib_id, parent_id=pid).count()
