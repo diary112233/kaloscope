@@ -71,6 +71,10 @@ if [ "$ENABLE_ARIA2" = "true" ]; then
     --enable-rpc \
     --rpc-listen-all=false \
     --rpc-listen-port=6800 \
+    --enable-peer-exchange=true \
+    --enable-dht=true \
+    --dht-listen-port=6888 \
+    --listen-port=6888 \
     --dir=/app/workspace/downloads \
     --daemon
 fi
@@ -79,5 +83,7 @@ EOF
 RUN chmod +x /app/entrypoint.sh
 
 EXPOSE 8000
+EXPOSE 6888
+EXPOSE 6888/udp
 VOLUME /app/workspace
 ENTRYPOINT ["/app/entrypoint.sh"]
