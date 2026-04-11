@@ -247,6 +247,8 @@ class Adapter(BaseModel):
             logger.error(
                 "The request failed with status code %d.", response.status_code
             )
+            if error_msg := _error_msg(response):
+                raise KaloscopeException(error_msg)
             raise KaloscopeException(ErrorCode.HTTP_REQUEST_FAILED)
 
         # raise an exception if the response is not successful
@@ -299,6 +301,25 @@ def _successful(expected: dict[str, str] | str | None, actual: JSONType) -> bool
             jsonpath_first(actual, path) == code for code, path in expected.items()
         )
     return actual == expected
+
+
+def _error_msg(response: httpx.Response) -> str | None:
+    """Extract the error message from the HTTP response if possible.
+
+    Args:
+        response: The HTTP response.
+
+    Returns:
+        The error message if found, otherwise None.
+    """
+    try:
+        if response.text and isinstance((json := try_loads(response.text)), dict):
+            error = json.get("error")
+            if isinstance(error, dict) and "message" in error:
+                return str(error["message"])
+    except Exception:
+        pass
+    return None
 
 
 def _mapping(json: Any, mappings: dict[str, str]) -> dict[str, Any]:
