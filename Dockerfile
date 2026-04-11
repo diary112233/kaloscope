@@ -29,6 +29,7 @@ FROM --platform=linux/amd64 python:3.13-slim
 # - git: required by gitpython
 # - libxml2/libxslt: required by lxml
 # - cmake/make/g++: required by opencc
+# - gosu: for dropping privileges if needed
 # - aria2: optional built-in download manager
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
@@ -37,10 +38,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     cmake \
     make \
     g++ \
+    gosu \
     aria2 \
     && rm -rf /var/lib/apt/lists/*
 
-# install Poetry via pip
+# install poetry via pip
 ENV POETRY_NO_INTERACTION=1 \
     POETRY_VIRTUALENVS_IN_PROJECT=true
 RUN python -m pip install --no-cache-dir setuptools poetry
@@ -56,17 +58,33 @@ RUN cd backend && poetry install --no-cache --no-root --only main
 # copy the rest of the backend source code
 COPY backend/ ./backend/
 
-# copy the built frontend assets from Stage 1
+# copy the built frontend assets from the previous stage
 COPY --from=frontend /pages/build/ ./frontend/build/
 
-# environment variable to control built-in aria2
+# environment variables
+ENV PUID=0
+ENV PGID=0
 ENV ENABLE_ARIA2=false
 
 # entrypoint script
 COPY <<'EOF' /app/entrypoint.sh
 #!/bin/sh
+set -e
 cd /app/backend
+
+# setup user if PUID/PGID is set
+PUID=${PUID:-0}
+PGID=${PGID:-0}
+if [ "$PUID" != "0" ] && [ "$(id -u)" = "0" ]; then
+  getent group "$PGID" > /dev/null 2>&1 || groupadd -g "$PGID" kaloscope
+  id -u "$PUID" > /dev/null 2>&1 || useradd -u "$PUID" -g "$PGID" -m -s /bin/sh kaloscope
+  chown -R "$PUID":"$PGID" /app
+  exec gosu "$PUID" "$0" "$@"
+fi
+
+# start aria2 if enabled
 if [ "$ENABLE_ARIA2" = "true" ]; then
+  mkdir -p /app/workspace/downloads
   aria2c \
     --enable-rpc \
     --rpc-listen-all=false \
@@ -78,6 +96,8 @@ if [ "$ENABLE_ARIA2" = "true" ]; then
     --dir=/app/workspace/downloads \
     --daemon
 fi
+
+# start sanic web server
 exec poetry run sanic app.main:app --host 0.0.0.0 --port 8000 --fast
 EOF
 RUN chmod +x /app/entrypoint.sh
