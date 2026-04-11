@@ -35,7 +35,7 @@ async def list_files(_, query: ListRequest) -> HTTPResponse:
         raise BadRequestException
     expand_to = Path(query.expand_to) if query.expand_to else None
     if expand_to is not None and not os.access(expand_to, os.R_OK):
-        raise BadRequestException
+        expand_to = None
 
     # check if the path is readable
     def readable(p: Path) -> bool:
