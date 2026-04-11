@@ -105,7 +105,9 @@
     if (!directory) {
       directory = _directories[0] || null;
     }
-    if (!downloaderId) {
+    if (downloaders.length === 0) {
+      downloaderId = 0;
+    } else if (!downloaderId) {
       downloaderId = downloaders.find((d) => d.status !== 'down')?.id ?? 0;
     }
   }
@@ -232,6 +234,7 @@
     <fieldset class="fieldset">
       <Label required>{$_('download.downloader.title')}</Label>
       <Select
+        required
         options={downloaders.map((d) => ({
           value: d.id,
           label: d.name,

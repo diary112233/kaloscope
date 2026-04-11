@@ -295,6 +295,7 @@
       <Label required>{$_('field.graph')}</Label>
       <div class="flex gap-2">
         <Select
+          required
           options={graphOptions}
           bind:value={graph_id}
           onchange={() => {
@@ -374,6 +375,7 @@
         <div class="w-[clamp(3rem,20rem,100%)] max-w-40">
           <Label required>{$_('download.downloader.title')}</Label>
           <Select
+            required
             options={downloaders.map((d) => ({
               value: d.id,
               label: d.name,
