@@ -25,19 +25,15 @@ RUN pnpm run build
 # ============================================================
 FROM --platform=linux/amd64 python:3.13-slim
 
-# install system dependencies
+# install runtime dependencies
 # - git: required by gitpython
 # - libxml2/libxslt: required by lxml
-# - cmake/make/g++: required by opencc
 # - gosu: for dropping privileges if needed
 # - aria2: optional built-in download manager
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     libxml2 \
     libxslt1.1 \
-    cmake \
-    make \
-    g++ \
     gosu \
     aria2 \
     && rm -rf /var/lib/apt/lists/*
@@ -52,8 +48,13 @@ WORKDIR /app
 # copy backend dependency manifests first for better layer caching
 COPY backend/pyproject.toml backend/poetry.lock backend/poetry.toml ./backend/
 
-# install backend dependencies
-RUN cd backend && poetry install --no-cache --no-root --only main
+# install backend dependencies, then remove build tools
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    cmake make g++ \
+    && cd backend && poetry install --no-cache --no-root --only main \
+    && apt-get purge -y cmake make g++ \
+    && apt-get autoremove -y \
+    && rm -rf /var/lib/apt/lists/*
 
 # copy the rest of the backend source code
 COPY backend/ ./backend/
@@ -85,6 +86,8 @@ fi
 # start aria2 if enabled
 if [ "$ENABLE_ARIA2" = "true" ]; then
   mkdir -p /app/workspace/downloads
+  ARIA2_SESSION=/app/workspace/aria2.session
+  touch "$ARIA2_SESSION"
   aria2c \
     --enable-rpc \
     --rpc-listen-all=false \
@@ -93,6 +96,9 @@ if [ "$ENABLE_ARIA2" = "true" ]; then
     --enable-dht=true \
     --dht-listen-port=6888 \
     --listen-port=6888 \
+    --input-file="$ARIA2_SESSION" \
+    --save-session="$ARIA2_SESSION" \
+    --save-session-interval=60 \
     --dir=/app/workspace/downloads \
     --daemon
 fi
