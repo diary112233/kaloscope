@@ -247,9 +247,10 @@ class Adapter(BaseModel):
             logger.error(
                 "The request failed with status code %d.", response.status_code
             )
+            extra = {"responded": True, "status_code": response.status_code}
             if error_msg := _error_msg(response):
-                raise KaloscopeException(error_msg)
-            raise KaloscopeException(ErrorCode.HTTP_REQUEST_FAILED)
+                raise KaloscopeException(error_msg, extra=extra)
+            raise KaloscopeException(ErrorCode.HTTP_REQUEST_FAILED, extra=extra)
 
         # raise an exception if the response is not successful
         if not _successful(self._expected(api), response.text):

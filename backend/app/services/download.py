@@ -245,7 +245,19 @@ class DownloadTaskService(BaseService[DownloadTask], model=DownloadTask):
         task = await DownloadTask.get(id=id)
         downloader = await Downloader.get(id=task.downloader_id)
         adapter = load_config(downloader.config)
-        await adapter.call("delete", {**asdict(Unique.from_task(task)), "local": local})
+        try:
+            await adapter.call(
+                "delete", {**asdict(Unique.from_task(task)), "local": local}
+            )
+        except KaloscopeException as e:
+            if e.extra is not None and e.extra.get("responded"):
+                # As long as the downloader responded (even with an error),
+                # we treat the delete as successful. We only need to ensure
+                # the delete request was delivered.
+                pass
+            else:
+                raise e
+
         await DownloadTask.filter(id=id).delete()
 
     @classmethod
