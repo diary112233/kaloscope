@@ -639,7 +639,7 @@
         &.xg-options-list {
           opacity: 1;
           z-index: 11;
-          font-size: 12px;
+          font-size: 20px;
           background-color: hsla(0, 0%, 10%, 0.9) !important;
         }
       }
