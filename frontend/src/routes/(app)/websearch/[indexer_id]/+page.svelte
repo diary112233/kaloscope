@@ -84,7 +84,7 @@
   beforeNavigate(({ from, to }) => {
     const fromUrl = from?.url;
     const toUrl = to?.url;
-    if (fromUrl && toUrl && fromUrl.pathname !== toUrl.pathname) {
+    if (fromUrl && toUrl && fromUrl.pathname !== toUrl.pathname && view) {
       const position = standaloneMode.current ? view.scrollPosition() : { left: window.scrollX, top: window.scrollY };
       positions.set({ ...$positions, [fromUrl.pathname]: position });
     }

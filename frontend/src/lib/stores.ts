@@ -119,7 +119,10 @@ export function restoreRoute(defaultRoute?: string) {
  * @param target - The target window or data view to scroll.
  * @param toTop - Whether to scroll to the top instead of restoring the position.
  */
-export function restorePosition<T>(target: Window | DataView<T>, toTop?: boolean) {
+export function restorePosition<T>(target: Window | DataView<T> | null | undefined, toTop?: boolean) {
+  if (!target) {
+    return;
+  }
   tick().then(() => {
     if (toTop) {
       target.scrollTo({ top: 0, behavior: 'smooth' });
