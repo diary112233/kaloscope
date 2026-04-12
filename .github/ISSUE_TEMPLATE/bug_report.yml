@@ -27,8 +27,8 @@ body:
       label: Environment
       description: Please provide your environment information.
       value: |
-        - Environment: [e.g., Docker]
         - Version: [e.g., v1.0.0]
+        - Browser: [e.g., Mobile Safari 26]
     validations:
       required: true
   - type: textarea
