@@ -41,7 +41,7 @@
   </Label>
   <input
     type="text"
-    class="nodrag input input-sm w-full"
+    class="nodrag input input-sm w-full truncate"
     required={field.required}
     minlength={field.minlength}
     maxlength={field.maxlength}

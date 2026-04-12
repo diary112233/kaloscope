@@ -46,7 +46,7 @@
         <!-- svelte-ignore binding_property_non_reactive -->
         <input
           type="text"
-          class="nodrag input input-sm w-1/2"
+          class="nodrag input input-sm w-1/2 truncate"
           placeholder={keyPlaceholder}
           bind:value={entry.key}
           oninput={() => updateNodeData(field.nodeId, { [field.id]: data })}
@@ -55,7 +55,7 @@
         <!-- svelte-ignore binding_property_non_reactive -->
         <input
           type="text"
-          class="nodrag input input-sm w-1/2"
+          class="nodrag input input-sm w-1/2 truncate"
           placeholder={valuePlaceholder}
           bind:value={entry.value}
           oninput={() => updateNodeData(field.nodeId, { [field.id]: data })}

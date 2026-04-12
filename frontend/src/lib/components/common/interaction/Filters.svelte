@@ -67,7 +67,7 @@
 {#snippet text(key: string, filter: Filter)}
   <input
     type="search"
-    class="input input-sm w-full"
+    class="input input-sm w-full truncate"
     value={values[key]}
     oninput={(event) => {
       values[key] = event.currentTarget.value.trim();

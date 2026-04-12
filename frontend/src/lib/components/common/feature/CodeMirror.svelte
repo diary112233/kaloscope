@@ -556,7 +556,13 @@
       <div>
         <label class="input input-sm w-full gap-3 rounded-t-box rounded-b-none ps-2">
           <iconify-icon icon={icons.bracesVariable} width="1rem"></iconify-icon>
-          <input type="text" class="grow" placeholder={$_('code.var_name')} bind:value={evalName} oninput={_evaluate} />
+          <input
+            type="text"
+            class="grow truncate"
+            placeholder={$_('code.var_name')}
+            bind:value={evalName}
+            oninput={_evaluate}
+          />
         </label>
         <CodeMirror
           placeholder={$_('code.raw_doc')}

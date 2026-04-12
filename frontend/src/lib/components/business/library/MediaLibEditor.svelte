@@ -1,6 +1,6 @@
 <script lang="ts" module>
-  import type { FlowTrigger, MediaLib, Resp } from '$lib/types';
   import { enumToOptions, LibType } from '$lib/enums';
+  import type { FlowTrigger, MediaLib, Resp } from '$lib/types';
 
   type MediaLibEditorProps = Partial<{
     id: number;
@@ -84,7 +84,7 @@
         disabled={!!id}
       />
       <Label required>{$_('field.name')}</Label>
-      <input placeholder={$_('field.name')} class="input w-full" bind:value={name} {...schema.name} />
+      <input placeholder={$_('field.name')} class="input w-full truncate" bind:value={name} {...schema.name} />
       <Label required>{$_('field.dir')}</Label>
       <!-- svelte-ignore a11y_consider_explicit_label -->
       <button

@@ -70,7 +70,13 @@
   >
     <fieldset class="fieldset">
       <Label required>{$_('field.name')}</Label>
-      <input placeholder={$_('field.name')} class="input w-full" bind:value={key} {...schema.key} disabled={!!id} />
+      <input
+        placeholder={$_('field.name')}
+        class="input w-full truncate"
+        bind:value={key}
+        {...schema.key}
+        disabled={!!id}
+      />
       <Label required>{$_('field.value')}</Label>
       <label class="input w-full">
         <input

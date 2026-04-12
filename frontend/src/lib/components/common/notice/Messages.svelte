@@ -150,7 +150,7 @@
         {msg.message || $_('message.default.content')}
       </p>
       {#if msg.prompt}
-        <input required type="text" class="input w-full" value={msg.advice} placeholder={msg.placeholder} />
+        <input required type="text" class="input w-full truncate" value={msg.advice} placeholder={msg.placeholder} />
       {/if}
       {#if msg.hint}
         <p class="flex items-center gap-1 text-xs opacity-50">

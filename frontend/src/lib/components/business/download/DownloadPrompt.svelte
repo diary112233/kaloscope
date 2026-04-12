@@ -290,7 +290,7 @@
       />
       {#if transferLibId}
         <Label required>{$_('download.transfer.method')}</Label>
-        <div class="flex gap-4">
+        <div class="flex flex-wrap gap-4">
           {#each Object.entries(TransferMethod) as [value, method] (value)}
             {#if value !== 'hardlink' || supportsHardlink}
               <label class="flex cursor-pointer items-center gap-1.5">
@@ -304,13 +304,13 @@
         <div class="flex gap-2">
           <input
             placeholder={$_('download.transfer.sub_pattern')}
-            class="input w-full"
+            class="input w-full truncate"
             bind:value={subPattern}
             {...schema.sub_pattern}
           />
           <input
             placeholder={$_('download.transfer.sub_repl')}
-            class="input w-full"
+            class="input w-full truncate"
             bind:value={subRepl}
             {...schema.sub_repl}
             disabled={!subPattern}

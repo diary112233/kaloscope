@@ -93,7 +93,7 @@
     </button>
     <input
       type="text"
-      class="nodrag grow text-ellipsis"
+      class="nodrag grow truncate"
       required={field.required}
       minlength={field.minlength}
       maxlength={field.maxlength}
