@@ -39,8 +39,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # install poetry via pip
-ENV POETRY_NO_INTERACTION=1 \
-    POETRY_VIRTUALENVS_IN_PROJECT=true
 RUN python -m pip install --no-cache-dir setuptools poetry
 
 WORKDIR /app
@@ -51,7 +49,8 @@ COPY backend/pyproject.toml backend/poetry.lock backend/poetry.toml ./backend/
 # install backend dependencies, then remove build tools
 RUN apt-get update && apt-get install -y --no-install-recommends \
     cmake make g++ \
-    && cd backend && poetry install --no-cache --no-root --only main \
+    && cd backend \
+    && poetry install --no-root --no-cache --no-interaction --only main \
     && apt-get purge -y cmake make g++ \
     && apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/*
