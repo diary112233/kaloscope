@@ -164,6 +164,8 @@ async def scan_directory(path: Path, repo: str):
             )
         else:
             # collect the IDs of existing templates
+            if tmpl.icon:
+                await save_icon(data.get("icon"), tmpl.icon)
             existing_ids.append(tmpl.id)
 
     if existing_ids:
@@ -171,14 +173,15 @@ async def scan_directory(path: Path, repo: str):
         await FlowTemplate.filter(id__in=existing_ids).update(newest=True)
 
 
-async def save_icon(icon: Any) -> str | None:
+async def save_icon(icon: Any, path: str | None = None) -> str | None:
     """Save the icon file to the workspace.
 
     Args:
         icon: The uploaded icon file or a base64 encoded string.
+        path: The relative path to the existing icon file, if any.
 
     Returns:
-        The icon file path, or None if no icon is provided.
+        The relative path to the saved icon file, or None if no icon is provided.
     """
     if icon is None:
         return None
@@ -199,10 +202,18 @@ async def save_icon(icon: Any) -> str | None:
         logger.error("No icon data provided.")
         return None
 
-    # save the icon file
-    icon_dir = Path(KaloscopeConfig.get_workspace("images")) / "icons"
-    icon_dir.mkdir(parents=True, exist_ok=True)
-    icon_file = f"{uuid.uuid4().hex}.webp"
-    async with aiofiles.open(icon_dir / icon_file, "wb") as f:
-        await f.write(icon_bytes)
-    return f"icons/{icon_file}"
+    # ensure the images directory exists
+    images = Path(KaloscopeConfig.get_workspace("images"))
+    (images / "icons").mkdir(parents=True, exist_ok=True)
+
+    # generate a unique filename for the new icon
+    if not path:
+        path = f"icons/{uuid.uuid4().hex}.webp"
+
+    # save the icon file if it doesn't exist
+    icon = images / path
+    if not icon.exists():
+        async with aiofiles.open(icon, "wb") as f:
+            await f.write(icon_bytes)
+
+    return path
