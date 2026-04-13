@@ -54,13 +54,13 @@
       "system": {
         "title": "System",
         "users": "Users",
-        "variables": "Variables",
         "medialibs": "Libraries",
         "downloaders": "Downloaders"
       },
       "workflows": {
         "title": "Workflows",
         "templates": "Templates",
+        "variables": "Variables",
         "graphs": "Graphs",
         "schedule": "Schedule"
       },

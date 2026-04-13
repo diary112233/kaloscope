@@ -54,13 +54,13 @@
       "system": {
         "title": "系统设置",
         "users": "用户管理",
-        "variables": "全局变量",
         "medialibs": "媒体库管理",
         "downloaders": "下载器设置"
       },
       "workflows": {
         "title": "工作流",
         "templates": "流程模板",
+        "variables": "全局变量",
         "graphs": "流程定义",
         "schedule": "定时调度"
       },

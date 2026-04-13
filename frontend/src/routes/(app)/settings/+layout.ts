@@ -55,11 +55,6 @@ export const load: LayoutLoad = async () => {
             icon: icons.peopleSettings
           },
           {
-            title: 'nav.settings.system.variables',
-            path: '/settings/system/variables',
-            icon: icons.bracesVariable
-          },
-          {
             title: 'nav.settings.system.medialibs',
             path: '/settings/system/medialibs',
             icon: icons.videoClipMultiple
@@ -78,6 +73,11 @@ export const load: LayoutLoad = async () => {
             title: 'nav.settings.workflows.templates',
             path: '/settings/workflows/templates',
             icon: icons.appStore
+          },
+          {
+            title: 'nav.settings.workflows.variables',
+            path: '/settings/workflows/variables',
+            icon: icons.bracesVariable
           },
           {
             title: 'nav.settings.workflows.graphs',
