@@ -26,17 +26,25 @@ RUN pnpm run build
 FROM --platform=linux/amd64 python:3.13-slim
 
 # install runtime dependencies
-# - git: required by gitpython
-# - libxml2/libxslt: required by lxml
-# - gosu: for dropping privileges if needed
-# - aria2: optional built-in download manager
+# - git:               required by gitpython
+# - libxml2, libxslt:  required by lxml
+# - gosu:              used to drop privileges
+# - aria2:             optional download manager
+# - curl:              used to download mkcert at runtime
+# - libnss3-tools:     required by mkcert to install CA certificates
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     libxml2 \
     libxslt1.1 \
     gosu \
     aria2 \
+    curl \
+    libnss3-tools \
     && rm -rf /var/lib/apt/lists/*
+
+# download and install mkcert
+RUN curl -fsSL "https://dl.filippo.io/mkcert/latest?for=linux/amd64" -o /usr/local/bin/mkcert \
+    && chmod +x /usr/local/bin/mkcert
 
 # install poetry via pip
 RUN python -m pip install --no-cache-dir setuptools poetry
