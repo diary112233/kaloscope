@@ -1,0 +1,33 @@
+import ssl
+from typing import cast
+
+import sanic.mixins.startup as startup
+from sanic import Sanic
+from sanic.constants import LocalCertCreator
+from sanic.http.tls.creators import CertCreator
+
+
+def _patched_get_ssl_context(app: Sanic, ssl: ssl.SSLContext | None) -> ssl.SSLContext:
+    """Patched version of get_ssl_context that allows self-signed TLS in PROD mode.
+
+    Args:
+        app: The Sanic application instance.
+        ssl: An optional SSLContext. If provided, it will be used directly.
+
+    Returns:
+        The SSLContext to be used for TLS connections.
+    """
+    if ssl:
+        return ssl
+
+    creator = CertCreator.select(
+        app,
+        cast(LocalCertCreator, app.config.LOCAL_CERT_CREATOR),
+        app.config.LOCAL_TLS_KEY,
+        app.config.LOCAL_TLS_CERT,
+    )
+    context = creator.generate_cert(app.config.LOCALHOST)
+    return context
+
+
+startup.get_ssl_context = _patched_get_ssl_context  # type: ignore

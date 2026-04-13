@@ -29,7 +29,7 @@ class RepoFetcher:
         """Initialize the repository fetcher.
 
         Args:
-            app: The Sanic application.
+            app: The Sanic application instance.
         """
         self._app = app
         self._task = None

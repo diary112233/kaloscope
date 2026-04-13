@@ -116,7 +116,7 @@ class LibWatcher:
         """Initialize the media library watcher.
 
         Args:
-            app: The Sanic application.
+            app: The Sanic application instance.
         """
         self._app = app
 

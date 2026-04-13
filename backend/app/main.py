@@ -251,7 +251,7 @@ def _worker(app: Sanic) -> str:
     """Get the worker name.
 
     Args:
-        app: The Sanic application.
+        app: The Sanic application instance.
 
     Returns:
         The worker name.

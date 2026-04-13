@@ -86,7 +86,7 @@ class KaloscopeConfig:
         """Update the Sanic application configuration and store it in the context.
 
         Args:
-            app: The Sanic application.
+            app: The Sanic application instance.
         """
         app.update_config(self.app)
         app.ctx.app_config = self

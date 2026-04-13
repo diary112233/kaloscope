@@ -77,7 +77,7 @@ class DLSyncer:
         """Initialize the download task synchronizer.
 
         Args:
-            app: The Sanic application.
+            app: The Sanic application instance.
         """
         self._app = app
         self._task = None

@@ -180,7 +180,7 @@ class FlowEngine:
         """Initialize the flow engine.
 
         Args:
-            app: The Sanic application.
+            app: The Sanic application instance.
         """
         self._app = app
         self._fetcher = RepoFetcher(app)

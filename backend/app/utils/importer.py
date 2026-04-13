@@ -42,7 +42,7 @@ def register_blueprints(
     See https://sanic.dev/en/guide/how-to/autodiscovery.html for more details.
 
     Args:
-        app: The Sanic application.
+        app: The Sanic application instance.
         module_names: The module names to search for blueprints.
         url_prefix: The URL prefix to be prepended to all blueprint routes.
     """
