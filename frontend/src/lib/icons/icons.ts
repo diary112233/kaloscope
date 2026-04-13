@@ -55,6 +55,7 @@ const fluentUISystemIcons = {
   fullScreenMaximizeFilled: 'fluent:full-screen-maximize-24-filled',
   fullScreenMinimizeFilled: 'fluent:full-screen-minimize-24-filled',
   globe: 'fluent:globe-24-regular',
+  globeDesktop: 'fluent:globe-desktop-24-regular',
   globeSearch: 'fluent:globe-search-24-regular',
   globeSearchFilled: 'fluent:globe-search-24-filled',
   grid: 'fluent:grid-24-regular',

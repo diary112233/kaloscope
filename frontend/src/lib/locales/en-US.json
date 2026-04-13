@@ -54,6 +54,7 @@
       "system": {
         "title": "System",
         "users": "Users",
+        "network": "Network",
         "medialibs": "Libraries",
         "downloaders": "Downloaders"
       },

@@ -55,6 +55,11 @@ export const load: LayoutLoad = async () => {
             icon: icons.peopleSettings
           },
           {
+            title: 'nav.settings.system.network',
+            path: '/settings/system/network',
+            icon: icons.globeDesktop
+          },
+          {
             title: 'nav.settings.system.medialibs',
             path: '/settings/system/medialibs',
             icon: icons.videoClipMultiple

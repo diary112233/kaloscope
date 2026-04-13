@@ -54,6 +54,7 @@
       "system": {
         "title": "系统设置",
         "users": "用户管理",
+        "network": "网络设置",
         "medialibs": "媒体库管理",
         "downloaders": "下载器设置"
       },
