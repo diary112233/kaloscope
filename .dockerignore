@@ -13,3 +13,10 @@ backend/.venv/
 backend/.cache/
 backend/.ruff_cache/
 backend/tests/
+
+# project meta
+scripts/
+screenshots/
+
+# runtime volume
+workspace/
