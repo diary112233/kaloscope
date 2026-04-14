@@ -98,10 +98,16 @@ if [ "$PUID" != "0" ] && [ "$(id -u)" = "0" ]; then
   exec gosu "$PUID" "$0" "$@"
 fi
 
+# set up root CA path for mkcert if AUTO_TLS is enabled
+if [ "$AUTO_TLS" = "true" ]; then
+  export CAROOT=/app/workspace/mkcert
+  mkdir -p "$CAROOT"
+fi
+
 # start aria2 if enabled
 if [ "$ENABLE_ARIA2" = "true" ]; then
-  mkdir -p /app/workspace/downloads
-  ARIA2_SESSION=/app/workspace/aria2.session
+  mkdir -p /app/workspace/downloads /app/workspace/aria2
+  ARIA2_SESSION=/app/workspace/aria2/aria2.session
   touch "$ARIA2_SESSION"
   aria2c \
     --enable-rpc \
