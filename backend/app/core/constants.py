@@ -1,3 +1,5 @@
+import mimetypes
+
 APP_NAME = "Kaloscope"
 """The name of the application."""
 
@@ -12,3 +14,6 @@ SESSION_ID = "KSID"
 
 NFO_MIME_TYPE = "text/x-nfo"
 """The MIME type for NFO files."""
+
+# register the NFO MIME type, which may be absent from the system's MIME type database
+mimetypes.add_type(NFO_MIME_TYPE, ".nfo")
