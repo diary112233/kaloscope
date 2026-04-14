@@ -44,7 +44,7 @@
   }
 
   /**
-   * Reactive map of message instances.
+   * The reactive map of message instances.
    */
   export const messages = new SvelteMap<string, Message>();
 

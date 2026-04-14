@@ -60,7 +60,7 @@
   const { dialog = false, maxSize = 5, timeout = 3000 }: AlertsProps = $props();
   const dialogId = $derived(dialog ? uuidv4() : '');
 
-  // reactive map of alert instances
+  // the reactive map of alert instances
   const alerts = new SvelteMap<string, Alert>();
 
   // whether to show alerts in this component

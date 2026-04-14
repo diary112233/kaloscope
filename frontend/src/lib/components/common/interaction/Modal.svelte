@@ -25,9 +25,14 @@
   }>;
 
   /**
-   * Reactive map of modal dialogs.
+   * The reactive map of modal dialogs.
    */
   const modals = new SvelteMap<string, ModalProps>();
+
+  /**
+   * The duration of the modal dialog transition in milliseconds.
+   */
+  const TRANSITION_DURATION = 200;
 </script>
 
 <script lang="ts">
@@ -77,8 +82,10 @@
     }
     let modal = modals.get(id);
     if (modal) {
-      modal.onclose?.();
       modal.explicit = true;
+      if (modal.onclose) {
+        setTimeout(() => modal.onclose?.(), TRANSITION_DURATION);
+      }
       if (shallow) {
         history.back();
       } else {
@@ -105,8 +112,8 @@
       const [id, modal] = Array.from(modals.entries()).pop() ?? [];
       if (id && modal && modal.shallow) {
         event.stopPropagation();
-        if (!modal.explicit) {
-          modal.onclose?.();
+        if (!modal.explicit && modal.onclose) {
+          setTimeout(() => modal.onclose?.(), TRANSITION_DURATION);
         }
         modals.delete(id);
         freeze.set(false);
@@ -116,7 +123,12 @@
 />
 
 {#if modals.has(id)}
-  <dialog {id} class="modal transition-none {_class}" bind:this={dialog} transition:fade={{ duration: 200 }}>
+  <dialog
+    {id}
+    class="modal transition-none {_class}"
+    bind:this={dialog}
+    transition:fade={{ duration: TRANSITION_DURATION }}
+  >
     <form method="dialog" class="modal-backdrop">
       <button onclick={close} aria-label="Close"></button>
     </form>
