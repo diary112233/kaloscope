@@ -3,6 +3,7 @@ from tortoise.migrations import operations as ops
 from app.models.download import DownloadState, TransferMethod
 from app.models.flow import GraphCategory, GraphState, IntervalUnit, JobState, JobTrigger
 from app.models.media import Language, LibType
+from app.models.network import DNSProtocol, ProxyProtocol
 from app.models.user import HistoryType, PermType, UserRole
 from orjson import loads
 from tortoise.fields.base import OnDelete
@@ -13,6 +14,20 @@ class Migration(migrations.Migration):
     initial = True
 
     operations = [
+        ops.CreateModel(
+            name='DNSResolver',
+            fields=[
+                ('id', fields.IntField(generated=True, primary_key=True, unique=True, db_index=True)),
+                ('created_at', fields.DatetimeField(null=True, auto_now=False, auto_now_add=True)),
+                ('updated_at', fields.DatetimeField(null=True, auto_now=True, auto_now_add=False)),
+                ('name', fields.CharField(unique=True, max_length=64)),
+                ('protocol', fields.CharEnumField(description='TLS: tls\nHTTPS: https', enum_type=DNSProtocol, max_length=16)),
+                ('nameserver', fields.CharField(max_length=255)),
+                ('dnssec', fields.BooleanField(default=False)),
+            ],
+            options={'table': 'dns_resolver', 'app': 'models', 'pk_attr': 'id'},
+            bases=['TortoiseModel'],
+        ),
         ops.CreateModel(
             name='DownloadDir',
             fields=[
@@ -232,6 +247,22 @@ class Migration(migrations.Migration):
             bases=['TortoiseModel'],
         ),
         ops.CreateModel(
+            name='HTTPProxy',
+            fields=[
+                ('id', fields.IntField(generated=True, primary_key=True, unique=True, db_index=True)),
+                ('created_at', fields.DatetimeField(null=True, auto_now=False, auto_now_add=True)),
+                ('updated_at', fields.DatetimeField(null=True, auto_now=True, auto_now_add=False)),
+                ('name', fields.CharField(unique=True, max_length=64)),
+                ('protocol', fields.CharEnumField(description='HTTP: http\nSOCKS5: socks5', enum_type=ProxyProtocol, max_length=16)),
+                ('host', fields.CharField(max_length=255)),
+                ('port', fields.IntField()),
+                ('username', fields.CharField(null=True, max_length=64)),
+                ('password', fields.CharField(null=True, max_length=64)),
+            ],
+            options={'table': 'http_proxy', 'app': 'models', 'pk_attr': 'id'},
+            bases=['TortoiseModel'],
+        ),
+        ops.CreateModel(
             name='MediaLib',
             fields=[
                 ('id', fields.IntField(generated=True, primary_key=True, unique=True, db_index=True)),
@@ -345,6 +376,33 @@ class Migration(migrations.Migration):
             bases=['TortoiseModel'],
         ),
         ops.CreateModel(
+            name='URLRule',
+            fields=[
+                ('id', fields.IntField(generated=True, primary_key=True, unique=True, db_index=True)),
+                ('created_at', fields.DatetimeField(null=True, auto_now=False, auto_now_add=True)),
+                ('updated_at', fields.DatetimeField(null=True, auto_now=True, auto_now_add=False)),
+                ('pattern', fields.CharField(unique=True, max_length=255)),
+                ('proxy_enabled', fields.BooleanField(default=True)),
+                ('dns_enabled', fields.BooleanField(default=True)),
+                ('priority', fields.IntField(unique=True)),
+                ('proxy', fields.ForeignKeyField('models.HTTPProxy', source_field='proxy_id', null=True, db_index=True, db_constraint=True, to_field='id', related_name='rules', on_delete=OnDelete.CASCADE)),
+            ],
+            options={'table': 'url_rule', 'app': 'models', 'pk_attr': 'id'},
+            bases=['TortoiseModel'],
+        ),
+        ops.CreateModel(
+            name='URLRuleDNS',
+            fields=[
+                ('id', fields.IntField(generated=True, primary_key=True, unique=True, db_index=True)),
+                ('created_at', fields.DatetimeField(null=True, auto_now=False, auto_now_add=True)),
+                ('updated_at', fields.DatetimeField(null=True, auto_now=True, auto_now_add=False)),
+                ('rule', fields.ForeignKeyField('models.URLRule', source_field='rule_id', db_index=True, db_constraint=True, to_field='id', related_name='resolvers', on_delete=OnDelete.CASCADE)),
+                ('resolver', fields.ForeignKeyField('models.DNSResolver', source_field='resolver_id', db_index=True, db_constraint=True, to_field='id', related_name='rules', on_delete=OnDelete.CASCADE)),
+            ],
+            options={'table': 'url_rule_dns', 'app': 'models', 'unique_together': (('rule', 'resolver'),), 'pk_attr': 'id'},
+            bases=['TortoiseModel'],
+        ),
+        ops.CreateModel(
             name='User',
             fields=[
                 ('id', fields.IntField(generated=True, primary_key=True, unique=True, db_index=True)),
@@ -357,6 +415,21 @@ class Migration(migrations.Migration):
                 ('preferences', fields.JSONField(null=True, encoder=JSON_DUMPS, decoder=loads)),
             ],
             options={'table': 'user', 'app': 'models', 'pk_attr': 'id'},
+            bases=['TortoiseModel'],
+        ),
+        ops.CreateModel(
+            name='Notification',
+            fields=[
+                ('id', fields.IntField(generated=True, primary_key=True, unique=True, db_index=True)),
+                ('created_at', fields.DatetimeField(null=True, auto_now=False, auto_now_add=True)),
+                ('updated_at', fields.DatetimeField(null=True, auto_now=True, auto_now_add=False)),
+                ('user', fields.ForeignKeyField('models.User', source_field='user_id', null=True, db_index=True, db_constraint=True, to_field='id', related_name='notifications', on_delete=OnDelete.CASCADE)),
+                ('role', fields.CharEnumField(null=True, description='USER: user\nADMIN: admin', enum_type=UserRole, max_length=16)),
+                ('title', fields.CharField(max_length=255)),
+                ('content', fields.TextField(unique=False)),
+                ('seen', fields.BooleanField(default=False)),
+            ],
+            options={'table': 'notification', 'app': 'models', 'pk_attr': 'id'},
             bases=['TortoiseModel'],
         ),
         ops.CreateModel(
