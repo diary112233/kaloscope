@@ -56,7 +56,9 @@ class DownloaderService(BaseService[Downloader], model=Downloader):
         Args:
             ids: The sorted downloader IDs.
         """
-        downloaders = await Downloader.filter(id__in=ids)
+        downloaders = await Downloader.all()
+        if set(ids) != set(d.id for d in downloaders):
+            raise KaloscopeException(ErrorCode.BAD_REQUEST)
         # avoid duplicate priorities
         priorities = [downloader.priority for downloader in downloaders]
         start_priority = 1 if min(priorities) > len(ids) else max(priorities) + 1

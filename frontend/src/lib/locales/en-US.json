@@ -548,6 +548,7 @@
     "flow_already_running": "Workflow task is already running!",
     "name_already_exists": "Name already exists!",
     "username_already_exists": "Username already exists!",
+    "pattern_already_exists": "Pattern already exists!",
     "incorrect_password": "Incorrect password!",
     "passwords_mismatch": "Passwords don't match!",
     "password_changed": "Password changed!",

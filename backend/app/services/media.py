@@ -21,7 +21,9 @@ class MediaLibService(BaseService[MediaLib], model=MediaLib):
         Args:
             ids: The sorted media library IDs.
         """
-        libs = await MediaLib.filter(id__in=ids)
+        libs = await MediaLib.all()
+        if set(ids) != set(lib.id for lib in libs):
+            raise KaloscopeException(ErrorCode.BAD_REQUEST)
         # avoid duplicate priorities
         priorities = [lib.priority for lib in libs]
         start_priority = 1 if min(priorities) > len(ids) else max(priorities) + 1

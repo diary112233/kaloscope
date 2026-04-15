@@ -17,7 +17,9 @@ class URLRuleService(BaseService[URLRule], model=URLRule):
         Args:
             ids: The sorted URL rule IDs.
         """
-        rules = await URLRule.filter(id__in=ids)
+        rules = await URLRule.all()
+        if set(ids) != set(rule.id for rule in rules):
+            raise KaloscopeException(ErrorCode.BAD_REQUEST)
         # avoid duplicate priorities
         priorities = [rule.priority for rule in rules]
         start_priority = 1 if min(priorities) > len(ids) else max(priorities) + 1
@@ -42,7 +44,7 @@ class URLRuleService(BaseService[URLRule], model=URLRule):
         # check if the pattern already exists
         filter = ~Q(id=obj.id) if obj.id else Q()
         if await URLRule.filter(filter & Q(pattern=obj.pattern)).count() > 0:
-            raise KaloscopeException(ErrorCode.NAME_ALREADY_EXISTS)
+            raise KaloscopeException(ErrorCode.PATTERN_ALREADY_EXISTS)
 
         if obj.id:
             # update the URL rule

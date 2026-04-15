@@ -135,13 +135,13 @@
         {
           icon: icons.arrowUp,
           text: $_('action.move_up'),
-          disabled: index === 0,
+          disabled: !!pattern || index === 0,
           onclick: () => moveUp(index)
         },
         {
           icon: icons.arrowDown,
           text: $_('action.move_down'),
-          disabled: index === rules.length - 1,
+          disabled: !!pattern || index === rules.length - 1,
           onclick: () => moveDown(index)
         },
         {
