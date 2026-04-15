@@ -82,7 +82,7 @@
   });
 </script>
 
-<DataView dvh loading={$loading} data={rules} tableClass="table-fixed">
+<DataView dvh loading={$loading} data={rules}>
   {#snippet filters()}
     <Search label={$_('field.pattern')} bind:value={pattern} onsearch={() => getAll()} />
   {/snippet}

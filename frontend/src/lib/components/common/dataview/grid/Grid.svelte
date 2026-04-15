@@ -157,7 +157,7 @@
         ondragstart={(event) => ondragstart(event, itemData)}
         ondragenter={() => ondragenter(itemData)}
         ondragend={(event) => ondragend(event)}
-        class="relative rotate-0 duration-200 {itemClass} {draggable ? 'cursor-move' : ''}"
+        class="relative min-w-0 rotate-0 duration-200 {itemClass} {draggable ? 'cursor-move' : ''}"
         animate:flip={{ duration: 500 }}
       >
         {@render item(itemData, index)}
@@ -165,7 +165,7 @@
     {/each}
   {:else}
     {#each data as itemData, index (index)}
-      <li class="relative rotate-0 duration-200 {itemClass}" transition:fade={{ duration: 200 }}>
+      <li class="relative min-w-0 rotate-0 duration-200 {itemClass}" transition:fade={{ duration: 200 }}>
         {@render item(itemData, index)}
       </li>
     {/each}
