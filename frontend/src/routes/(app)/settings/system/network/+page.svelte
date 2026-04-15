@@ -100,6 +100,8 @@
     <Search label={$_('field.pattern')} bind:value={pattern} onsearch={() => search()} />
   {/snippet}
   {#snippet actions()}
+    <Button size="md" icon={icons.bookGlobe} text={$_('field.secure_dns')} />
+    <Button size="md" icon={icons.serverLink} text={$_('field.http_proxy')} />
     <Button
       size="md"
       icon={icons.addCircle}
