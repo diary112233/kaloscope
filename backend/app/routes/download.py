@@ -41,7 +41,7 @@ download = Blueprint("download", url_prefix="/download")
 @download.get("/manager/list")
 async def list_downloaders(_) -> HTTPResponse:
     """List the downloaders."""
-    downloaders = await DownloaderService.dump_list(await Downloader.all())
+    downloaders = await DownloaderService.dump_list(Downloader.all())
     for downloader in downloaders:
         # check if the downloader is up or down
         adapter = load_config(downloader["config"])

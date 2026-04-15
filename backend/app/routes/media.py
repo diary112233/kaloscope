@@ -37,7 +37,7 @@ async def list_libraries(request: Request) -> HTTPResponse:
     if user.perms is not None:
         queries.append(Q(id__in=user.perms.media_lib_ids))
     # list the libraries without pagination
-    media_libs = await MediaLibService.dump_list(await MediaLib.filter(*queries))
+    media_libs = await MediaLibService.dump_list(MediaLib.filter(*queries))
     # attach the list of flow triggers
     for media_lib in media_libs:
         media_lib["triggers"] = await FlowTriggerService.get_triggers(
