@@ -36,7 +36,7 @@
   let copyId: number | null = $state(null);
 
   /**
-   * Search flow templates.
+   * Search for flow templates.
    *
    * @param page - The page number.
    * @param size - The page size.

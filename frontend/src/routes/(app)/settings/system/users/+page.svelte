@@ -60,7 +60,7 @@
   }
 
   /**
-   * Delete user by ID.
+   * Delete a user by ID.
    *
    * @param id - The user ID.
    */

@@ -33,7 +33,7 @@
   const loading = createLoading();
 
   /**
-   * Search download plans.
+   * Search for download plans.
    *
    * @param page - The page number.
    * @param size - The page size.

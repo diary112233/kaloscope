@@ -20,7 +20,7 @@
   const loading = createLoading();
 
   /**
-   * Delete download task by ID.
+   * Delete a download task by ID.
    *
    * @param form - The form element.
    * @param data - The form data.

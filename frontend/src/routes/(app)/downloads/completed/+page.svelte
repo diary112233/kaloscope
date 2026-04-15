@@ -28,7 +28,7 @@
   const loading = createLoading();
 
   /**
-   * Search download tasks.
+   * Search for download tasks.
    *
    * @param page - The page number.
    * @param size - The page size.

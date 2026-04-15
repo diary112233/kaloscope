@@ -41,7 +41,7 @@
   const loading = createLoading();
 
   /**
-   * Search flow graphs.
+   * Search for flow graphs.
    *
    * @param page - The page number.
    * @param size - The page size.
@@ -73,7 +73,7 @@
   }
 
   /**
-   * Retract flow graph by ID.
+   * Retract a flow graph by ID.
    *
    * @param id - The flow graph ID.
    */
@@ -86,7 +86,7 @@
   }
 
   /**
-   * Delete flow graph by ID.
+   * Delete a flow graph by ID.
    *
    * @param id - The flow graph ID.
    */
@@ -99,7 +99,7 @@
   }
 
   /**
-   * Upgrade flow graph by ID.
+   * Upgrade a flow graph by ID.
    *
    * @param id - The flow graph ID.
    * @param tmpl - The newest template to reference.

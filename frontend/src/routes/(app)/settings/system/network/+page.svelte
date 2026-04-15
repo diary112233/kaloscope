@@ -16,9 +16,9 @@
   const loading = createLoading();
 
   /**
-   * Get all URL rules.
+   * Search for URL rules.
    */
-  function getAll() {
+  function search() {
     loading.start();
     api
       .get('network/rule/list', { searchParams: { pattern } })
@@ -29,19 +29,24 @@
 
   /**
    * Delete a URL rule by ID.
+   *
+   * @param id - The URL rule ID.
    */
   function del(id: number) {
     loading.start();
     api
       .post('network/rule/delete', { json: { ids: [id] } })
-      .then(() => getAll())
+      .then(() => search())
       .catch(() => loading.end());
   }
 
   /**
-   * Toggle a boolean field on a URL rule.
+   * Toggle a boolean field of a URL rule.
+   *
+   * @param rule - The URL rule.
+   * @param field - The field to toggle.
    */
-  function toggle(rule: URLRule, field: 'http_proxy' | 'secure_dns') {
+  function toggle(rule: URLRule, field: 'secure_dns' | 'http_proxy') {
     const value = !rule[field];
     rule[field] = value;
     api.post('network/rule/toggle', { json: { id: rule.id, [field]: value } });
@@ -57,9 +62,13 @@
 
   /**
    * Move a rule up in the list.
+   *
+   * @param index - The index of the rule to move up.
    */
   function moveUp(index: number) {
-    if (index <= 0) return;
+    if (index <= 0) {
+      return;
+    }
     const temp = rules[index];
     rules[index] = rules[index - 1];
     rules[index - 1] = temp;
@@ -68,9 +77,13 @@
 
   /**
    * Move a rule down in the list.
+   *
+   * @param index - The index of the rule to move down.
    */
   function moveDown(index: number) {
-    if (index >= rules.length - 1) return;
+    if (index >= rules.length - 1) {
+      return;
+    }
     const temp = rules[index];
     rules[index] = rules[index + 1];
     rules[index + 1] = temp;
@@ -78,13 +91,13 @@
   }
 
   onMount(() => {
-    getAll();
+    search();
   });
 </script>
 
 <DataView dvh loading={$loading} data={rules}>
   {#snippet filters()}
-    <Search label={$_('field.pattern')} bind:value={pattern} onsearch={() => getAll()} />
+    <Search label={$_('field.pattern')} bind:value={pattern} onsearch={() => search()} />
   {/snippet}
   {#snippet actions()}
     <Button
@@ -160,8 +173,8 @@
   {/snippet}
 </DataView>
 
-<URLRuleEditor bind:this={creator} onsave={getAll} />
+<URLRuleEditor bind:this={creator} onsave={() => search()} />
 
 {#if selected}
-  <URLRuleEditor bind:this={updater} {...selected} onsave={getAll} />
+  <URLRuleEditor bind:this={updater} {...selected} onsave={() => search()} />
 {/if}

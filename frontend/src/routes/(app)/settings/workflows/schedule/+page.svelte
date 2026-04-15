@@ -37,7 +37,7 @@
   const loading = createLoading();
 
   /**
-   * Search flow jobs.
+   * Search for flow jobs.
    *
    * @param page - The page number.
    * @param size - The page size.

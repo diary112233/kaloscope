@@ -28,7 +28,7 @@
   }
 
   /**
-   * Delete media library by ID.
+   * Delete a media library by ID.
    *
    * @param id - The media library ID.
    */
@@ -44,7 +44,7 @@
    * Sort the media libraries.
    */
   const sort = debounce(() => {
-    const ids = libs.map((MediaLib) => MediaLib.id);
+    const ids = libs.map((lib) => lib.id);
     api.post('media/lib/sort', { json: { ids } });
   });
 

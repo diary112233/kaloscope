@@ -33,7 +33,7 @@
   const loadingIds = new SvelteSet<number>();
 
   /**
-   * Search download tasks.
+   * Search for download tasks.
    *
    * @param page - The page number.
    * @param size - The page size.

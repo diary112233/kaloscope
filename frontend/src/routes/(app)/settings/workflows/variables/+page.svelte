@@ -57,7 +57,7 @@
   }
 
   /**
-   * Delete global variable by ID.
+   * Delete a global variable by ID.
    *
    * @param id - The global variable ID.
    */

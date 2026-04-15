@@ -28,7 +28,7 @@
   }
 
   /**
-   * Delete downloader by ID.
+   * Delete a downloader by ID.
    *
    * @param id - The downloader ID.
    */
