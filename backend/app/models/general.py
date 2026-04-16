@@ -11,18 +11,27 @@ from tortoise.fields import (
 
 from app.models.base import Pageable, TortoiseModel
 from app.models.user import User, UserRole
+from app.utils.crypto import xor_decrypt
 
 
 # -------------------- ORM Models --------------------
 class GlobalVariable(TortoiseModel):
     key = CharField(max_length=64, unique=True)
     value = CharField(max_length=4096)
-    value_length = IntField()
     encrypted = BooleanField()
+
+    def value_length(self) -> int:
+        """Get the length of the decrypted value."""
+        if not self.encrypted:
+            return len(self.value)
+        return len(xor_decrypt(self.value))
 
     class Meta:
         table = "global_variable"
         ordering = ["-created_at"]
+
+    class PydanticMeta:
+        computed = ("value_length",)
 
 
 class GlobalCookie(TortoiseModel):

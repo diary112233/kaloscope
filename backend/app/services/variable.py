@@ -30,8 +30,7 @@ class VariableService(BaseService[GlobalVariable], model=GlobalVariable):
         if obj.id:
             # update the global variable
             await GlobalVariable.filter(id=obj.id).update(
-                value=xor_encrypt(obj.value) if obj.encrypted else obj.value,
-                value_length=len(obj.value),
+                value=xor_encrypt(obj.value) if obj.encrypted else obj.value
             )
             variable = await GlobalVariable.get(id=obj.id)
         else:
@@ -39,7 +38,6 @@ class VariableService(BaseService[GlobalVariable], model=GlobalVariable):
             variable = await GlobalVariable.create(
                 key=obj.key,
                 value=xor_encrypt(obj.value) if obj.encrypted else obj.value,
-                value_length=len(obj.value),
                 encrypted=obj.encrypted,
             )
 

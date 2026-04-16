@@ -240,7 +240,6 @@ class Migration(migrations.Migration):
                 ('updated_at', fields.DatetimeField(null=True, auto_now=True, auto_now_add=False)),
                 ('key', fields.CharField(unique=True, max_length=64)),
                 ('value', fields.CharField(max_length=4096)),
-                ('value_length', fields.IntField()),
                 ('encrypted', fields.BooleanField()),
             ],
             options={'table': 'global_variable', 'app': 'models', 'pk_attr': 'id'},
