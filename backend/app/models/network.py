@@ -2,6 +2,7 @@ from enum import StrEnum, auto
 
 from pydantic import BaseModel, Field, PositiveInt
 from tortoise.fields import (
+    SET_NULL,
     BooleanField,
     CharEnumField,
     CharField,
@@ -76,7 +77,11 @@ class URLRule(TortoiseModel):
     priority = IntField(unique=True)
     proxy_id: int | None
     proxy: ForeignKeyNullableRelation[HTTPProxy] = ForeignKeyField(
-        "models.HTTPProxy", related_name="rules", db_index=True, null=True
+        "models.HTTPProxy",
+        related_name="rules",
+        db_index=True,
+        null=True,
+        on_delete=SET_NULL,
     )
     # relational fields
     resolvers: ReverseRelation["URLRuleDNS"]

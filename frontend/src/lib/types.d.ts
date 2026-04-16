@@ -185,6 +185,8 @@ export type URLRule = {
   secure_dns: boolean;
   http_proxy: boolean;
   priority: number;
+  proxy_id: number | null;
+  resolver_ids: number[];
 };
 
 /**

@@ -198,7 +198,7 @@
             onclick={() => {
               const selected = (values[key] ?? []) as string[];
               if (selected.includes(value)) {
-                values[key] = selected.filter((n) => n !== value);
+                values[key] = selected.filter((v) => v !== value);
                 if (values[key].length === 0) {
                   delete values[key];
                 }

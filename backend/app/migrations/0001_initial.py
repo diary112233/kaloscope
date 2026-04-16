@@ -385,7 +385,7 @@ class Migration(migrations.Migration):
                 ('secure_dns', fields.BooleanField(default=True)),
                 ('http_proxy', fields.BooleanField(default=True)),
                 ('priority', fields.IntField(unique=True)),
-                ('proxy', fields.ForeignKeyField('models.HTTPProxy', source_field='proxy_id', null=True, db_index=True, db_constraint=True, to_field='id', related_name='rules', on_delete=OnDelete.CASCADE)),
+                ('proxy', fields.ForeignKeyField('models.HTTPProxy', source_field='proxy_id', null=True, db_index=True, db_constraint=True, to_field='id', related_name='rules', on_delete=OnDelete.SET_NULL)),
             ],
             options={'table': 'url_rule', 'app': 'models', 'pk_attr': 'id'},
             bases=['TortoiseModel'],

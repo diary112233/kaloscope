@@ -29,6 +29,9 @@ async def list_rules(_, query: URLRuleQuery) -> HTTPResponse:
     if query.pattern:
         queries.append(Q(pattern__icontains=query.pattern))
     rules = await URLRuleService.dump_list(URLRule.filter(*queries))
+    for rule in rules:
+        rule["proxy_id"] = p["id"] if (p := rule.pop("proxy", None)) else None
+        rule["resolver_ids"] = [r["resolver_id"] for r in rule.pop("resolvers", [])]
     return json(rules)
 
 

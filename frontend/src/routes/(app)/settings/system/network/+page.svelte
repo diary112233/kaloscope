@@ -249,10 +249,10 @@
   {/snippet}
 </DataView>
 
-<URLRuleEditor bind:this={creator} onsave={() => search()} />
+<URLRuleEditor bind:this={creator} {resolvers} {proxies} onsave={() => search()} />
 
 {#if selected}
-  <URLRuleEditor bind:this={updater} {...selected} onsave={() => search()} />
+  <URLRuleEditor bind:this={updater} {...selected} {resolvers} {proxies} onsave={() => search()} />
 {/if}
 
 <Modal icon={icons.bookGlobe} title={$_('entity.dns_resolvers')} maxWidth="34rem" bind:this={resolverModal}>
