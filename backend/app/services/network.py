@@ -12,6 +12,7 @@ from app.models.network import (
     URLRuleUpsert,
 )
 from app.services.base import BaseService
+from app.utils.crypto import xor_encrypt
 
 
 class URLRuleService(BaseService[URLRule], model=URLRule):
@@ -107,9 +108,10 @@ class DNSResolverService(BaseService[DNSResolver], model=DNSResolver):
         data = obj.model_dump(exclude={"id"})
         if obj.id:
             await DNSResolver.filter(id=obj.id).update(**data)
-            return await DNSResolver.get(id=obj.id)
+            resolver = await DNSResolver.get(id=obj.id)
         else:
-            return await DNSResolver.create(**data)
+            resolver = await DNSResolver.create(**data)
+        return resolver
 
 
 class HTTPProxyService(BaseService[HTTPProxy], model=HTTPProxy):
@@ -133,9 +135,16 @@ class HTTPProxyService(BaseService[HTTPProxy], model=HTTPProxy):
         if await HTTPProxy.filter(filter & Q(name=obj.name)).count() > 0:
             raise KaloscopeException(ErrorCode.NAME_ALREADY_EXISTS)
 
-        data = obj.model_dump(exclude={"id"})
+        data = obj.model_dump(exclude={"id", "password"})
+        if obj.password:
+            # encrypt the password before saving to the database
+            data["password"] = xor_encrypt(obj.password)
+        elif not obj.username:
+            data["password"] = None
+
         if obj.id:
             await HTTPProxy.filter(id=obj.id).update(**data)
-            return await HTTPProxy.get(id=obj.id)
+            proxy = await HTTPProxy.get(id=obj.id)
         else:
-            return await HTTPProxy.create(**data)
+            proxy = await HTTPProxy.create(**data)
+        return proxy

@@ -201,6 +201,21 @@ export type DNSResolver = {
 };
 
 /**
+ * The type of the HTTP proxy server.
+ */
+export type HTTPProxy = {
+  id: number;
+  created_at: string;
+  updated_at: string;
+  name: string;
+  protocol: 'http' | 'socks5';
+  host: string;
+  port: number;
+  username: string | null;
+  pw_length: number;
+};
+
+/**
  * The type of the media library.
  */
 export type MediaLib = {

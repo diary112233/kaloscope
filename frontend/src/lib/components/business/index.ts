@@ -19,6 +19,7 @@ export { default as Uploader } from './indexer/Uploader.svelte';
 export { default as MediaLibEditor } from './library/MediaLibEditor.svelte';
 
 export { default as DNSResolverEditor } from './network/DNSResolverEditor.svelte';
+export { default as ProxyServerEditor } from './network/ProxyServerEditor.svelte';
 export { default as URLRuleEditor } from './network/URLRuleEditor.svelte';
 
 export { default as UserCenter } from './user/UserCenter.svelte';

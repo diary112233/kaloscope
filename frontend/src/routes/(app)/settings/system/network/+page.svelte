@@ -8,13 +8,14 @@
     DNSResolverEditor,
     HCell,
     Modal,
+    ProxyServerEditor,
     Search,
     URLRuleEditor
   } from '$lib/components';
   import { createLoading } from '$lib/helpers';
   import { _, dateTime } from '$lib/i18n';
   import { icons } from '$lib/icons';
-  import type { DNSResolver, Resp, URLRule } from '$lib/types';
+  import type { DNSResolver, HTTPProxy, Resp, URLRule } from '$lib/types';
   import { debounce } from '$lib/utils';
   import { onMount, tick } from 'svelte';
 
@@ -131,9 +132,40 @@
       .then(() => getDNSResolvers());
   }
 
+  // HTTP proxy states
+  let proxies: HTTPProxy[] = $state([]);
+  let proxyModal: Modal;
+  let proxyCreator: ProxyServerEditor | null = $state(null);
+  let proxyUpdater: ProxyServerEditor | null = $state(null);
+  let selectedProxy: HTTPProxy | null = $state(null);
+
+  /**
+   * Get the HTTP proxy servers.
+   */
+  function getProxyServers() {
+    api
+      .get('network/proxy/list')
+      .json<Resp<HTTPProxy[]>>()
+      .then((resp) => (proxies = resp.data));
+  }
+
+  /**
+   * Delete an HTTP proxy server by ID.
+   *
+   * @param id - The HTTP proxy server ID.
+   */
+  function delProxyServer(id: number) {
+    api
+      .post('network/proxy/delete', {
+        json: { ids: [id] }
+      })
+      .then(() => getProxyServers());
+  }
+
   onMount(() => {
     search();
     getDNSResolvers();
+    getProxyServers();
   });
 </script>
 
@@ -143,7 +175,7 @@
   {/snippet}
   {#snippet actions()}
     <Button size="md" icon={icons.bookGlobe} text={$_('entity.dns_resolvers')} onclick={() => resolverModal.show()} />
-    <Button size="md" icon={icons.serverLink} text={$_('entity.proxy_servers')} />
+    <Button size="md" icon={icons.serverLink} text={$_('entity.proxy_servers')} onclick={() => proxyModal.show()} />
     <Button
       size="md"
       icon={icons.addCircle}
@@ -269,4 +301,52 @@
 
 {#if selectedResolver}
   <DNSResolverEditor bind:this={resolverUpdater} {...selectedResolver} onsave={() => getDNSResolvers()} />
+{/if}
+
+<Modal icon={icons.serverLink} title={$_('entity.proxy_servers')} maxWidth="34rem" bind:this={proxyModal}>
+  <div class="flex max-h-96 min-h-18 flex-col gap-2 overflow-y-auto p-1">
+    {#each proxies as proxy (proxy.id)}
+      <div class="my-auto flex items-center gap-2 rounded-selector bg-base-200 p-2">
+        <span class="grow truncate text-sm">{proxy.name}</span>
+        <span class="divider mx-0 divider-horizontal h-6 w-0 self-center"></span>
+        <Button
+          size="xs"
+          icon={icons.edit}
+          onclick={() => {
+            selectedProxy = proxy;
+            tick().then(() => proxyUpdater?.showModal());
+          }}
+        />
+        <Button
+          size="xs"
+          icon={icons.deleteDismiss}
+          onclick={() => {
+            confirm({
+              icon: icons.deleteDismiss,
+              title: `${$_('action.delete', $_('entity.proxy_server'))} [${proxy.name}]`,
+              onconfirm: () => delProxyServer(proxy.id)
+            });
+          }}
+        />
+      </div>
+    {/each}
+    {#if proxies.length === 0}
+      <div class="m-auto text-sm opacity-50">{$_('data.nodata')}</div>
+    {/if}
+  </div>
+  <div class="flex justify-end border-t pt-4">
+    <Button
+      icon={icons.addCircle}
+      text={$_('action.add', $_('entity.proxy_server'))}
+      square={false}
+      class="font-normal btn-soft"
+      onclick={() => proxyCreator?.showModal()}
+    />
+  </div>
+</Modal>
+
+<ProxyServerEditor bind:this={proxyCreator} onsave={() => getProxyServers()} />
+
+{#if selectedProxy}
+  <ProxyServerEditor bind:this={proxyUpdater} {...selectedProxy} onsave={() => getProxyServers()} />
 {/if}

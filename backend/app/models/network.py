@@ -13,6 +13,7 @@ from tortoise.fields import (
 )
 
 from app.models.base import Pageable, TortoiseModel
+from app.utils.crypto import xor_decrypt
 
 
 # -------------------- Enumerations --------------------
@@ -37,12 +38,19 @@ class HTTPProxy(TortoiseModel):
     # relational fields
     rules: ReverseRelation["URLRule"]
 
+    def pw_length(self) -> int:
+        """Get the length of the decrypted password."""
+        if not self.password:
+            return 0
+        return len(xor_decrypt(self.password))
+
     class Meta:
         table = "http_proxy"
         ordering = ["name"]
 
     class PydanticMeta:
         exclude = ("password", "rules")
+        computed = ("pw_length",)
 
 
 class DNSResolver(TortoiseModel):
@@ -107,8 +115,8 @@ class HTTPProxyUpsert(BaseModel):
     protocol: ProxyProtocol
     host: str = Field(min_length=1, max_length=255)
     port: int = Field(ge=1, le=65535)
-    username: str | None = Field(min_length=1, max_length=64, default=None)
-    password: str | None = Field(min_length=1, max_length=64, default=None)
+    username: str | None = Field(max_length=64, default=None)
+    password: str | None = Field(max_length=64, default=None)
 
 
 class DNSResolverQuery(Pageable):
