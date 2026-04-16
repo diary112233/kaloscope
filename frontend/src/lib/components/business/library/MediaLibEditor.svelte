@@ -45,11 +45,11 @@
    */
   function upsert(form: HTMLFormElement, data: FormData) {
     loading.start();
-    const jsonData: Record<string, unknown> = Object.fromEntries(data);
-    jsonData.id = id;
-    jsonData.triggers = triggers;
+    const json: Record<string, unknown> = Object.fromEntries(data);
+    json.id = id;
+    json.triggers = triggers;
     api
-      .post('media/lib/upsert', { json: jsonData })
+      .post('media/lib/upsert', { json })
       .json<Resp<MediaLib>>()
       .then((resp) => {
         modal.close();

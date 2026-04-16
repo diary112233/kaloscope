@@ -74,11 +74,11 @@ methods:
    */
   function upsert(form: HTMLFormElement, data: FormData) {
     loading.start();
-    const jsonData: Record<string, unknown> = Object.fromEntries(data);
-    jsonData.id = id;
-    jsonData.config = config;
+    const json: Record<string, unknown> = Object.fromEntries(data);
+    json.id = id;
+    json.config = config;
     api
-      .post('download/manager/upsert', { json: jsonData })
+      .post('download/manager/upsert', { json })
       .json<Resp<Downloader>>()
       .then((resp) => {
         modal.close();

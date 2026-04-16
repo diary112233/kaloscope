@@ -85,19 +85,19 @@
     }
     // send the request
     loading.start();
-    const jsonData: Record<string, unknown> = { id, graph_id, trigger, bootparams: params };
+    const json: Record<string, unknown> = { id, graph_id, trigger, bootparams: params };
     if (trigger === 'date') {
-      jsonData.run_date = run_date || null;
+      json.run_date = run_date || null;
     } else if (trigger === 'cron') {
-      jsonData.cron_expr = cron_expr;
+      json.cron_expr = cron_expr;
     } else if (trigger === 'interval') {
-      jsonData.interval_num = interval_num;
-      jsonData.interval_unit = interval_unit;
-      jsonData.interval_start = interval_start || null;
-      jsonData.interval_end = interval_end || null;
+      json.interval_num = interval_num;
+      json.interval_unit = interval_unit;
+      json.interval_start = interval_start || null;
+      json.interval_end = interval_end || null;
     }
     api
-      .post('flow/job/upsert', { json: jsonData })
+      .post('flow/job/upsert', { json })
       .json<Resp<FlowJob>>()
       .then((resp) => {
         modal.close();

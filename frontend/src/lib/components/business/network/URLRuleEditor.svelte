@@ -41,11 +41,11 @@
    */
   function upsert(form: HTMLFormElement, data: FormData) {
     loading.start();
-    const jsonData: Record<string, unknown> = Object.fromEntries(data);
-    jsonData.id = id;
-    jsonData.pattern = `${secure ? HTTPS : HTTP}${pattern}`;
+    const json: Record<string, unknown> = Object.fromEntries(data);
+    json.id = id;
+    json.pattern = `${secure ? HTTPS : HTTP}${pattern}`;
     api
-      .post('network/rule/upsert', { json: jsonData })
+      .post('network/rule/upsert', { json })
       .json<Resp<URLRule>>()
       .then((resp) => {
         modal.close();

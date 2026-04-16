@@ -39,10 +39,10 @@
    */
   function upsert(data: FormData) {
     loading.start();
-    const jsonData: Record<string, unknown> = Object.fromEntries(data);
-    jsonData.id = id;
+    const json: Record<string, unknown> = Object.fromEntries(data);
+    json.id = id;
     api
-      .post('network/dns/upsert', { json: jsonData })
+      .post('network/dns/upsert', { json })
       .json<Resp<DNSResolver>>()
       .then((resp) => {
         modal.close();

@@ -39,11 +39,11 @@
    */
   function upsert(form: HTMLFormElement, data: FormData) {
     loading.start();
-    const jsonData: Record<string, unknown> = Object.fromEntries(data);
-    jsonData.id = id;
-    jsonData.encrypted = encrypted;
+    const json: Record<string, unknown> = Object.fromEntries(data);
+    json.id = id;
+    json.encrypted = encrypted;
     api
-      .post('variable/upsert', { json: jsonData })
+      .post('variable/upsert', { json })
       .json<Resp<GlobalVariable>>()
       .then((resp) => {
         modal.close();

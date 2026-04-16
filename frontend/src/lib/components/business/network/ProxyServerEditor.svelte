@@ -44,10 +44,10 @@
    */
   function upsert(data: FormData) {
     loading.start();
-    const jsonData: Record<string, unknown> = Object.fromEntries(data);
-    jsonData.id = id;
+    const json: Record<string, unknown> = Object.fromEntries(data);
+    json.id = id;
     api
-      .post('network/proxy/upsert', { json: jsonData })
+      .post('network/proxy/upsert', { json })
       .json<Resp<HTTPProxy>>()
       .then((resp) => {
         modal.close();
