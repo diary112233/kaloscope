@@ -118,6 +118,9 @@ class NetworkTransport(httpx.AsyncHTTPTransport):
                 proxy_rule.pattern,
                 proxy.name,
             )
+            if proxy.protocol == ProxyProtocol.HTTP and request.url.host != host:
+                # for HTTP proxies, ensure we use the original hostname in the URL
+                request.url = request.url.copy_with(host=host)
             return await self._proxy_request(proxy, request)
 
         # use the default transport if no proxy rules match
@@ -158,8 +161,8 @@ class NetworkTransport(httpx.AsyncHTTPTransport):
                 return cached
 
         # query all resolvers concurrently, take the first valid result
-        tasks = [self._dns_query(host, resolver) for resolver in resolvers]
-        for earliest in asyncio.as_completed(tasks):
+        queries = [self._dns_query(host, resolver) for resolver in resolvers]
+        for earliest in asyncio.as_completed(queries):
             if ip := await earliest:
                 return ip
 
@@ -179,7 +182,7 @@ class NetworkTransport(httpx.AsyncHTTPTransport):
             query = dns.message.make_query(host, dns.rdatatype.A)
             if resolver.dnssec:
                 query.flags |= dns.flags.AD
-                query.use_edns(ednsflags=dns.flags.DO)
+                query.want_dnssec(True)  # optional: AD flag is sufficient here
 
             if resolver.protocol == DNSProtocol.TLS:
                 response = await dns.asyncquery.tls(query, resolver.nameserver)
