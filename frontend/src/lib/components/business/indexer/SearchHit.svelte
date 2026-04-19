@@ -200,8 +200,8 @@
   {@const btnClass = 'hover:bg-base-300 hover:text-base-content border-0 bg-black/60 text-white'}
   {@const ratio = coverRatio ?? '16/9'}
   <!-- svelte-ignore a11y_click_events_have_key_events -->
-  <div tabindex="0" role="button" class="group relative {pointerClass}" onclick={() => gotoDetails(rsrc)}>
-    <Rating score={rsrc.rating} class="absolute top-1 left-1 z-1" />
+  <div tabindex="0" role="button" class="group @container relative {pointerClass}" onclick={() => gotoDetails(rsrc)}>
+    <Rating score={rsrc.rating} class="absolute top-1 left-1 z-1 text-[clamp(0.75rem,7cqw,0.875rem)]" />
     <div class="absolute top-0 right-0 z-1 flex gap-2 p-1 opacity-0 group-hover:opacity-100 {transClass}">
       {#if detailsConfig && rsrc.favorite !== undefined}
         <Button
@@ -244,12 +244,12 @@
       </div>
     {/if}
   </div>
-  <div class="flex flex-col gap-2 p-2">
+  <div class="@container flex flex-col gap-2 p-2">
     <!-- svelte-ignore a11y_click_events_have_key_events -->
     <div
       tabindex="0"
       role="button"
-      class="line-clamp-2 h-10 text-sm font-medium {pointerClass}"
+      class="line-clamp-2 h-10 text-[clamp(0.75rem,7cqw,0.875rem)] font-medium {pointerClass}"
       title={rsrc.title}
       onclick={() => gotoDetails(rsrc)}
     >

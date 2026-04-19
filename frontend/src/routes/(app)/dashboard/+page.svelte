@@ -289,7 +289,7 @@
   });
 </script>
 
-<Container padding="1rem 0" maxWidth="max(150vh,40rem)">
+<Container padding="1rem 0" maxWidth="max(150vh,72rem)">
   <!-- recent searches -->
   {#if showSearches && searches.length > 0}
     <div class="mb-10" transition:fade={{ duration: 200 }}>
