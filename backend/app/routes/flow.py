@@ -66,7 +66,13 @@ async def add_repository(_, body: RepositoryAdd) -> HTTPResponse:
 @validate(json=IDs)
 async def delete_repositories(_, body: IDs) -> HTTPResponse:
     """Delete the flow repositories."""
-    await FlowRepository.filter(id__in=body.ids).delete()
+    for id in body.ids:
+        try:
+            await FlowRepositoryService.delete(int(id))
+        except Exception as e:
+            if len(body.ids) == 1:
+                raise e
+            logger.error("Failed to delete the flow repository: %s", id, exc_info=True)
     return empty()
 
 
