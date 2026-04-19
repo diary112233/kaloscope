@@ -75,8 +75,8 @@ COPY --from=frontend /pages/build/ ./frontend/build/
 ENV PUID=0
 ENV PGID=0
 ENV UMASK=022
-ENV AUTO_TLS=false
 ENV TLS_HOSTNAME=
+ENV AUTO_TLS=false
 ENV DEBUG_MODE=false
 ENV ENABLE_ARIA2=false
 
