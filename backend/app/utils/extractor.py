@@ -139,7 +139,7 @@ def extract_title(name: str, ext: bool = False) -> str:
     title = _PREFIX_PATTERN.sub("", stem).strip()
 
     # remove standalone year token before video tags
-    title = re.sub(r"(?<![\w])[\(\[（]?(19|20)\d{2}[\)\]）]?(?![\w])", " ", title)
+    title = re.sub(r"(?<!\d)[\(\[（]?(19|20)\d{2}[\)\]）]?(?!\d)", " ", title)
 
     # remove trailing technical tags and everything after them
     title = _VIDEO_TAGS_PATTERN.sub("", title)
