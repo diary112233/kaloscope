@@ -173,8 +173,8 @@ class JobAction(Enum):
 class FlowEngine:
     """The flow engine for managing the flow execution and scheduling."""
 
-    _EVENT_CONSUMER = "flow_event_consumer"
     _JOB_LISTENER = "flow_job_listener"
+    _EVENT_CONSUMER = "flow_event_consumer"
 
     def __init__(self, app: Sanic):
         """Initialize the flow engine.
@@ -318,12 +318,13 @@ class FlowEngine:
                         if self._job_actions.get(id) == JobAction.REFRESH:
                             # add the job to the scheduler again
                             await self.add_job(id)
+
                         self._job_actions.pop(id)
                 await asyncio.sleep(1)
             except asyncio.CancelledError:
                 break
             except Exception:
-                logger.error("Failed to process the job actions!", exc_info=True)
+                logger.error("Failed to process the job action!", exc_info=True)
                 await asyncio.sleep(1)
 
     async def add_job(self, job_id: int):

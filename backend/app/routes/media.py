@@ -59,8 +59,8 @@ async def sort_libraries(_, body: IDs) -> HTTPResponse:
 @validate(json=MediaLibUpsert)
 async def upsert_library(_, body: MediaLibUpsert) -> HTTPResponse:
     """Create or update a media library."""
-    library = await MediaLibService.upsert(body)
-    return json(await MediaLibService.dump(library))
+    lib = await MediaLibService.upsert(body)
+    return json(await MediaLibService.dump(lib))
 
 
 @media.post("/lib/delete")

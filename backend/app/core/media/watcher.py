@@ -1,8 +1,9 @@
 import asyncio
 import queue
 from datetime import UTC, datetime
+from enum import Enum, auto
 from functools import cached_property
-from multiprocessing.managers import ListProxy
+from multiprocessing.managers import DictProxy, ListProxy
 from multiprocessing.synchronize import Lock
 from pathlib import Path
 from queue import Queue
@@ -106,10 +107,17 @@ class EventHandler(FileSystemEventHandler):
         self._loop.create_task(self._persist(event))
 
 
+class LibAction(Enum):
+    """The actions for the media library watcher."""
+
+    SCAN = auto()
+    REMOVE = auto()
+
+
 class LibWatcher:
     """The media library watcher."""
 
-    _REMOVAL_LISTENER = "lib_removal_listener"
+    _LISTENER = "lib_listener"
     _observers: dict[str, tuple[BaseObserver, Queue]] = {}
 
     def __init__(self, app: Sanic):
@@ -125,8 +133,12 @@ class LibWatcher:
         return self._app.shared_ctx.lib_watcher_lock
 
     @cached_property
-    def _removing_paths(self) -> ListProxy[str]:
-        return self._app.shared_ctx.lib_removing_paths
+    def _watcher_actions(self) -> DictProxy[str, LibAction]:
+        return self._app.shared_ctx.lib_watcher_actions
+
+    @cached_property
+    def _scanning_paths(self) -> ListProxy[str]:
+        return self._app.shared_ctx.lib_scanning_paths
 
     @cached_property
     def _observing_paths(self) -> ListProxy[str]:
@@ -137,13 +149,33 @@ class LibWatcher:
         libs = await MediaLib.all()
         for lib in libs:
             await self.add_observer(lib, initialize=False)
-        self._app.add_task(self._removal_listener(), name=self._REMOVAL_LISTENER)
+        self._app.add_task(self._listener(), name=self._LISTENER)
 
     async def shutdown(self):
         """Shutdown the watcher."""
         for path in list(self._observers.keys()):
             await self.remove_observer(path, force=True)
-        await self._app.cancel_task(self._REMOVAL_LISTENER)
+        await self._app.cancel_task(self._LISTENER)
+
+    async def _listener(self):
+        """Listen for the actions and perform the corresponding operations."""
+        while True:
+            try:
+                for path in list(self._watcher_actions.keys()):
+                    if path in self._observers:
+                        action = self._watcher_actions.get(path)
+                        if action == LibAction.SCAN:
+                            await self.scan_directory(path)
+                        elif action == LibAction.REMOVE:
+                            await self.remove_observer(path)
+
+                        self._watcher_actions.pop(path)
+                await asyncio.sleep(10)
+            except asyncio.CancelledError:
+                break
+            except Exception:
+                logger.error("Failed to process the watcher action!", exc_info=True)
+                await asyncio.sleep(5)
 
     async def add_observer(self, lib: MediaLib, *, initialize: bool = False):
         """Add a directory observer to monitor the specified path.
@@ -157,7 +189,7 @@ class LibWatcher:
                 path = lib.dir
                 if path not in self._observing_paths:
                     # create a new queue to store media events
-                    events = await self._create_queue(lib)
+                    events = await self._create_events(lib)
                     handler = EventHandler(lib, self._app.loop, events)
                     observer = Observer()
                     observer.schedule(handler, path, recursive=True)
@@ -178,9 +210,8 @@ class LibWatcher:
             path: The directory path to stop monitoring.
             force: Whether to forcefully remove the observer.
         """
-
         if path not in self._observers:
-            self._removing_paths.append(path)
+            self._watcher_actions[path] = LibAction.REMOVE
             return
 
         self._watcher_lock.acquire()
@@ -194,22 +225,7 @@ class LibWatcher:
         finally:
             self._watcher_lock.release()
 
-    async def _removal_listener(self):
-        """Listen for removal paths and remove the matching observers."""
-        while True:
-            try:
-                for path in self._removing_paths[:]:
-                    if path in self._observers:
-                        await self.remove_observer(path)
-                        self._removing_paths.remove(path)
-                await asyncio.sleep(10)
-            except asyncio.CancelledError:
-                break
-            except Exception:
-                logger.error("Failed to remove the matching observers!", exc_info=True)
-                await asyncio.sleep(5)
-
-    async def _create_queue(self, lib: MediaLib) -> Queue:
+    async def _create_events(self, lib: MediaLib) -> Queue:
         """Create a new queue for the specified media library.
 
         Args:
@@ -244,6 +260,19 @@ class LibWatcher:
             except Exception:
                 logger.error("Failed to consume the media event!", exc_info=True)
                 await asyncio.sleep(1)
+
+    async def scan_directory(self, path: str):
+        """Scan the directory for existing files and create events.
+
+        Args:
+            path: The directory path to scan for existing files.
+        """
+        if path not in self._observers:
+            self._watcher_actions[path] = LibAction.SCAN
+            return
+
+        lib = await MediaLib.filter(dir=path).get()
+        await self._scan_directory(lib)
 
     async def _scan_directory(self, lib: MediaLib, *, initialize: bool = False):
         """Scan the directory for existing files and create events.

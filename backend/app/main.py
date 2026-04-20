@@ -101,7 +101,8 @@ async def init_shared_ctx(app: Sanic):
     shared.repo_fetcher_flag = multiprocessing.Event()
     # shared objects for the media library watcher
     shared.lib_watcher_lock = multiprocessing.Lock()
-    shared.lib_removing_paths = sync_manager.list()
+    shared.lib_watcher_actions = sync_manager.dict()
+    shared.lib_scanning_paths = sync_manager.list()
     shared.lib_observing_paths = sync_manager.list()
     # shared objects for the download synchronizer
     shared.dl_syncer_lock = multiprocessing.Lock()
