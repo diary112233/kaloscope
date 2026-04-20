@@ -31,6 +31,7 @@ from watchdog.events import (
 from watchdog.observers import Observer
 from watchdog.observers.api import BaseObserver
 
+from app.core.exceptions import ErrorCode, KaloscopeException
 from app.core.media.handlers.base import MetaKeywords, get_handler
 from app.core.media.shelver import is_nfo, update_metadata
 from app.models.flow import GraphCategory
@@ -197,7 +198,7 @@ class LibWatcher:
                     # create a task to consume events
                     self._app.add_task(self._event_consumer(events), name=encrypt(path))
                     # scan the directory for existing files
-                    self._app.add_task(self._scan_directory(lib))
+                    self._app.add_task(self.scan_directory(lib))
                     self._observing_paths.append(path)
             finally:
                 self._watcher_lock.release()
@@ -273,14 +274,22 @@ class LibWatcher:
         else:
             path = target
 
+        # check if the path is already being scanned
+        if path in self._scanning_paths:
+            raise KaloscopeException(ErrorCode.SCAN_IN_PROGRESS)
+        self._scanning_paths.append(path)
+
         # check if the path is observed by the current worker
         if path not in self._observers:
             self._watcher_actions[path] = LibAction.SCAN
             return
 
-        if lib is None:
-            lib = await MediaLib.filter(dir=path).get()
-        await self._scan_directory(lib)
+        try:
+            if lib is None:
+                lib = await MediaLib.filter(dir=path).get()
+            await self._scan_directory(lib)
+        finally:
+            self._scanning_paths.remove(path)
 
     async def _scan_directory(self, lib: MediaLib):
         """Scan the directory for existing files and create events.

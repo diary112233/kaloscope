@@ -554,6 +554,7 @@
     "name_already_exists": "Name already exists!",
     "username_already_exists": "Username already exists!",
     "pattern_already_exists": "Pattern already exists!",
+    "scan_in_progress": "Scanning in progress, please try again later!",
     "incorrect_password": "Incorrect password!",
     "passwords_mismatch": "Passwords don't match!",
     "password_changed": "Password changed!",

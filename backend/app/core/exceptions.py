@@ -29,6 +29,7 @@ class ErrorCode(StrEnum):
     NAME_ALREADY_EXISTS = auto()
     USERNAME_ALREADY_EXISTS = auto()
     PATTERN_ALREADY_EXISTS = auto()
+    SCAN_IN_PROGRESS = auto()
     INCORRECT_PASSWORD = auto()
     DUPLICATE_DIRECTORY = auto()
     INVALID_YAML_CONFIG = auto()
