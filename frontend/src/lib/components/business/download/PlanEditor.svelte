@@ -231,7 +231,9 @@
         })
         .json<Resp<Page<FlowGraph>>>()
         .then((resp) => {
-          graphOptions = resp.data.items.map((g) => ({ value: g.id, label: g.name }));
+          graphOptions = resp.data.items
+            .filter((g) => g.node_types.includes('search_start'))
+            .map((g) => ({ value: g.id, label: g.name }));
           graph_id = resp.data.items[0]?.id;
           configure(graph_id);
         });

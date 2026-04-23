@@ -91,7 +91,8 @@
       })
       .json<Resp<Page<FlowGraph>>>()
       .then((resp) => {
-        graphs = resp.data.items;
+        const items = resp.data.items;
+        graphs = items.filter((g) => g.node_types.includes('search_start'));
       });
   });
 </script>
