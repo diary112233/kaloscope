@@ -591,5 +591,15 @@
       "title": "清空记录",
       "content": "是否确定要删除所有记录？"
     }
+  },
+  "notification": {
+    "download_failed": {
+      "title": "下载失败",
+      "content": "\"{name}\" 下载失败！错误信息：{error}"
+    },
+    "download_completed": {
+      "title": "下载完成",
+      "content": "\"{name}\" 下载完成！"
+    }
   }
 }

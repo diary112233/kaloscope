@@ -591,5 +591,15 @@
       "title": "Clear All",
       "content": "Are you sure you want to delete all records?"
     }
+  },
+  "notification": {
+    "download_failed": {
+      "title": "Download Failed",
+      "content": "\"{name}\" failed to download! Error: {error}"
+    },
+    "download_completed": {
+      "title": "Download Completed",
+      "content": "\"{name}\" downloaded successfully!"
+    }
   }
 }

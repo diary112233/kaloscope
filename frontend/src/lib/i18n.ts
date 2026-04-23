@@ -6,15 +6,18 @@ export { locale, locales, number } from 'svelte-i18n';
 export { format as _ };
 
 type Nullable<T> = T | null | undefined;
+type MessageObject = {
+  locale?: string;
+  format?: string;
+  default?: string;
+  values?: any; // eslint-disable-line
+};
 
 /**
  * Formatter for i18n messages.
  */
 export const format = derived(_format, ($format) => {
-  return (
-    id: Nullable<string>,
-    values?: string | number | (string | number)[] | { locale?: string; default?: string }
-  ) => {
+  return (id: Nullable<string>, values?: string | number | (string | number)[] | MessageObject) => {
     if (id === null || id === undefined) {
       return EMPTY;
     }

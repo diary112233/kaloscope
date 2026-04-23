@@ -10,6 +10,9 @@
     onrefresh?: (unread: number) => void;
   };
 
+  // the notification templates that need i18n processing
+  const TEMPLATES: string[] = ['DOWNLOAD_FAILED', 'DOWNLOAD_COMPLETED'];
+
   let notifications: Notification[] = $state([]);
   let total = $derived(notifications.length);
   let unread = $derived(notifications.filter((n) => !n.seen).length);
@@ -28,10 +31,9 @@
   // the modal dialog for the notifications center
   let modal: Modal;
 
-  // show the notifications center and mark all notifications as read
+  // show the notifications center
   export const showModal = () => {
     modal.show();
-    api.post('notification/read');
   };
 
   /**
@@ -63,6 +65,35 @@
     api.post('notification/delete', { json: { ids: [id] } }).then(() => getAll());
   }
 
+  /**
+   * Get the title of a notification.
+   *
+   * @param notification - The notification object.
+   * @returns The title of the notification, processed for i18n if it's a template.
+   */
+  function title(notification: Notification): string {
+    const title = notification.title;
+    if (TEMPLATES.includes(title)) {
+      return $_(`notification.${title.toLowerCase()}.title`);
+    }
+    return title;
+  }
+
+  /**
+   * Get the content of a notification.
+   *
+   * @param notification - The notification object.
+   * @returns The content of the notification, processed for i18n if it's a template.
+   */
+  function content(notification: Notification): string {
+    const { title, content } = notification;
+    if (TEMPLATES.includes(title)) {
+      const options = { values: JSON.parse(content) };
+      return $_(`notification.${title.toLowerCase()}.content`, options);
+    }
+    return content;
+  }
+
   onMount(() => {
     if ($token) {
       getAll();
@@ -88,7 +119,13 @@
   </button>
 </div>
 
-<Modal icon={icons.alertUrgent} title={$_('app.notifications')} maxWidth="42rem" bind:this={modal} onclose={getAll}>
+<Modal
+  icon={icons.alertUrgent}
+  title={$_('app.notifications')}
+  maxWidth="42rem"
+  bind:this={modal}
+  onclose={() => api.post('notification/read').then(() => getAll())}
+>
   <div class="flex items-center justify-between gap-2">
     <span class="mx-1 text-sm font-semibold opacity-50">
       {$_('data.paginator.total', $number(total))}
@@ -99,8 +136,8 @@
     </button>
   </div>
   {#if notifications.length === 0}
-    <div class="rounded-box border border-dashed py-10 text-center text-sm opacity-50">
-      {$_('data.nodata')}
+    <div class="rounded-box border border-dashed py-10">
+      <div class="h-6.5 text-center opacity-20">{$_('data.nodata')}</div>
     </div>
   {:else}
     <ul class="flex max-h-[50vh] flex-col gap-3 overflow-y-auto">
@@ -112,11 +149,11 @@
                 <span class="status animate-bounce status-info"></span>
               {/if}
               <h4 class="truncate text-sm font-semibold text-surface">
-                {notification.title}
+                {title(notification)}
               </h4>
             </div>
             <p class="text-sm leading-6 whitespace-pre-wrap opacity-80">
-              {notification.content}
+              {content(notification)}
             </p>
             <time class="text-xs opacity-50">
               {$dateTime(notification.created_at)}

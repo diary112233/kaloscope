@@ -3,6 +3,7 @@ from enum import StrEnum, auto
 from sanic import Request
 from tortoise.expressions import Q
 
+from app.core.constants import ENCODING
 from app.core.exceptions import UnauthorizedException
 from app.models.general import Notification
 from app.models.user import UserInfo, UserRole
@@ -34,7 +35,7 @@ class Notifications:
             user_id=user_id,
             role=UserRole.ADMIN if user_id is None else None,
             title=template.name,
-            content=json.dumps(kwargs),
+            content=json.dumps(kwargs).decode(ENCODING),
         )
 
     @classmethod

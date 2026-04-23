@@ -17,6 +17,7 @@ from tortoise.expressions import F, RawSQL
 
 from app.core.dl.adapter import Adapter, load_config
 from app.core.flow.engine import FlowEngine
+from app.core.notifications import Notifications, NotificationTemplate
 from app.models.download import (
     Downloader,
     DownloadPlan,
@@ -217,6 +218,9 @@ async def sync_tasks(downloader: Downloader, tasks: list[DownloadTask]):
         error_msg = str(item.get("error_msg", ""))
         if error_msg:
             state = DownloadState.ERROR
+            await Notifications.send(
+                NotificationTemplate.DOWNLOAD_FAILED, name=task.name, error=error_msg
+            )
 
         # update the state to `COMPLETED` if the percentage has reached 100
         percentage = float(item.get("percentage", 0.0))
@@ -229,6 +233,9 @@ async def sync_tasks(downloader: Downloader, tasks: list[DownloadTask]):
             dl_speed = 0
             completed_at = timezone.now()
             state = DownloadState.COMPLETED
+            await Notifications.send(
+                NotificationTemplate.DOWNLOAD_COMPLETED, name=task.name
+            )
 
         # get the files if the details method is supported
         files = item.get("files")
