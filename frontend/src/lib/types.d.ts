@@ -136,10 +136,9 @@ export type User = {
  */
 type Notification = {
   id: number;
-  created_at: string;
-  updated_at: string;
   title: string;
   content: string;
+  created_at: string;
   seen: boolean;
 };
 

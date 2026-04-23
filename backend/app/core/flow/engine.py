@@ -870,11 +870,11 @@ class FlowTask(ABC):
 
     async def clear_logs(self, *, preserve: int):
         """Clear the old logs for the flow graph."""
-        condition = Q(graph_id=self.graph_id)
+        filter = Q(graph_id=self.graph_id)
         await FlowLog.filter(
-            condition,
+            filter,
             started_at__not_in=sorted(
-                await FlowLog.filter(condition)
+                await FlowLog.filter(filter)
                 .group_by("started_at")
                 .values_list("started_at", flat=True),
                 reverse=True,

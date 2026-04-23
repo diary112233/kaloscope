@@ -23,13 +23,15 @@
   import { _ } from '$lib/i18n';
   import { icons } from '$lib/icons';
   import { historyBack, subroutes } from '$lib/stores';
-  import { onMount } from 'svelte';
 
   let { navs = [], back = false, shadow = false, hidden = false, appMode = false }: NavbarProps = $props();
   let themeSwitcher: Themes;
   let langSwitcher: Languages;
   let notifications: Notifications;
   let logo: Logo | null = $state(null);
+
+  // unread notifications count
+  let unreadNotifications = $state(0);
 
   // the dynamic class names
   let navbarClass = $derived(appMode ? 'sticky bg-blur-90' : 'bg-base-200');
@@ -43,16 +45,6 @@
     } else {
       const pathname = page.url.pathname;
       drawerStyle = navs.find((nav) => pathname.startsWith(nav.path))?.drawerStyle;
-    }
-  });
-
-  // notifications count
-  let notificationsCount = $state(0);
-  onMount(() => {
-    if (appMode && notifications) {
-      setInterval(() => {
-        notificationsCount = notifications.getCount();
-      }, 60 * 1000);
     }
   });
 </script>
@@ -152,12 +144,16 @@
       pwaThemeColor={appMode ? '--color-base-125' : '--color-base-200'}
       bind:this={themeSwitcher}
     />
-    <Notifications class="mr-1.5 {appMode ? 'max-sm:hidden' : 'hidden'}" bind:this={notifications} />
+    <Notifications
+      class="mr-1.5 {appMode ? 'max-sm:hidden' : 'hidden'}"
+      onrefresh={(unread) => (unreadNotifications = unread)}
+      bind:this={notifications}
+    />
     <UserCenter
       {navs}
       switchTheme={() => themeSwitcher.showModal()}
       switchLanguage={() => langSwitcher.showModal()}
-      notifications={{ show: () => notifications.showModal(), count: notificationsCount }}
+      notifications={{ show: () => notifications.showModal(), unread: unreadNotifications }}
       class="dropdown-end {appMode ? '' : 'hidden'}"
       triggerClass="h-(--ks-navbar-h)"
       contentClass="mt-1"

@@ -15,7 +15,7 @@
     /** Notifications configuration. */
     notifications?: {
       show: () => void;
-      count: number;
+      unread: number;
     };
   } & Pick<DropdownProps, 'class' | 'triggerClass' | 'contentClass'>;
 
@@ -138,7 +138,7 @@
       $_('app.notifications'),
       () => notifications?.show(),
       'sm:hidden',
-      notifications?.count
+      notifications?.unread
     )}
     {#each navs.filter((nav) => !nav.mobile) as nav (nav.path)}
       {@render option(nav.icon, $_(nav.title), () => goto(nav.path), 'sm:hidden')}

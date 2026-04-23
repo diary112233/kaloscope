@@ -1,72 +1,82 @@
 <script lang="ts" module>
-  import type { Notification } from '$lib/types';
+  import type { Notification, Resp } from '$lib/types';
 
   export type NotificationsProps = {
     /** The class names for the wrapper element. */
     class?: string;
     /** The class names for the trigger button. */
     triggerClass?: string;
+    /** The callback function when refreshing the notifications. */
+    onrefresh?: (unread: number) => void;
   };
 
-  const MOCK_NOTIFICATIONS: Notification[] = [
-    {
-      id: 1,
-      title: 'Indexer task completed',
-      content: 'The Bangumi calendar index finished successfully and 24 items were updated.',
-      seen: false,
-      created_at: '2026-04-22T09:30:00Z',
-      updated_at: '2026-04-22T09:30:00Z'
-    },
-    {
-      id: 2,
-      title: 'Download queue paused',
-      content: 'The downloader paused because the remote server responded with a temporary rate limit.',
-      seen: false,
-      created_at: '2026-04-22T08:10:00Z',
-      updated_at: '2026-04-22T08:10:00Z'
-    },
-    {
-      id: 3,
-      title: 'New workflow available',
-      content: 'A new media cleanup workflow was added to the shared library and can be imported now.',
-      seen: true,
-      created_at: '2026-04-21T18:40:00Z',
-      updated_at: '2026-04-21T18:40:00Z'
-    }
-  ];
-
-  let notifications: Notification[] = $state([...MOCK_NOTIFICATIONS]);
-  let count = $derived(notifications.length);
+  let notifications: Notification[] = $state([]);
+  let total = $derived(notifications.length);
+  let unread = $derived(notifications.filter((n) => !n.seen).length);
 </script>
 
 <script lang="ts">
+  import { api } from '$lib/api';
   import { Modal } from '$lib/components';
   import { _, dateTime, number } from '$lib/i18n';
   import { icons } from '$lib/icons';
+  import { token } from '$lib/stores';
+  import { onMount } from 'svelte';
 
-  let { class: _class, triggerClass }: NotificationsProps = $props();
+  let { class: _class, triggerClass, onrefresh }: NotificationsProps = $props();
 
   // the modal dialog for the notifications center
   let modal: Modal;
 
-  export const showModal = () => modal.show();
-  export const getCount = () => {
-    return count;
+  // show the notifications center and mark all notifications as read
+  export const showModal = () => {
+    modal.show();
+    api.post('notification/read');
   };
 
-  function removeNotification(id: number) {
-    notifications = notifications.filter((notification) => notification.id !== id);
+  /**
+   * Get all notifications.
+   */
+  function getAll() {
+    api
+      .get('notification/list')
+      .json<Resp<Notification[]>>()
+      .then((resp) => {
+        notifications = resp.data;
+        onrefresh?.(unread);
+      });
   }
 
-  function clearNotifications() {
-    notifications = [];
+  /**
+   * Clear all notifications.
+   */
+  function clear() {
+    api.post('notification/clear').then(() => getAll());
   }
+
+  /**
+   * Delete a notification by ID.
+   *
+   * @param id - The notification ID.
+   */
+  function del(id: number) {
+    api.post('notification/delete', { json: { ids: [id] } }).then(() => getAll());
+  }
+
+  onMount(() => {
+    if ($token) {
+      getAll();
+      // refresh the notifications every minute
+      const refreshInterval = setInterval(() => getAll(), 60 * 1000);
+      return () => clearInterval(refreshInterval);
+    }
+  });
 </script>
 
 <div class="indicator {_class}">
-  {#if count > 0}
+  {#if unread > 0}
     <span class="indicator-item mt-1 badge badge-xs badge-primary">
-      {count > 99 ? '99+' : count}
+      {unread > 99 ? '99+' : unread}
     </span>
   {/if}
   <button
@@ -78,12 +88,12 @@
   </button>
 </div>
 
-<Modal icon={icons.alertUrgent} title={$_('app.notifications')} maxWidth="42rem" bind:this={modal}>
+<Modal icon={icons.alertUrgent} title={$_('app.notifications')} maxWidth="42rem" bind:this={modal} onclose={getAll}>
   <div class="flex items-center justify-between gap-2">
     <span class="mx-1 text-sm font-semibold opacity-50">
-      {$_('data.paginator.total', $number(count))}
+      {$_('data.paginator.total', $number(total))}
     </span>
-    <button class="btn btn-subtle btn-sm" onclick={clearNotifications} disabled={count === 0}>
+    <button class="btn btn-subtle btn-sm" onclick={clear} disabled={total === 0}>
       <iconify-icon icon={icons.delete} width="1rem"></iconify-icon>
       {$_('action.clear', $_('entity.notifications'))}
     </button>
@@ -115,7 +125,7 @@
           <button
             class="btn btn-square btn-subtle btn-sm"
             aria-label={$_('action.delete', $_('entity.notification'))}
-            onclick={() => removeNotification(notification.id)}
+            onclick={() => del(notification.id)}
           >
             <iconify-icon icon={icons.deleteDismiss} width="1rem"></iconify-icon>
           </button>
