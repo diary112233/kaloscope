@@ -447,8 +447,10 @@ class FlowGraphService(BaseService[FlowGraph], model=FlowGraph):
         created = 0
         with zipfile.ZipFile(io.BytesIO(zip.body), mode="r") as zf:
             for filename in zf.namelist():
-                if not filename.endswith(".json"):
+                path = Path(filename)
+                if path.suffix != ".json" or "__MACOSX" in path.parts:
                     continue
+
                 data = json.loads(zf.read(filename))
                 graph = await FlowGraph.get_or_none(name=data["name"])
                 if graph is None:
@@ -464,6 +466,9 @@ class FlowGraphService(BaseService[FlowGraph], model=FlowGraph):
                     )
                     created += 1
                 elif graph.category == data["category"]:
+                    if graph.editable is False:
+                        # skip if the graph is not editable
+                        continue
                     if graph.revision and graph.revision >= data.get("revision", 0):
                         # skip if the revision is not newer
                         continue
@@ -475,6 +480,7 @@ class FlowGraphService(BaseService[FlowGraph], model=FlowGraph):
                     if graph.state != GraphState.DRAFT:
                         graph.state = GraphState.MODIFIED
                     await graph.save()
+
         return created
 
     @classmethod
