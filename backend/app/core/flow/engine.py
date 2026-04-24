@@ -704,8 +704,9 @@ class FlowTask(ABC):
                 ctx.bind_loop(self.nodes[loop_id].node_data)
             started_at = timezone.now()
             yield ctx
-        except Exception:
-            await self.log_error(node, traceback.format_exc())
+        except Exception as e:
+            if not isinstance(e, CancellationSignal):
+                await self.log_error(node, traceback.format_exc())
             raise
         finally:
             # update the context with the changes from the node execution

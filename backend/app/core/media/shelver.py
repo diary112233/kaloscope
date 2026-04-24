@@ -73,9 +73,9 @@ async def gen_nfo(context: Context, tmpl: NFOType):
     retval = context.get(RETVAL_KEY)
     if not retval or not isinstance(retval, list):
         return
-    # check if NFO file is locked
-    if is_locked(nfo_path):
-        logger.info("NFO file is locked, skipping generation: %s", nfo_path)
+    # check if NFO file already exists
+    if Path(nfo_path).exists():
+        logger.info("NFO file already exists, skipping generation: %s", nfo_path)
         return
     # generate NFO file
     tmpl_path = TEMPLATES_PATH / f"{tmpl.value}.nfo"

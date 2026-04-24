@@ -1,6 +1,11 @@
+from pathlib import Path
+
+from sanic.log import logger
+
+from app.core.flow.context import Context
 from app.core.flow.fields.code import CodeField
 from app.core.flow.handles import OutputHandle
-from app.core.flow.nodes.base import Node, start_node
+from app.core.flow.nodes.base import CancellationSignal, Node, start_node
 from app.models.flow import GraphCategory
 
 
@@ -16,3 +21,13 @@ class IngestStartNode(Node):
 
     class Handles:
         output = OutputHandle()
+
+    @classmethod
+    async def execute(cls, *, context: Context, **kwargs):
+        # check if NFO file already exists
+        bootparams = context.bootparams
+        nfo_type = bootparams.get("nfo_type")
+        nfo_path = bootparams.get("nfo_path")
+        if nfo_type and nfo_path and Path(nfo_path).exists():
+            logger.info("NFO file already exists, skipping generation: %s", nfo_path)
+            raise CancellationSignal
