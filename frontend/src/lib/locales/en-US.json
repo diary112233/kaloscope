@@ -441,12 +441,8 @@
     "readonly": "Read-Only Mode",
     "sidebar": "Sidebar",
     "fitview": "Fit View",
-    "interactivity": {
-      "toggle": "Toggle Interactivity"
-    },
-    "minimap": {
-      "toggle": "Toggle Minimap"
-    },
+    "minimap": "Toggle Minimap",
+    "interactivity": "Toggle Interactivity",
     "autosaving": "Saving in {0} seconds",
     "autosave": {
       "on": "Turn on AutoSave",

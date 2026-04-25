@@ -385,13 +385,13 @@
       <Button
         size="xs"
         icon={$minimap ? icons.map : icons.mapOff}
-        text={$_('flow.minimap.toggle')}
+        text={$_('flow.minimap')}
         onclick={() => toggleMinimap()}
       />
       <Button
         size="xs"
         icon={interactive ? icons.lockOpen : icons.lockClosed}
-        text={$_('flow.interactivity.toggle')}
+        text={$_('flow.interactivity')}
         disabled={readonly}
         onclick={() => toggleInteractivity()}
       />

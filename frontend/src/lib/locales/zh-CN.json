@@ -441,12 +441,8 @@
     "readonly": "只读模式",
     "sidebar": "侧边栏",
     "fitview": "适应视图",
-    "interactivity": {
-      "toggle": "开启/关闭交互"
-    },
-    "minimap": {
-      "toggle": "开启/关闭缩略图"
-    },
+    "minimap": "开启/关闭缩略图",
+    "interactivity": "开启/关闭交互",
     "autosaving": "{0}秒后将会保存",
     "autosave": {
       "on": "开启自动保存",

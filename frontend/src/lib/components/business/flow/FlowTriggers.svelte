@@ -183,7 +183,7 @@
           />
           <span class="text-lg font-thin {triggerGraphId === trigger.graph_id ? '' : 'opacity-30'}">{index + 1}</span>
         </span>
-        <span class="list-col-grow font-semibold opacity-60">{trigger.graph_name}</span>
+        <span class="list-col-grow font-semibold text-surface/80">{trigger.graph_name}</span>
         <Button
           icon={trigger.asynchronous ? icons.arrowNarrowDownDashed : icons.arrowNarrowDown}
           text={trigger.asynchronous ? $_('flow.trigger.async_mode') : $_('flow.trigger.sync_mode')}
