@@ -359,7 +359,7 @@ class Migration(migrations.Migration):
                 ('dir', fields.CharField(max_length=4096)),
                 ('path', fields.CharField(max_length=4096)),
                 ('name', fields.CharField(max_length=255)),
-                ('visible', fields.BooleanField(default=False)),
+                ('visible', fields.BooleanField(default=True)),
                 ('nfo_path', fields.CharField(null=True, max_length=4096)),
                 ('nfo_mtime', fields.DatetimeField(null=True, auto_now=False, auto_now_add=False)),
                 ('title', fields.CharField(null=True, max_length=255)),

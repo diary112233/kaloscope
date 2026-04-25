@@ -25,6 +25,26 @@
   let player: VideoPlayer | null = $state(null);
   let playing = $state(false);
 
+  // the sorted child media items
+  let parts: MediaItem[] = $derived.by(() => {
+    const items = media?.children;
+    if (!items || items.length === 0) {
+      return [];
+    }
+    return items.slice().sort((a, b) => {
+      if (a.season !== b.season) {
+        return (a.season ?? 0) - (b.season ?? 0);
+      }
+      if (a.episode !== b.episode) {
+        return (a.episode ?? 0) - (b.episode ?? 0);
+      }
+      return (a.title ?? a.name).localeCompare(b.title ?? b.name, undefined, {
+        numeric: true,
+        sensitivity: 'base'
+      });
+    });
+  });
+
   /**
    * Start playing the selected media item.
    */
@@ -36,8 +56,8 @@
     playing = true;
     tick().then(() => {
       const chapters = [];
-      if (media?.children?.length) {
-        for (const part of media.children) {
+      if (parts.length) {
+        for (const part of parts) {
           chapters.push({
             url: `${MEDIA_STREAM_PREFIX}${encodeURIComponent(part.path)}`,
             title: mediaTitle(part)
@@ -236,13 +256,13 @@
       {/if}
 
       <!-- parts -->
-      {#if media.children?.length}
+      {#if parts.length}
         <div class="mt-6">
           <h2 class="mb-3 text-lg font-semibold">
             {media.lib.lib_type === 'tv_show' ? $_('media.episodes') : $_('media.parts')}
           </h2>
           <div class="flex max-h-144 flex-col gap-2 overflow-y-scroll pr-3">
-            {#each media.children as part (part.id)}
+            {#each parts as part (part.id)}
               {@const active = _media?.id === part.id}
               {@const activeClass = active ? 'bg-primary/15' : 'bg-gradient hover:bg-base-content/15'}
               <button

@@ -77,7 +77,7 @@ class MediaItem(TortoiseModel):
     dir = CharField(max_length=4096)
     path = CharField(max_length=4096)
     name = CharField(max_length=255)
-    visible = BooleanField(default=False)
+    visible = BooleanField(default=True)
     nfo_path = CharField(max_length=4096, null=True)
     nfo_mtime = DatetimeField(null=True)
     title = CharField(max_length=255, null=True)

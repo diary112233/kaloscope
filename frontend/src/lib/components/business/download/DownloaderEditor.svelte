@@ -140,7 +140,7 @@ methods:
       >
         <option value="">{$_('enum.none')}</option>
         {#if presets}
-          {#each Object.keys(presets).sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase())) as key (key)}
+          {#each Object.keys(presets).sort((a, b) => a.localeCompare(b)) as key (key)}
             <option value={key} disabled={exists.includes(key)}>{key}</option>
           {/each}
         {/if}

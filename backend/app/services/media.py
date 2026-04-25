@@ -125,8 +125,7 @@ class MediaItemService(BaseService[MediaItem], model=MediaItem):
                 "year": m.year,
                 "season": m.season,
                 "episode": m.episode,
-                # only top-level items are visible
-                "visible": parent_id is None,
+                "visible": True,
             },
         )
         return item
