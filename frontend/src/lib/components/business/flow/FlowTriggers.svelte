@@ -91,7 +91,7 @@
           if (appending || unboundGraphs.length === 0) {
             return;
           }
-          graph = null;
+          graph = unboundGraphs[0];
           appending = true;
           triggerGraphId = 0;
           triggerElement = null;
@@ -186,7 +186,8 @@
         <span class="list-col-grow font-semibold opacity-60">{trigger.graph_name}</span>
         <Button
           icon={trigger.asynchronous ? icons.arrowNarrowDownDashed : icons.arrowNarrowDown}
-          text={$_('flow.trigger.mode.toggle')}
+          text={trigger.asynchronous ? $_('flow.trigger.async_mode') : $_('flow.trigger.sync_mode')}
+          tipTheme="plain"
           ghost={!trigger.asynchronous}
           class="btn-circle {trigger.asynchronous ? 'border-dashed text-base-content/70' : ''}"
           onclick={(event) => {

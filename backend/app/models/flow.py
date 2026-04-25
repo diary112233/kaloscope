@@ -110,7 +110,7 @@ class FlowGraph(TortoiseModel):
     )
     name = CharField(max_length=64, unique=True)
     icon = CharField(max_length=255, null=True)
-    description = CharField(max_length=255, null=True)
+    description = CharField(max_length=512, null=True)
     category = CharEnumField(max_length=16, enum_type=GraphCategory)
     revision = IntField(null=True)
     state = CharEnumField(max_length=16, enum_type=GraphState)
@@ -300,7 +300,7 @@ class GraphQuery(Pageable):
 class GraphBasics(BaseModel, RequestFilesMixin):
     id: PositiveInt | None = None
     name: str = Field(min_length=1, max_length=64)
-    description: str | None = Field(max_length=255, default=None)
+    description: str | None = Field(max_length=512, default=None)
     icon: str | None = None
     image: File | None = None
     category: GraphCategory | None = None

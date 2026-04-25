@@ -537,9 +537,8 @@
     "trigger": {
       "count": "流程数量",
       "bound": "绑定的工作流",
-      "mode": {
-        "toggle": "切换运行模式"
-      }
+      "sync_mode": "同步执行",
+      "async_mode": "异步执行"
     }
   },
   "alert": {

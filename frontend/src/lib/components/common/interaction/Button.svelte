@@ -28,6 +28,8 @@
     class: string;
     iconClass: string;
     textClass: string;
+    /** The tooltip theme for the button. */
+    tipTheme: string;
     /** The click event handler for the button. */
     onclick: MouseEventHandler<HTMLButtonElement>;
   }>;
@@ -72,6 +74,7 @@
     class: _class,
     iconClass,
     textClass,
+    tipTheme,
     onclick
   }: ButtonProps = $props();
 
@@ -96,6 +99,7 @@
   }}
   use:tooltip={{
     content: square ? text : '',
+    theme: tipTheme || 'default',
     followCursor: true
   }}
 >

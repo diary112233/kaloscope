@@ -334,7 +334,6 @@
         zIndex: 9999,
         content: graph.description ?? '',
         theme: 'description',
-        arrow: true,
         followCursor: true,
         delay: [800, 0]
       }}

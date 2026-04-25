@@ -339,18 +339,21 @@
 
 /* custom Tippy.js themes */
 /* https://atomiks.github.io/tippyjs/v6/themes/#creating-a-theme */
+.tippy-box:not([data-placement='left']):not([data-placement='right']) {
+  @apply mt-2 ml-2;
+}
 .tippy-box[data-theme~='default'] {
-  @apply mt-1 border glass bg-neutral text-xs text-neutral-content;
+  @apply border glass bg-neutral text-xs text-neutral-content;
+}
+.tippy-box[data-theme~='plain'] {
+  @apply border border-border bg-base-200 text-xs text-base-content;
 }
 .tippy-box[data-theme~='handle'] {
   @apply border-2 border-border bg-base-200 text-xs font-semibold text-base-content;
 }
 .tippy-box[data-theme~='description'] {
-  @apply mt-4 bg-base-300/90 shadow-xl backdrop-blur-xs;
+  @apply border border-border/50 bg-base-200/90 shadow-xl backdrop-blur-xs;
   > .tippy-content {
-    @apply prose break-all whitespace-break-spaces text-base-content;
-  }
-  > .tippy-arrow::before {
-    @apply border-b-base-300/90;
+    @apply prose prose-sm break-all whitespace-break-spaces text-base-content/80;
   }
 }

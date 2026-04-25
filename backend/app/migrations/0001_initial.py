@@ -101,7 +101,7 @@ class Migration(migrations.Migration):
                 ('tmpl', fields.ForeignKeyField('models.FlowTemplate', source_field='tmpl_id', null=True, db_index=True, db_constraint=True, to_field='id', related_name='graphs', on_delete=OnDelete.SET_NULL)),
                 ('name', fields.CharField(unique=True, max_length=64)),
                 ('icon', fields.CharField(null=True, max_length=255)),
-                ('description', fields.CharField(null=True, max_length=255)),
+                ('description', fields.CharField(null=True, max_length=512)),
                 ('category', fields.CharEnumField(description='INDEXER: indexer\nINGEST: ingest\nSCHEDULE: schedule', enum_type=GraphCategory, max_length=16)),
                 ('revision', fields.IntField(null=True)),
                 ('state', fields.CharEnumField(description='DRAFT: draft\nMODIFIED: modified\nPUBLISHED: published', enum_type=GraphState, max_length=16)),

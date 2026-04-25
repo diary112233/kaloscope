@@ -537,9 +537,8 @@
     "trigger": {
       "count": "Workflow Count",
       "bound": "Bound Workflows",
-      "mode": {
-        "toggle": "Toggle Execution Mode"
-      }
+      "sync_mode": "Synchronous Execution",
+      "async_mode": "Asynchronous Execution"
     }
   },
   "alert": {
