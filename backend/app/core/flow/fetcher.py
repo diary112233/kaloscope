@@ -1,13 +1,14 @@
 import asyncio
 import base64
 import uuid
+from fnmatch import fnmatch
 from functools import cached_property
 from multiprocessing.synchronize import Event, Lock
 from pathlib import Path
 from typing import Any
 
 import aiofiles
-from git import GitError, InvalidGitRepositoryError
+from git import Git, GitError, InvalidGitRepositoryError
 from git.repo import Repo
 from sanic import Sanic
 from sanic.log import Colors, logger
@@ -17,7 +18,9 @@ from tortoise import timezone
 from app.core.config import KaloscopeConfig
 from app.core.constants import ENCODING
 from app.models.flow import FlowRepository, FlowTemplate
+from app.models.network import ProxyProtocol, URLRule
 from app.utils import json
+from app.utils.crypto import xor_decrypt
 
 
 class RepoFetcher:
@@ -78,6 +81,48 @@ class RepoFetcher:
                 await asyncio.sleep(600)
 
 
+async def _proxy_environment(url: str) -> dict[str, str]:
+    """Build Git proxy environment variables for a repository URL.
+
+    Args:
+        url: The repository URL to match against the proxy rules.
+
+    Returns:
+        A dict of proxy environment variables for Git, or an empty dict.
+    """
+    proxy_rules = (
+        await URLRule.filter(
+            http_proxy=True,
+            proxy_id__not_isnull=True,
+            proxy__protocol=ProxyProtocol.HTTP,
+        )
+        .select_related("proxy")
+        .order_by("priority")
+    )
+
+    for rule in proxy_rules:
+        pattern = p if (p := rule.pattern).endswith("*") else p + "*"
+        if not fnmatch(url, pattern) or not rule.proxy:
+            continue
+
+        proxy = rule.proxy
+        if (username := proxy.username) and (password := proxy.password):
+            password = xor_decrypt(password)
+            proxy_url = f"http://{username}:{password}@{proxy.host}:{proxy.port}"
+        else:
+            proxy_url = f"http://{proxy.host}:{proxy.port}"
+
+        logger.info(
+            f"Using proxy {Colors.BLUE}%s{Colors.END} for repository:"
+            f"{Colors.GREEN} %s{Colors.END}",
+            proxy_url,
+            url,
+        )
+        return {"HTTP_PROXY": proxy_url, "HTTPS_PROXY": proxy_url}
+
+    return {}
+
+
 async def fetch_origin(repo: FlowRepository):
     """Fetch the latest changes from the remote repository.
 
@@ -87,22 +132,25 @@ async def fetch_origin(repo: FlowRepository):
     repo_dir = Path(KaloscopeConfig.get_workspace("repositories"))
     repo_path = repo_dir / repo.repo_name
     repo_path.mkdir(parents=True, exist_ok=True)
+    proxy_env = await _proxy_environment(repo.repo_url)
     try:
-        try:
-            # try to pull the latest changes from the remote repository
-            Repo(repo_path).remotes.origin.pull()
-            logger.info(
-                f"Pulled latest changes for repository: {Colors.GREEN}%s{Colors.END}",
-                repo_path,
-            )
-        except InvalidGitRepositoryError:
-            # if the path is not a valid git repository, clone it
-            Repo.clone_from(repo.repo_url, to_path=repo_path)
-            logger.info(
-                f"Cloned repository from %s to: {Colors.GREEN}%s{Colors.END}",
-                repo.repo_url,
-                repo_path,
-            )
+        with Git().custom_environment(**proxy_env):
+            try:
+                # try to pull the latest changes from the remote repository
+                Repo(repo_path).remotes.origin.pull(kill_after_timeout=30)
+                logger.info(
+                    f"Pulled latest changes for repository:"
+                    f"{Colors.GREEN} %s{Colors.END}",
+                    repo_path,
+                )
+            except InvalidGitRepositoryError:
+                # if the path is not a valid git repository, clone it
+                Repo.clone_from(repo.repo_url, to_path=repo_path)
+                logger.info(
+                    f"Cloned repository from %s to: {Colors.GREEN}%s{Colors.END}",
+                    repo.repo_url,
+                    repo_path,
+                )
     except GitError:
         logger.error(
             f"Failed to synchronize the repository: {Colors.RED}%s{Colors.END}",
