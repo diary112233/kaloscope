@@ -68,7 +68,7 @@ async def proxy_image(
     # try to load the image from the local workspace
     local_path = Path(KaloscopeConfig.get_workspace("images"))
     local_path = local_path / (url[7:] if http else url[8:] if https else url)
-    if local_path.exists() and local_path.is_file():
+    if local_path.exists() and local_path.is_file() and local_path.stat().st_size > 0:
         # guess the MIME type based on the file extension
         mime_type, _ = mimetypes.guess_file_type(local_path)
         content_type = mime_type or "application/octet-stream"
