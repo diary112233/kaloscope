@@ -5,6 +5,7 @@
     item: MediaItem;
     class?: string;
     triggerClass?: string;
+    onclick?: () => void;
     ondelete?: () => void;
   };
 </script>
@@ -16,7 +17,7 @@
   import { _ } from '$lib/i18n';
   import { icons } from '$lib/icons';
 
-  let { item, class: _class, triggerClass, ondelete }: MediaActionsProps = $props();
+  let { item, class: _class, triggerClass, onclick, ondelete }: MediaActionsProps = $props();
 
   /**
    * Delete the media item.
@@ -37,8 +38,9 @@
   contentClass="shadow-lg!"
   class="dropdown-end {_class}"
   onclick={(event) => {
-    closeAll();
     event.stopPropagation();
+    closeAll();
+    onclick?.();
   }}
 >
   {#snippet trigger()}

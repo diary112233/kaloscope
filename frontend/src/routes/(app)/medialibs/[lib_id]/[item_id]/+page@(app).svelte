@@ -292,6 +292,9 @@
                   <MediaActions
                     item={part}
                     triggerClass="ml-1 opacity-70"
+                    onclick={() => {
+                      selectMedia(part);
+                    }}
                     ondelete={() => {
                       // refresh the parent media details to update the parts list
                       getDetails(media!.id).then((data) => {
