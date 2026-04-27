@@ -219,6 +219,7 @@
     "export": "Export {0}",
     "import": "Import {0}",
     "search": "Enter {0}",
+    "scrape": "Scrape {0}",
     "select": "Select {0}",
     "upgrade": "Upgrade {0}",
     "retract": "Retract {0}",

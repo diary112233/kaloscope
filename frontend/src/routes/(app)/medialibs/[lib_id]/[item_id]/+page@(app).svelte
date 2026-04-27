@@ -249,8 +249,8 @@
             {#each meta.actors as actor, i (i)}
               <div class="flex w-24 shrink-0 flex-col items-center gap-1 text-center">
                 <Image proxy="store" src={actor.thumb} text={actor.name} width="4.5rem" circle />
-                <div class="line-clamp-1 text-xs font-medium">{actor.name}</div>
-                <div class="line-clamp-1 text-xs opacity-50">{actor.role}</div>
+                <div class="line-clamp-1 text-xs font-medium" title={actor.name}>{actor.name}</div>
+                <div class="line-clamp-1 text-xs opacity-50" title={actor.role}>{actor.role}</div>
               </div>
             {/each}
           </div>
@@ -261,26 +261,31 @@
       {#if parts.length}
         <div class="mt-6">
           <h2 class="mb-3 text-lg font-semibold">
-            {media.lib.lib_type === 'tv_show' ? $_('media.episodes') : $_('media.parts')}
+            {media.lib?.lib_type === 'tv_show' ? $_('media.episodes') : $_('media.parts')}
           </h2>
-          <div class="flex max-h-144 flex-col gap-2 overflow-y-scroll pr-3">
+          <div class="flex max-h-144 flex-col gap-2 overflow-y-scroll px-2 py-3">
             {#each parts as part (part.id)}
               {@const active = _media?.id === part.id}
               {@const activeClass = active ? 'bg-primary/15' : 'bg-gradient hover:bg-base-content/15'}
+              {@const transClass = 'transition-colors duration-300'}
               <button
-                class="media-part flex items-center rounded-lg px-3 py-2 text-left transition-colors {activeClass}"
+                class="media-part flex items-center rounded-lg px-3 py-2 text-left {transClass} {activeClass}"
                 onclick={() => selectMedia(part)}
               >
                 <Image proxy="store" src={part.poster} text={part.name} width="5rem" ratio="16/9" />
                 <div class="flex min-w-0 flex-1 flex-col gap-0.5 px-3">
-                  <span class="truncate text-sm font-medium {active ? 'text-primary' : ''}">{mediaTitle(part)}</span>
+                  <span class="truncate text-sm font-medium {transClass}" class:text-primary={active}>
+                    {mediaTitle(part)}
+                  </span>
                   <span class="text-xs opacity-50">{part.aired}</span>
                 </div>
                 <!-- svelte-ignore a11y_click_events_have_key_events -->
                 <div
                   tabindex="0"
                   role="button"
-                  class="btn btn-circle btn-enlarge shadow-sm btn-sm {active ? 'btn-active' : 'btn-subtle'}"
+                  class="btn btn-circle btn-enlarge shadow-sm btn-sm {transClass}"
+                  class:btn-active={active}
+                  class:btn-subtle={!active}
                   onclick={(event) => {
                     event.stopPropagation();
                     selectMedia(part).then(play);
@@ -291,7 +296,8 @@
                 {#if $user?.role === 'admin'}
                   <MediaActions
                     item={part}
-                    triggerClass="ml-1 opacity-70"
+                    class="dropdown-end ml-1"
+                    triggerClass="opacity-70"
                     onclick={() => {
                       selectMedia(part);
                     }}

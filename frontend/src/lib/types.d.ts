@@ -71,8 +71,8 @@ export type Option = {
 export type Nav = {
   title: string;
   path: string;
-  icon: IconifyIcon;
-  iconFilled: IconifyIcon;
+  icon: string | IconifyIcon;
+  iconFilled: string | IconifyIcon;
   mobile: boolean;
   drawerStyle?: 'menu' | 'app';
 };
@@ -248,9 +248,9 @@ export type MediaLib = {
 export type MediaItem = {
   id: number;
   // lib_id: number;
-  lib: MediaLib;
+  lib?: MediaLib;
   // parent_id: number | null;
-  parent: MediaItem | null;
+  parent?: MediaItem | null;
   dir: string;
   path: string;
   name: string;

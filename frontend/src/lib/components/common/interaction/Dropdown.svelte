@@ -25,11 +25,15 @@
   };
 
   /**
-   * Close all dropdowns.
+   * Close all dropdowns except the current one.
+   *
+   * @param currentTarget - The current dropdown's event target.
    */
-  export function closeAll() {
+  export function closeDropdowns(currentTarget?: EventTarget & HTMLElement) {
     document.querySelectorAll('details.dropdown').forEach((dropdown) => {
-      dropdown.removeAttribute('open');
+      if (dropdown !== currentTarget?.closest('details.dropdown')) {
+        dropdown.removeAttribute('open');
+      }
     });
   }
 </script>

@@ -1,11 +1,14 @@
 <script lang="ts" module>
   import type { MediaItem } from '$lib/types';
+  import type { IconifyIcon } from 'iconify-icon';
+  import type { MouseEventHandler } from 'svelte/elements';
 
   export type MediaActionsProps = {
     item: MediaItem;
     class?: string;
     triggerClass?: string;
     onclick?: () => void;
+    onscrape?: () => void;
     ondelete?: () => void;
   };
 </script>
@@ -13,11 +16,18 @@
 <script lang="ts">
   import { api } from '$lib/api';
   import { Dropdown, confirm, mediaTitle } from '$lib/components';
-  import { closeAll } from '$lib/components/common/interaction/Dropdown.svelte';
+  import { closeDropdowns } from '$lib/components/common/interaction/Dropdown.svelte';
   import { _ } from '$lib/i18n';
   import { icons } from '$lib/icons';
 
-  let { item, class: _class, triggerClass, onclick, ondelete }: MediaActionsProps = $props();
+  let { item, class: _class, triggerClass, onclick, onscrape, ondelete }: MediaActionsProps = $props();
+
+  /**
+   * Scrape metadata manually.
+   */
+  function scrapeMetadata() {
+    // TODO
+  }
 
   /**
    * Delete the media item.
@@ -33,13 +43,29 @@
   }
 </script>
 
+{#snippet action(icon: IconifyIcon, text: string, onclick: MouseEventHandler<HTMLElement>)}
+  <li>
+    <button
+      class="px-2"
+      onclick={(event) => {
+        event.stopPropagation();
+        onclick?.(event);
+        event.currentTarget.blur();
+      }}
+    >
+      <iconify-icon {icon} width="1rem" class="size-4"></iconify-icon>
+      {text}
+    </button>
+  </li>
+{/snippet}
+
 <Dropdown
-  contentWidth="10rem"
+  contentWidth="8rem"
   contentClass="shadow-lg!"
-  class="dropdown-end {_class}"
+  class={_class}
   onclick={(event) => {
     event.stopPropagation();
-    closeAll();
+    closeDropdowns(event.currentTarget);
     onclick?.();
   }}
 >
@@ -49,18 +75,11 @@
     </div>
   {/snippet}
   <ul class="menu gap-1">
-    <li>
-      <button
-        class="px-2"
-        onclick={(event) => {
-          event.stopPropagation();
-          deleteItem();
-          event.currentTarget.blur();
-        }}
-      >
-        <iconify-icon icon={icons.delete} width="1rem"></iconify-icon>
-        {$_('action.delete')}
-      </button>
-    </li>
+    {#if onscrape}
+      {@render action(icons.boxMultipleSearch, $_('action.scrape'), () => scrapeMetadata())}
+    {/if}
+    {#if ondelete}
+      {@render action(icons.delete, $_('action.delete'), () => deleteItem())}
+    {/if}
   </ul>
 </Dropdown>

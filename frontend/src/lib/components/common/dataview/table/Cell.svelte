@@ -104,7 +104,7 @@
               event.currentTarget.blur();
             }}
           >
-            <iconify-icon icon={action.icon} width="1rem"></iconify-icon>
+            <iconify-icon icon={action.icon} width="1rem" class="size-4"></iconify-icon>
             {action.text}
           </button>
         </li>

@@ -184,10 +184,15 @@
         onclick={() => goto(`${page.url.pathname}/${item.id}`)}
       >
         <Rating score={item.rating} class="absolute top-1 left-1 z-1 text-[clamp(0.875rem,8cqw,1rem)]" />
-        <div class="absolute right-0 bottom-0 z-1 p-1" class:hidden={$user?.role !== 'admin'}>
+        <div
+          class:hidden={$user?.role !== 'admin'}
+          class="absolute right-0 bottom-0 z-1 p-1 opacity-0 group-hover:opacity-100 {transClass}"
+        >
           <MediaActions
             {item}
-            triggerClass="opacity-0 group-hover:opacity-100 {transClass} {btnClass}"
+            class="dropdown-left dropdown-end"
+            triggerClass={btnClass}
+            onscrape={() => search()}
             ondelete={() => search()}
           />
         </div>
