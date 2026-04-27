@@ -38,7 +38,7 @@
   onclick={(event) => event.stopPropagation()}
 >
   {#snippet trigger()}
-    <div class="btn btn-square btn-subtle btn-sm {triggerClass}">
+    <div class="btn btn-circle btn-subtle btn-sm {triggerClass}">
       <iconify-icon icon={icons.moreVertical} width="1.25rem"></iconify-icon>
     </div>
   {/snippet}

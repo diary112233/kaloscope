@@ -198,7 +198,7 @@
 {#if mode === 'grid'}
   {@const pointerClass = detailsConfig ? 'cursor-pointer transition-colors hover:text-primary' : ''}
   {@const transClass = 'transition-opacity duration-300'}
-  {@const btnClass = 'hover:bg-base-300 hover:text-base-content border-0 bg-black/60 text-white'}
+  {@const btnClass = 'border-0 bg-black/60 text-white hover:bg-base-300 hover:text-base-content'}
   {@const ratio = coverRatio ?? '16/9'}
   <!-- svelte-ignore a11y_click_events_have_key_events -->
   <div tabindex="0" role="button" class="group @container relative {pointerClass}" onclick={() => gotoDetails(rsrc)}>
