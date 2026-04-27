@@ -1,4 +1,5 @@
 import re
+from pathlib import Path
 
 from aiofiles import os as async_os
 from sanic import Blueprint, HTTPResponse, Request, empty, json
@@ -18,11 +19,12 @@ from app.models.media import (
     MediaLib,
     MediaLibUpsert,
     MediaQuery,
-    MediaStream,
+    MediaResource,
 )
 from app.models.user import UserInfo, UserRole
 from app.services.flow import FlowTriggerService
 from app.services.media import MediaItemService, MediaLibService
+from app.utils.extractor import extract_title
 
 # subroutes for all media related operations
 media = Blueprint("media", url_prefix="/media")
@@ -130,9 +132,17 @@ async def get_item_details(_, id: int) -> HTTPResponse:
     return json(item)
 
 
+@media.get("/title")
+@validate(query=MediaResource)
+async def get_item_title(_, query: MediaResource) -> HTTPResponse:
+    """Extract a scrape title from the media resource path."""
+    path = Path(query.path)
+    return json({"title": extract_title(path.name if path.is_dir() else path.stem)})
+
+
 @media.get("/stream")
-@validate(query=MediaStream)
-async def get_item_stream(request: Request, query: MediaStream) -> ResponseStream:
+@validate(query=MediaResource)
+async def get_item_stream(request: Request, query: MediaResource) -> ResponseStream:
     """Get the media item stream with HTTP Range support."""
     path = query.path
     stat = await async_os.stat(path)

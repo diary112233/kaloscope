@@ -130,9 +130,9 @@ class MediaLibUpsert(BaseModel):
 
 class MediaQuery(Pageable):
     lib_id: PositiveInt | None = None
-    path: str | None = None
     keyword: str | None = None
+    path: str | None = None
 
 
-class MediaStream(BaseModel):
+class MediaResource(BaseModel):
     path: str

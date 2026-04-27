@@ -47,7 +47,7 @@ _VIDEO_TAGS_PATTERN = re.compile(
         | BluRay | Blu-Ray | BDRip | BDRemux | BD | BDMV
         | WEB-DL | WEBRip | WEBDL | WEB
         | DVDRip | DVD
-        | HDTV | HDCAM
+        | HD(?:TV|CAM)?
         | AMZN | NF | DSNP | HMAX | ATVP | iT
         # encoding
         | [Hh]\.?26[45] | HEVC | AVC | x26[45] | xvid | divx

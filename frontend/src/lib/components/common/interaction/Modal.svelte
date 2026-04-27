@@ -125,8 +125,9 @@
 {#if modals.has(id)}
   <dialog
     {id}
-    class="modal transition-none {_class}"
     bind:this={dialog}
+    class="modal cursor-default transition-none {_class}"
+    onclick={(event) => event.stopPropagation()}
     transition:fade={{ duration: TRANSITION_DURATION }}
   >
     <form method="dialog" class="modal-backdrop">
