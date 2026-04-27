@@ -112,6 +112,15 @@ async def list_items(_, query: MediaQuery) -> HTTPResponse:
     )
 
 
+@media.post("/delete")
+@authorize(role=UserRole.ADMIN)
+@validate(json=IDs)
+async def delete_items(_, body: IDs) -> HTTPResponse:
+    """Delete the media items (logically by setting visible to False)."""
+    await MediaItem.filter(id__in=body.ids).update(visible=False)
+    return empty()
+
+
 @media.get("/<id:int>")
 async def get_item_details(_, id: int) -> HTTPResponse:
     """Get the details of the media item."""
