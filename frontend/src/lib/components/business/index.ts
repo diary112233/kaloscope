@@ -15,6 +15,7 @@ export { default as JobEditor } from './flow/JobEditor.svelte';
 export { markFavorites, default as SearchHit } from './indexer/SearchHit.svelte';
 export { default as Uploader } from './indexer/Uploader.svelte';
 
+export { default as MediaActions } from './library/MediaActions.svelte';
 export { default as MediaLibEditor } from './library/MediaLibEditor.svelte';
 
 export { default as DNSResolverEditor } from './network/DNSResolverEditor.svelte';
