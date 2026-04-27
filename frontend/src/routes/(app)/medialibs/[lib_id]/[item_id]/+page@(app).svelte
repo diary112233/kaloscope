@@ -31,18 +31,20 @@
     if (!items || items.length === 0) {
       return [];
     }
-    return items.slice().sort((a, b) => {
-      if (a.season !== b.season) {
-        return (a.season ?? 0) - (b.season ?? 0);
-      }
-      if (a.episode !== b.episode) {
-        return (a.episode ?? 0) - (b.episode ?? 0);
-      }
-      return (a.title ?? a.name).localeCompare(b.title ?? b.name, undefined, {
-        numeric: true,
-        sensitivity: 'base'
+    return items
+      .filter((i) => i.visible)
+      .sort((a, b) => {
+        if (a.season !== b.season) {
+          return (a.season ?? 0) - (b.season ?? 0);
+        }
+        if (a.episode !== b.episode) {
+          return (a.episode ?? 0) - (b.episode ?? 0);
+        }
+        return (a.title ?? a.name).localeCompare(b.title ?? b.name, undefined, {
+          numeric: true,
+          sensitivity: 'base'
+        });
       });
-    });
   });
 
   /**
@@ -287,7 +289,16 @@
                   <iconify-icon icon={icons.play} width="1.25rem"></iconify-icon>
                 </div>
                 {#if $user?.role === 'admin'}
-                  <MediaActions item={part} triggerClass="ml-1 opacity-70" />
+                  <MediaActions
+                    item={part}
+                    triggerClass="ml-1 opacity-70"
+                    ondelete={() => {
+                      // refresh the parent media details to update the parts list
+                      getDetails(media!.id).then((data) => {
+                        media = data;
+                      });
+                    }}
+                  />
                 {/if}
               </button>
             {/each}
