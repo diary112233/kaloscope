@@ -10,7 +10,7 @@ dependencies = [
   "pydantic[email] (>=2.13.3,<3.0.0)",
   "tortoise-orm[accel] (>=1.1.7,<2.0.0)",
   "httpx[http2,socks,brotli,zstd] (>=0.28.1,<0.29.0)",
-  "hishel[async] (>=1.1.10,<2.0.0)",
+  "hishel[async] (>=1.2.0,<2.0.0)",
   "dnspython (>=2.8.0,<3.0.0)",
   "apscheduler (>=3.11.2,<4.0.0)",
   "watchdog (>=6.0.0,<7.0.0)",
@@ -35,7 +35,7 @@ package-mode = false
 packages = [{ include = "app" }]
 
 [tool.poetry.group.dev.dependencies]
-ruff = "^0.15.11"
+ruff = "^0.15.12"
 pytest = "^9.0.3"
 pre-commit = "^4.6.0"
 commitizen = "^4.13.10"
