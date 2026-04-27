@@ -50,6 +50,17 @@
 
   let open: boolean = $state(false);
   let dropdown: HTMLDetailsElement;
+  let dropdownContent: HTMLElement | null = $state(null);
+
+  $effect(() => {
+    if (open) {
+      // scroll the dropdown content into view when opened
+      dropdownContent?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest'
+      });
+    }
+  });
 </script>
 
 <svelte:window
@@ -92,6 +103,7 @@
     {/if}
   </summary>
   <p
+    bind:this={dropdownContent}
     class="dropdown-content overflow-auto rounded-box border bg-base-100 shadow-xl [&_.menu]:w-full {contentClass}"
     style:max-height={contentMaxHeight}
     style:width={contentWidth}

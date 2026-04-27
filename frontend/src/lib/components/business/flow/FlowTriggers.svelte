@@ -49,8 +49,7 @@
     const scroll = () => {
       element.scrollIntoView({
         behavior: 'smooth',
-        block: 'nearest',
-        inline: 'nearest'
+        block: 'nearest'
       });
     };
     delay ? setTimeout(scroll, delay) : scroll();
