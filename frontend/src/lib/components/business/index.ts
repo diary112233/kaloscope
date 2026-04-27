@@ -6,7 +6,6 @@ export { default as PlanEditor } from './download/PlanEditor.svelte';
 export { default as FileTree } from './filesystem/FileTree.svelte';
 
 export { default as FlowDesigner } from './flow/designer/FlowDesigner.svelte';
-export { default as FlowExecutor } from './flow/FlowExecutor.svelte';
 export { default as FlowLogs } from './flow/FlowLogs.svelte';
 export { default as FlowRepos } from './flow/FlowRepos.svelte';
 export { default as FlowTriggers } from './flow/FlowTriggers.svelte';
