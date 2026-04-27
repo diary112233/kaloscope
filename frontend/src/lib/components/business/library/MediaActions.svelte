@@ -11,7 +11,8 @@
 
 <script lang="ts">
   import { api } from '$lib/api';
-  import { Dropdown, confirm } from '$lib/components';
+  import { Dropdown, confirm, mediaTitle } from '$lib/components';
+  import { closeAll } from '$lib/components/common/interaction/Dropdown.svelte';
   import { _ } from '$lib/i18n';
   import { icons } from '$lib/icons';
 
@@ -23,7 +24,7 @@
   function deleteItem() {
     confirm({
       icon: icons.delete,
-      title: `${$_('action.delete')} [${item.title ?? item.name}]`,
+      title: `${$_('action.delete')} [${mediaTitle(item)}]`,
       onconfirm: () => {
         api.post('media/delete', { json: { ids: [item.id] } }).then(() => ondelete?.());
       }
@@ -35,10 +36,13 @@
   contentWidth="10rem"
   contentClass="shadow-lg!"
   class="dropdown-end {_class}"
-  onclick={(event) => event.stopPropagation()}
+  onclick={(event) => {
+    closeAll();
+    event.stopPropagation();
+  }}
 >
   {#snippet trigger()}
-    <div class="btn btn-circle btn-subtle btn-sm {triggerClass}">
+    <div class="btn btn-circle border-0 btn-subtle btn-sm {triggerClass}">
       <iconify-icon icon={icons.moreVertical} width="1.25rem"></iconify-icon>
     </div>
   {/snippet}

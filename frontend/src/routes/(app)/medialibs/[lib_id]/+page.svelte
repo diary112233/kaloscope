@@ -174,7 +174,7 @@
     {#snippet item(item)}
       {@const pointerClass = 'cursor-pointer transition-colors hover:text-primary'}
       {@const transClass = 'transition-all duration-300'}
-      {@const btnClass = 'border-0 text-white hover:bg-base-300 hover:text-base-content'}
+      {@const btnClass = 'text-white hover:bg-base-300 hover:text-base-content'}
       <!-- svelte-ignore a11y_click_events_have_key_events -->
       <div
         tabindex="0"

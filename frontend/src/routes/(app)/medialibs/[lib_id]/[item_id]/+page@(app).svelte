@@ -1,12 +1,12 @@
 <script lang="ts">
   import { page } from '$app/state';
   import { api } from '$lib/api';
-  import { Backdrop, Container, Image, Rating, VideoPlayer, mediaTitle } from '$lib/components';
+  import { Backdrop, Container, Image, MediaActions, Rating, VideoPlayer, mediaTitle } from '$lib/components';
   import { MEDIA_STREAM_PREFIX } from '$lib/constants';
   import { createLoading } from '$lib/helpers';
   import { _ } from '$lib/i18n';
   import { icons } from '$lib/icons';
-  import { historyBack } from '$lib/stores';
+  import { historyBack, user } from '$lib/stores';
   import type { MediaItem, MediaMeta, Resp } from '$lib/types';
   import { onMount, tick } from 'svelte';
 
@@ -266,11 +266,11 @@
               {@const active = _media?.id === part.id}
               {@const activeClass = active ? 'bg-primary/15' : 'bg-gradient hover:bg-base-content/15'}
               <button
-                class="media-part flex items-center gap-3 rounded-lg px-3 py-2 text-left transition-colors {activeClass}"
+                class="media-part flex items-center rounded-lg px-3 py-2 text-left transition-colors {activeClass}"
                 onclick={() => selectMedia(part)}
               >
                 <Image proxy="store" src={part.poster} text={part.name} width="5rem" ratio="16/9" />
-                <div class="flex min-w-0 flex-1 flex-col gap-0.5">
+                <div class="flex min-w-0 flex-1 flex-col gap-0.5 px-3">
                   <span class="truncate text-sm font-medium {active ? 'text-primary' : ''}">{mediaTitle(part)}</span>
                   <span class="text-xs opacity-50">{part.aired}</span>
                 </div>
@@ -286,6 +286,9 @@
                 >
                   <iconify-icon icon={icons.play} width="1.25rem"></iconify-icon>
                 </div>
+                {#if $user?.role === 'admin'}
+                  <MediaActions item={part} triggerClass="ml-1 opacity-70" />
+                {/if}
               </button>
             {/each}
           </div>
