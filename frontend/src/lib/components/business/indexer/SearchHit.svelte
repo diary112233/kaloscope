@@ -71,6 +71,7 @@
   import { Badge, Button, Cell, Image, Rating, Uploader, downloadPrompt } from '$lib/components';
   import { _ } from '$lib/i18n';
   import { icons } from '$lib/icons';
+  import { user } from '$lib/stores';
 
   let { indexerId, indexerConfig, mode, rsrc, coverRatio, searchButton }: SearchHitProps = $props();
   let detailsConfig = $derived(indexerConfig.details);
@@ -178,7 +179,7 @@
         onclick: () => (rsrc.favorite ? unfavorite(rsrc) : favorite(rsrc))
       },
       {
-        condition: !!rsrc.link,
+        condition: !!rsrc.link && $user?.role === 'admin',
         icon: icons.download,
         text: $_('action.download'),
         onclick: () => downloadPrompt(rsrc.link)
@@ -213,7 +214,7 @@
           }}
         />
       {/if}
-      {#if rsrc.link}
+      {#if rsrc.link && $user?.role === 'admin'}
         <Button
           icon={icons.download}
           class={btnClass}
