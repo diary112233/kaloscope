@@ -15,32 +15,13 @@
 
 <script lang="ts">
   import { api } from '$lib/api';
-  import { Dropdown, confirm, mediaTitle } from '$lib/components';
+  import { Dropdown, MetadataScraper, confirm, mediaTitle } from '$lib/components';
   import { closeDropdowns } from '$lib/components/common/interaction/Dropdown.svelte';
   import { _ } from '$lib/i18n';
   import { icons } from '$lib/icons';
 
   let { item, class: _class, triggerClass, onclick, onscrape, ondelete }: MediaActionsProps = $props();
-
-  /**
-   * Scrape metadata manually.
-   */
-  function scrapeMetadata() {
-    // TODO
-  }
-
-  /**
-   * Delete the media item.
-   */
-  function deleteItem() {
-    confirm({
-      icon: icons.delete,
-      title: `${$_('action.delete')} [${mediaTitle(item)}]`,
-      onconfirm: () => {
-        api.post('media/delete', { json: { ids: [item.id] } }).then(() => ondelete?.());
-      }
-    });
-  }
+  let scraper: MetadataScraper | null = $state(null);
 </script>
 
 {#snippet action(icon: IconifyIcon, text: string, onclick: MouseEventHandler<HTMLElement>)}
@@ -76,10 +57,26 @@
   {/snippet}
   <ul class="menu gap-1">
     {#if onscrape}
-      {@render action(icons.boxMultipleSearch, $_('action.scrape'), () => scrapeMetadata())}
+      {@render action(icons.boxMultipleSearch, $_('action.scrape'), () => {
+        // scrape metadata for the media item
+        scraper?.showModal();
+      })}
     {/if}
     {#if ondelete}
-      {@render action(icons.delete, $_('action.delete'), () => deleteItem())}
+      {@render action(icons.delete, $_('action.delete'), () => {
+        // delete the media item
+        confirm({
+          icon: icons.delete,
+          title: `${$_('action.delete')} [${mediaTitle(item)}]`,
+          onconfirm: () => {
+            api.post('media/delete', { json: { ids: [item.id] } }).then(() => ondelete?.());
+          }
+        });
+      })}
     {/if}
   </ul>
 </Dropdown>
+
+{#if onscrape}
+  <MetadataScraper bind:this={scraper} {item} {onscrape} />
+{/if}

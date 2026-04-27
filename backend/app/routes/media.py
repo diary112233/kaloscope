@@ -43,11 +43,11 @@ async def list_libraries(request: Request) -> HTTPResponse:
     media_libs = await MediaLibService.dump_list(MediaLib.filter(*queries))
     # attach the triggers and scanning status for each library
     watcher: LibWatcher = request.app.ctx.lib_watcher
-    for media_lib in media_libs:
-        media_lib["triggers"] = await FlowTriggerService.get_triggers(
-            GraphCategory.INGEST, media_lib["id"]
+    for lib in media_libs:
+        lib["triggers"] = await FlowTriggerService.get_triggers(
+            GraphCategory.INGEST, lib["id"]
         )
-        media_lib["scanning"] = watcher.is_scanning(media_lib["dir"])
+        lib["scanning"] = watcher.is_scanning(lib["dir"])
     return json(media_libs)
 
 
@@ -127,8 +127,14 @@ async def delete_items(_, body: IDs) -> HTTPResponse:
 async def get_item_details(_, id: int) -> HTTPResponse:
     """Get the details of the media item."""
     item = await MediaItemService.dump(await MediaItem.get(id=id))
-    if nfo_path := item["nfo_path"]:
-        item["metadata"] = parse_nfo(item["lib"]["lib_type"], nfo_path)
+    if lib := item.get("lib"):
+        # attach the triggers
+        lib["triggers"] = await FlowTriggerService.get_triggers(
+            GraphCategory.INGEST, lib["id"]
+        )
+        # attach the metadata
+        if nfo_path := item.get("nfo_path"):
+            item["metadata"] = parse_nfo(lib["lib_type"], nfo_path)
     return json(item)
 
 

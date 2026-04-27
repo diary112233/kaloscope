@@ -52,7 +52,7 @@
   }: SearchProps = $props();
 
   // the placeholder text
-  let placeholder = $derived(_placeholder || (label ? $_('action.search', label.toLocaleLowerCase()) : ''));
+  let placeholder = $derived(_placeholder || (label ? $_('action.enter', label.toLocaleLowerCase()) : ''));
 
   // the input element
   let searchInput: HTMLInputElement;

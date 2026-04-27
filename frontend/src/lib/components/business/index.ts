@@ -17,6 +17,7 @@ export { default as Uploader } from './indexer/Uploader.svelte';
 
 export { default as MediaActions } from './library/MediaActions.svelte';
 export { default as MediaLibEditor } from './library/MediaLibEditor.svelte';
+export { default as MetadataScraper } from './library/MetadataScraper.svelte';
 
 export { default as DNSResolverEditor } from './network/DNSResolverEditor.svelte';
 export { default as ProxyServerEditor } from './network/ProxyServerEditor.svelte';

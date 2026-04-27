@@ -39,6 +39,7 @@
   import { enhance } from '$app/forms';
   import { api } from '$lib/api';
   import { FileTree, Label, Modal, Overlay, Search, Select } from '$lib/components';
+  import { EMPTY_SIGN } from '$lib/constants';
   import { createFormSchema, createLoading } from '$lib/helpers';
   import { _ } from '$lib/i18n';
   import { icons } from '$lib/icons';
@@ -81,9 +82,9 @@
 
   // the graph options and preview resources
   let graphOptions: Option[] = $state([]);
-  let resources: Resource[] = $state([]);
   let querySchema: Record<string, Filter> | null = $state(null);
-  let previewLoading: boolean = $state(false);
+  let resources: Resource[] = $state([]);
+  let searching = createLoading();
   let abortController: AbortController | null = null;
 
   // the download directory and downloaders
@@ -131,14 +132,14 @@
    * Search for preview resources using the selected flow graph.
    */
   function preview() {
-    if (previewLoading) {
+    if ($searching !== null) {
       return;
     }
     resources = [];
     if (!graph_id || !keyword.trim()) {
       return;
     }
-    previewLoading = true;
+    searching.start();
     abortController = new AbortController();
     api
       .post(`flow/graph/${graph_id}/execute`, {
@@ -161,7 +162,7 @@
         }
       })
       .finally(() => {
-        previewLoading = false;
+        searching.end();
       });
   }
 
@@ -326,7 +327,7 @@
         />
       </div>
       <div class="relative mt-2 h-34 overflow-y-auto rounded-box border">
-        <Overlay loading={previewLoading} fixed={false} animation="spinner" />
+        <Overlay loading={$searching} fixed={false} animation="spinner" />
         <table class="table-pin-rows table table-fixed table-xs">
           <thead>
             <tr class="text-xs font-semibold uppercase">
@@ -335,12 +336,20 @@
             </tr>
           </thead>
           <tbody>
-            {#each resources as rsrc, i (i)}
+            {#if resources.length > 0}
+              {#each resources as rsrc, i (i)}
+                <tr>
+                  <td class="truncate" title={rsrc.title}>{rsrc.title ?? EMPTY_SIGN}</td>
+                  <td class="text-right opacity-70">{rsrc.size ?? EMPTY_SIGN}</td>
+                </tr>
+              {/each}
+            {:else if !$searching}
               <tr>
-                <td class="truncate" title={rsrc.title}>{rsrc.title}</td>
-                <td class="text-right opacity-70">{rsrc.size}</td>
+                <td colspan="2" class="h-26 text-center text-sm opacity-20">
+                  {$_('data.nodata')}
+                </td>
               </tr>
-            {/each}
+            {/if}
           </tbody>
         </table>
       </div>
