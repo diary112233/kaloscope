@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <tvshow>
-  <lockdata>{{ lockdata|default(false)|lower }}</lockdata>
+  <lockdata>{{ lockdata|default(true)|lower }}</lockdata>
+  <uniqueid type="{{ site }}" default="true">{{ id }}</uniqueid>
   <title>{{ title }}</title>
   <originaltitle>{{ originaltitle }}</originaltitle>
   <tagline>{{ tagline }}</tagline>

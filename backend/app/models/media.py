@@ -51,6 +51,8 @@ class MediaLib(TortoiseModel):
     dir = CharField(max_length=4096, unique=True)
     language = CharEnumField(max_length=16, enum_type=Language, null=True)
     priority = IntField(unique=True)
+    danmaku_server = CharField(max_length=255, null=True)
+    danmaku_cache_hours = IntField(default=24)
     # relational fields
     items: ReverseRelation["MediaItem"]
     events: ReverseRelation["MediaEvent"]
@@ -80,6 +82,7 @@ class MediaItem(TortoiseModel):
     visible = BooleanField(default=True)
     nfo_path = CharField(max_length=4096, null=True)
     nfo_mtime = DatetimeField(null=True)
+    uniqueid = CharField(max_length=255, null=True)
     title = CharField(max_length=255, null=True)
     year = IntField(null=True)
     aired = CharField(max_length=64, null=True)
