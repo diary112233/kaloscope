@@ -103,7 +103,6 @@
             onclick={(event) => {
               value = option.value;
               onchange?.(event);
-              event.currentTarget.blur();
             }}
           >
             <span class="size-3">

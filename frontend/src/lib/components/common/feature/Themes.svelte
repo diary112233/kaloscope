@@ -120,9 +120,8 @@
     <li data-theme={theme} class="rounded-field">
       <button
         class="bg-base-100 font-sans shadow-sm hover:bg-base-300 {$themeStore === theme ? '[&_svg]:block' : ''}"
-        onclick={(event) => {
+        onclick={() => {
           switchTheme(theme);
-          event.currentTarget.blur();
         }}
       >
         <span class="size-3">

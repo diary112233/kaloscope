@@ -100,8 +100,7 @@
           <button
             class="px-2 {action.class}"
             onclick={(event) => {
-              !action.disabled && action.onclick && action.onclick(event);
-              event.currentTarget.blur();
+              !action.disabled && action.onclick?.(event);
             }}
           >
             <iconify-icon icon={action.icon} width="1rem" class="size-4"></iconify-icon>

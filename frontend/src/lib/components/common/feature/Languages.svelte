@@ -32,9 +32,8 @@
     <li>
       <button
         class={$locale?.startsWith(code) ? 'item-emphasis' : ''}
-        onclick={(event) => {
+        onclick={() => {
           switchLocale(code);
-          event.currentTarget.blur();
         }}
       >
         <Badge uppercase>{code.split('-')[0]}</Badge>

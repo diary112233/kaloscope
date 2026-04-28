@@ -81,12 +81,7 @@
   count?: number
 )}
   <li class={_class}>
-    <button
-      onclick={(event) => {
-        onclick?.(event);
-        event.currentTarget.blur();
-      }}
-    >
+    <button onclick={(event) => onclick?.(event)}>
       <iconify-icon {icon} width="1.25rem" class="size-5"></iconify-icon>
       {text}
       {#if count && count > 0}

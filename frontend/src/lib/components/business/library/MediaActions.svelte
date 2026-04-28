@@ -30,8 +30,8 @@
       class="px-2"
       onclick={(event) => {
         event.stopPropagation();
+        closeDropdowns();
         onclick?.(event);
-        event.currentTarget.blur();
       }}
     >
       <iconify-icon {icon} width="1rem" class="size-4"></iconify-icon>
