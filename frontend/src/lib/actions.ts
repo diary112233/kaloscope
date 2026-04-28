@@ -5,6 +5,24 @@ import type { Instance, Props } from 'tippy.js';
 import tippy from 'tippy.js';
 
 /**
+ * A Svelte action to portal an element to a specified parent element.
+ *
+ * @param target - The target element.
+ * @param parent - The parent element to append the target to.
+ * @returns The Svelte action return.
+ */
+export function portal(target: HTMLElement, parent?: HTMLElement): ActionReturn {
+  (parent || document.body).appendChild(target);
+  return {
+    destroy: () => {
+      if (target.parentNode) {
+        target.parentNode.removeChild(target);
+      }
+    }
+  };
+}
+
+/**
  * A Svelte action to create a tooltip using Tippy.js.
  *
  * @param target - The target element.
@@ -51,15 +69,15 @@ export function tooltip(target: HTMLElement, props: Partial<Props>): ActionRetur
 /**
  * A Svelte action to create a Cropper.js instance.
  *
- * @param element - The target image element.
+ * @param target - The target image element.
  * @param transform - The transform event handler.
  * @returns The Svelte action return.
  */
-export function cropper(element: HTMLImageElement, transform: (blob: Promise<Blob | null>) => void): ActionReturn {
+export function cropper(target: HTMLImageElement, transform: (blob: Promise<Blob | null>) => void): ActionReturn {
   // add 2px to the size to avoid the border
-  const size = `${Math.max(element.width, element.height) + 2}px`;
+  const size = `${Math.max(target.width, target.height) + 2}px`;
   // create the Cropper.js instance
-  const instance = new Cropper(element);
+  const instance = new Cropper(target);
   const image = instance.getCropperImage();
   const canvas = instance.getCropperCanvas();
   const selection = instance.getCropperSelection();

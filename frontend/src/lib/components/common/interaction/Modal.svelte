@@ -37,6 +37,7 @@
 
 <script lang="ts">
   import { pushState } from '$app/navigation';
+  import { portal } from '$lib/actions';
   import { Alerts } from '$lib/components';
   import { messages } from '$lib/components/common/notice/Messages.svelte';
   import { freeze } from '$lib/stores';
@@ -125,9 +126,9 @@
 {#if modals.has(id)}
   <dialog
     {id}
+    use:portal
     bind:this={dialog}
-    class="modal cursor-default transition-none {_class}"
-    onclick={(event) => event.stopPropagation()}
+    class="modal transition-none {_class}"
     transition:fade={{ duration: TRANSITION_DURATION }}
   >
     <form method="dialog" class="modal-backdrop">

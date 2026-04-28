@@ -107,7 +107,7 @@
           language: language || null,
           title: title.trim(),
           year: year || null,
-          season: season || null,
+          season: season || 1,
           page_num: 1,
           page_size: 5
         }
