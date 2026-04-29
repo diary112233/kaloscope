@@ -56,33 +56,65 @@ def is_locked(path: Path | str) -> bool:
         return False
 
 
-async def gen_nfo(context: Context, tmpl: NFOType):
-    """Generate NFO file for the given context and template type.
+def nfo_context(context: Context) -> tuple[str, str, dict]:
+    """Extract the NFO context from the flow context.
 
     Args:
-        context: Context of the flow execution.
-        tmpl: Template type to use for NFO generation.
+        context: The flow context.
+
+    Returns:
+        A tuple of (NFO type, NFO path, NFO data).
     """
-    bootparams = context.bootparams
     # ensure we have NFO type and path
+    bootparams = context.bootparams
     nfo_type = bootparams.get("nfo_type")
     nfo_path = bootparams.get("nfo_path")
-    if not nfo_type or not nfo_path:
-        return
+    if not isinstance(nfo_type, str) or not isinstance(nfo_path, str):
+        return "", "", {}
+
     # ensure we have return value
     retval = context.get(RETVAL_KEY)
-    if not retval or not isinstance(retval, list):
+    if not retval or not isinstance(retval, list) or not isinstance(retval[0], dict):
+        return "", "", {}
+
+    # return the NFO context
+    return nfo_type, nfo_path, retval[0]
+
+
+async def gen_nfo(nfo_type: str, nfo_path: str, data: dict, *, overwrite: bool = False):
+    """Generate NFO file from the given context.
+
+    Args:
+        nfo_type: The type of the NFO file (e.g. "movie", "tvshow").
+        nfo_path: The path to the NFO file to generate.
+        data: The data to render the NFO file with.
+        overwrite: Whether to overwrite the NFO file if it already exists.
+    """
+    # validate the parameters
+    if not nfo_type or not nfo_path or not data:
         return
+    if nfo_type not in NFOType:
+        logger.error("Invalid NFO type: %s", nfo_type)
+        return
+
     # check if NFO file already exists
-    if Path(nfo_path).exists():
+    path = Path(nfo_path)
+    if not overwrite and path.exists():
         logger.info("NFO file already exists, skipping generation: %s", nfo_path)
         return
-    # generate NFO file
-    tmpl_path = TEMPLATES_PATH / f"{tmpl.value}.nfo"
+
+    # create parent directory if it doesn't exist
+    path.parent.mkdir(parents=True, exist_ok=True)
+
+    # load the NFO template
+    tmpl_path = TEMPLATES_PATH / f"{nfo_type}.nfo"
     async with aiofiles.open(tmpl_path, encoding=ENCODING) as f:
         template = await f.read()
-    async with aiofiles.open(nfo_path, "w", encoding=ENCODING) as f:
-        await f.write(render(template, context=retval[0]))
+
+    # generate NFO file
+    mode = "w" if overwrite else "x"
+    async with aiofiles.open(nfo_path, mode, encoding=ENCODING) as f:
+        await f.write(render(template, context=data))
 
 
 def parse_nfo(lib_type: LibType, path: Path | str) -> MediaMeta | None:
