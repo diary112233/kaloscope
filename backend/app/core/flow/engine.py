@@ -523,6 +523,7 @@ class FlowTask(ABC):
         "started_at",
         "_definition",
         "_nodes",
+        "_incomers",
         "_outgoers",
         "_context",
         "_merge_lock",
@@ -540,6 +541,7 @@ class FlowTask(ABC):
         # the flow graph definition
         self._definition: dict
         self._nodes: dict[str, NodeWrapper] | None = None
+        self._incomers: dict[TargetWrapper, list[SourceWrapper]] | None = None
         self._outgoers: dict[SourceWrapper, list[TargetWrapper]] | None = None
         # the context for the flow task
         self._context: Context
@@ -651,6 +653,25 @@ class FlowTask(ABC):
                 )
             self._nodes = nodes
         return self._nodes
+
+    @property
+    def incomers(self) -> dict[TargetWrapper, list[SourceWrapper]]:
+        """Construct the target-sources mapping from the edges.
+
+        Returns:
+            A dictionary of target-sources mapping.
+        """
+        if self._incomers is None:
+            incomers = {}
+            for edge in self._definition["edges"]:
+                target = TargetWrapper(edge["target"], handle_id=edge["targetHandle"])
+                source = SourceWrapper(edge["source"], handle_id=edge["sourceHandle"])
+                if target in incomers:
+                    incomers[target].append(source)
+                else:
+                    incomers[target] = [source]
+            self._incomers = incomers
+        return self._incomers
 
     @property
     def outgoers(self) -> dict[SourceWrapper, list[TargetWrapper]]:

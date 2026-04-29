@@ -103,7 +103,7 @@
       },
       {} as Record<string, Record<string, string | null>>
     );
-    // construct the node-targets and node-sources maps
+    // construct the node-sources and node-targets maps
     const incomers = { [`${conn.target}`]: [{ source: conn.source, sourceHandle: conn.sourceHandle }] };
     const outgoers = { [`${conn.source}`]: [{ target: conn.target, targetHandle: conn.targetHandle }] };
     for (const edge of edges) {
