@@ -9,7 +9,13 @@ from sanic.log import Colors, logger
 
 from app.core.flow.context import OUTPUT_KEY, Context
 from app.core.flow.fields import DividerField, Field
-from app.core.flow.handles import DefaultHandles, Handle, InputHandle, OutputHandle
+from app.core.flow.handles import (
+    STOP,
+    DefaultHandles,
+    Handle,
+    InputHandle,
+    OutputHandle,
+)
 from app.models.flow import FlowGraph, GraphCategory
 
 N = TypeVar("N", bound="Node")
@@ -240,7 +246,10 @@ class Node(metaclass=NodeMeta):
                 input_handle=input_handle,
                 context=context,
             )
-            if output_handle is None:
+            if output_handle is STOP:
+                # explicitly abort flow, skip default handle fallback
+                output_handle = None
+            elif output_handle is None:
                 # get the default output handle if not provided
                 output_handles = [
                     h for h in cls._handles if isinstance(h, OutputHandle)
