@@ -36,6 +36,7 @@ class ErrorCode(StrEnum):
     INFO_HASH_COLLISION = auto()
     GET_INFO_HASH_FAILED = auto()
     HTTP_REQUEST_FAILED = auto()
+    EXPORT_ITEMS_FAILED = auto()
     IMPORT_ITEMS_FAILED = auto()
 
 

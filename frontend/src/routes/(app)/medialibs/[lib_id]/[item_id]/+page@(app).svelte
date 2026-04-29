@@ -169,7 +169,7 @@
           <!-- titles -->
           <h1 class="text-2xl font-bold sm:text-3xl">{media?.title ?? media?.name}</h1>
           {#if meta?.originaltitle && meta.originaltitle !== meta.title}
-            <p class="text-sm opacity-60">{meta.originaltitle}</p>
+            <h4 class="text-sm opacity-60">{meta.originaltitle}</h4>
           {/if}
 
           <!-- badges -->

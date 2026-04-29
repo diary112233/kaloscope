@@ -153,10 +153,10 @@
         <input required type="text" class="input w-full truncate" value={msg.advice} placeholder={msg.placeholder} />
       {/if}
       {#if msg.hint}
-        <p class="flex items-center gap-1 text-xs opacity-50">
+        <div class="flex items-center gap-1 text-xs opacity-50">
           <iconify-icon icon={icons.info} width="1.125rem" class="size-4.5"></iconify-icon>
           {msg.hint}
-        </p>
+        </div>
       {/if}
       <!-- action buttons -->
       <div class="modal-action">

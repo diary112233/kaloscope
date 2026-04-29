@@ -9,7 +9,7 @@ from tortoise.expressions import Q
 from app.core.constants import APP_NAME
 from app.core.cookiejar import SQLiteCookieJar
 from app.core.decorators import authorize
-from app.core.exceptions import ErrorCode, KaloscopeException
+from app.core.exceptions import BadRequestException, ErrorCode, KaloscopeException
 from app.core.flow.context import AUTH_KEY
 from app.core.flow.engine import FlowEngine
 from app.core.flow.nodes.base import Node, start_config
@@ -116,7 +116,7 @@ async def copy_template(_, id: int, body: GraphBasics) -> HTTPResponse:
 async def gen_graph_name(_, query: GraphQuery) -> HTTPResponse:
     """Generate a unique name for the flow graph."""
     if not query.name:
-        return empty()
+        raise BadRequestException
     return text(await FlowGraphService.unique_name(query.name))
 
 
@@ -245,7 +245,7 @@ async def export_graphs(_, body: IDs) -> HTTPResponse:
     """Export the flow graphs as a zip file."""
     zip = await FlowGraphService.export_graphs(body.ids)
     if zip is None:
-        return empty()
+        raise KaloscopeException(ErrorCode.EXPORT_ITEMS_FAILED)
     return raw(
         zip,
         content_type="application/zip",

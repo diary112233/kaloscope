@@ -56,6 +56,22 @@ def is_locked(path: Path | str) -> bool:
         return False
 
 
+def nfo_type(lib_type: LibType) -> str:
+    """Get the corresponding NFO type for the given library type.
+
+    Args:
+        lib_type: The library type.
+
+    Returns:
+        The corresponding NFO type.
+    """
+    if lib_type == LibType.MOVIE:
+        return NFOType.MOVIE
+    elif lib_type == LibType.TV_SHOW:
+        return NFOType.TV_SHOW
+    return ""
+
+
 def nfo_context(context: Context) -> tuple[str, str, dict]:
     """Extract the NFO context from the flow context.
 
@@ -81,7 +97,9 @@ def nfo_context(context: Context) -> tuple[str, str, dict]:
     return nfo_type, nfo_path, retval[0]
 
 
-async def gen_nfo(nfo_type: str, nfo_path: str, data: dict, *, overwrite: bool = False):
+async def gen_nfo(
+    nfo_type: str, nfo_path: str, data: dict, *, overwrite: bool = False
+) -> bool:
     """Generate NFO file from the given context.
 
     Args:
@@ -89,19 +107,22 @@ async def gen_nfo(nfo_type: str, nfo_path: str, data: dict, *, overwrite: bool =
         nfo_path: The path to the NFO file to generate.
         data: The data to render the NFO file with.
         overwrite: Whether to overwrite the NFO file if it already exists.
+
+    Returns:
+        True if the NFO file is generated successfully, False otherwise.
     """
     # validate the parameters
     if not nfo_type or not nfo_path or not data:
-        return
+        return False
     if nfo_type not in NFOType:
         logger.error("Invalid NFO type: %s", nfo_type)
-        return
+        return False
 
     # check if NFO file already exists
     path = Path(nfo_path)
     if not overwrite and path.exists():
         logger.info("NFO file already exists, skipping generation: %s", nfo_path)
-        return
+        return False
 
     # create parent directory if it doesn't exist
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -115,6 +136,7 @@ async def gen_nfo(nfo_type: str, nfo_path: str, data: dict, *, overwrite: bool =
     mode = "w" if overwrite else "x"
     async with aiofiles.open(nfo_path, mode, encoding=ENCODING) as f:
         await f.write(render(template, context=data))
+    return True
 
 
 def parse_nfo(lib_type: LibType, path: Path | str) -> MediaMeta | None:

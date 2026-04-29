@@ -23,7 +23,7 @@
    * Get the corresponding NFO type for the given library type.
    *
    * @param libType - The library type.
-   * @returns The corresponding NFO type, or null if not applicable.
+   * @returns The corresponding NFO type.
    */
   function getNFOType(libType: keyof typeof LibType | null | undefined): string | null {
     if (!libType) {
@@ -152,9 +152,16 @@
     if (!result) {
       return;
     }
-    // TODO: apply the selected metadata result to the current media item.
-    onscrape?.();
-    modal.close();
+    loading.start();
+    api
+      .post(`media/${item?.id}/gen_nfo`, { json: result })
+      .then(() => {
+        modal.close();
+        onscrape?.();
+      })
+      .finally(() => {
+        loading.end();
+      });
   }
 </script>
 
@@ -169,6 +176,7 @@
     <Select options={graphOptions} bind:value={graphId} class="w-full" />
     <Label required>{$_('field.title')}</Label>
     <input placeholder={$_('field.title')} class="input w-full" bind:value={title} />
+    <div class="px-1 text-xs opacity-50">{item?.path}</div>
     <div class="flex flex-wrap gap-2 *:min-w-0">
       <div class="flex-1">
         <Label>{$_('field.year')}</Label>

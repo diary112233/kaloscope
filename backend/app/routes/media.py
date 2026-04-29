@@ -10,7 +10,8 @@ from sanic_ext import validate
 from tortoise.expressions import Q, RawSQL
 
 from app.core.decorators import authorize
-from app.core.media.shelver import parse_nfo
+from app.core.exceptions import BadRequestException
+from app.core.media.shelver import gen_nfo, nfo_type, parse_nfo, update_metadata
 from app.core.media.watcher import LibWatcher
 from app.models.base import IDs, Range
 from app.models.flow import GraphCategory
@@ -136,6 +137,25 @@ async def get_item_details(_, id: int) -> HTTPResponse:
         if nfo_path := item.get("nfo_path"):
             item["metadata"] = parse_nfo(lib["lib_type"], nfo_path)
     return json(item)
+
+
+@media.post("/<id:int>/gen_nfo")
+@authorize(role=UserRole.ADMIN)
+async def generate_nfo(request: Request, id: int) -> HTTPResponse:
+    """Generate the NFO file for the media item."""
+    item = await MediaItem.get_or_none(
+        id=id,
+        parent_id__isnull=True,
+    ).select_related("lib")
+    if not item:
+        raise BadRequestException
+    # overwrite the NFO file and update the metadata immediately
+    lib = item.lib
+    path = item.nfo_path
+    metadata = request.json
+    if await gen_nfo(nfo_type(lib.lib_type), path, metadata, overwrite=True):
+        await update_metadata(lib, path)
+    return empty()
 
 
 @media.get("/title")
