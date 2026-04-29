@@ -482,6 +482,7 @@
         "condition": "Condition",
         "http": "HTTP Request",
         "text": "Save Text",
+        "variables": "Variables",
         "script": "Script"
       },
       "handle": {
@@ -505,6 +506,7 @@
         "formatter": "Formatter",
         "config": "Configuration",
         "varname": "Variable Name",
+        "variables": "JSON Object",
         "expression": "Expression",
         "language": "Language",
         "code": "Code",

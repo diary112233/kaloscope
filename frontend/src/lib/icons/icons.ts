@@ -155,6 +155,7 @@ const tablerIcons = {
   arrowBigUp: 'tabler:arrow-big-up',
   arrowNarrowDown: 'tabler:arrow-narrow-down',
   arrowNarrowDownDashed: 'tabler:arrow-narrow-down-dashed',
+  circleDashedPlus: 'tabler:circle-dashed-plus',
   colorSwatch: 'tabler:color-swatch',
   deviceTvOld: 'tabler:device-tv-old',
   link: 'tabler:link',

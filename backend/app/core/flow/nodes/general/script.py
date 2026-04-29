@@ -7,7 +7,7 @@ from app.core.flow.fields import ScriptField
 from app.core.flow.nodes.base import Node, general_node
 
 
-@general_node(order=3, icon="code")
+@general_node(order=4, icon="code")
 class ScriptNode(Node):
     script = ScriptField("code", required=True)
 

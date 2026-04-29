@@ -482,6 +482,7 @@
         "condition": "条件",
         "http": "HTTP 请求",
         "text": "保存文本",
+        "variables": "设置变量",
         "script": "脚本"
       },
       "handle": {
@@ -505,6 +506,7 @@
         "formatter": "格式化",
         "config": "配置",
         "varname": "变量名",
+        "variables": "JSON 格式键值对",
         "expression": "表达式",
         "language": "语言",
         "code": "代码",
