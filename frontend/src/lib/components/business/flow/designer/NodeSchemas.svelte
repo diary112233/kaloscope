@@ -173,7 +173,7 @@
                   class="btn btn-square btn-subtle btn-sm {disabled ? 'btn-disabled' : ''}"
                   onclick={() => addNode(schema)}
                 >
-                  <iconify-icon icon={icons.addCircle} width="1.25rem"></iconify-icon>
+                  <iconify-icon icon={icons.addCircle} width="1.25rem" class="opacity-70"></iconify-icon>
                 </div>
               </button>
             </li>

@@ -478,8 +478,9 @@
         "episode": "剧集",
         "schedule_start": "开始",
         "schedule_end": "结束",
-        "loop": "循环",
         "condition": "条件",
+        "loop": "循环",
+        "merge": "合并",
         "http": "HTTP 请求",
         "text": "保存文本",
         "variables": "设置变量",
@@ -508,6 +509,8 @@
         "varname": "变量名",
         "variables": "JSON 格式键值对",
         "expression": "表达式",
+        "merge_maximum": "合并数量",
+        "timeout": "超时时间（秒）",
         "language": "语言",
         "code": "代码",
         "path": "文件路径",
@@ -520,6 +523,8 @@
       },
       "tooltip": {
         "format_response": "格式化响应结果并合并到全局上下文中。",
+        "merge_maximum": "输出前等待的最大输入数量，超出部分将被丢弃。",
+        "merge_timeout": "首次输入到达后的最大等待时间。",
         "force_end": "立即结束流程，无需等待其它节点执行完毕。"
       },
       "placeholder": {

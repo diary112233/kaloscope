@@ -478,8 +478,9 @@
         "episode": "Episode",
         "schedule_start": "Start",
         "schedule_end": "End",
-        "loop": "Loop",
         "condition": "Condition",
+        "loop": "Loop",
+        "merge": "Merge",
         "http": "HTTP Request",
         "text": "Save Text",
         "variables": "Variables",
@@ -508,6 +509,8 @@
         "varname": "Variable Name",
         "variables": "JSON Object",
         "expression": "Expression",
+        "merge_maximum": "Merge Limit",
+        "timeout": "Timeout (s)",
         "language": "Language",
         "code": "Code",
         "path": "File Path",
@@ -520,6 +523,8 @@
       },
       "tooltip": {
         "format_response": "Format the response and merge it into the global context.",
+        "merge_maximum": "Max inputs to wait for before output; extras are discarded.",
+        "merge_timeout": "Max wait time after the first input arrives.",
         "force_end": "End the workflow immediately without waiting for other nodes to complete."
       },
       "placeholder": {
