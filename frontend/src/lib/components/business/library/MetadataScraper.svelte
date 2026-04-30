@@ -122,7 +122,6 @@
           $manual: true,
           item_path: item.path,
           item_name: item.name,
-          nfo_path: item.nfo_path,
           nfo_type: getNFOType(item.lib?.lib_type),
           language: language || null,
           title: title.trim(),
@@ -154,7 +153,9 @@
     }
     loading.start();
     api
-      .post(`media/${item?.id}/gen_nfo`, { json: result })
+      .post(`media/${item?.id}/gen_nfo`, {
+        json: { graph_id: graphId, metadata: result }
+      })
       .then(() => {
         modal.close();
         onscrape?.();

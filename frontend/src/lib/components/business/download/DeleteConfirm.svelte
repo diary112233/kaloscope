@@ -28,7 +28,9 @@
   function del(form: HTMLFormElement, data: FormData) {
     loading.start();
     api
-      .post('download/delete', { json: { ids: [taskId], local: !!data.get('local') } })
+      .post('download/delete', {
+        json: { ids: [taskId], local: !!data.get('local') }
+      })
       .then(() => {
         modal.close();
         onconfirm?.();

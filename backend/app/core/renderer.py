@@ -508,42 +508,50 @@ def year(value: Any, tz: float | None = None) -> int | None:
     return None
 
 
-def prefix(value: Any, prefix: str, strict: bool = True) -> str:
+def _str(value: Any) -> str:
+    """Convert a value to a string, treating None and bool as empty string.
+
+    Args:
+        value: The value to convert.
+
+    Returns:
+        The converted string.
+    """
+    if value is None or isinstance(value, bool):
+        return ""
+    return str(value)
+
+
+def prefix(value: Any, prefix: Any, strict: bool = True) -> str:
     """Add a prefix to a string value.
 
     Args:
         value: The value to add the prefix to.
-        prefix: The prefix string.
-        strict: Whether to only add the prefix if the value is truthy.
+        prefix: The prefix to add.
+        strict: Whether to return empty string if the value or prefix is falsy.
 
     Returns:
         The prefixed string.
     """
-    if strict and not value:
+    if strict and (not value or not prefix):
         return ""
-    value = "" if (value is None or isinstance(value, bool)) else value
-    if not isinstance(value, str):
-        value = str(value)
-    return f"{prefix}{value}"
+    return f"{_str(prefix)}{_str(value)}"
 
 
-def suffix(value: Any, suffix: str, strict: bool = True) -> str:
+def suffix(value: Any, suffix: Any, strict: bool = True) -> str:
     """Add a suffix to a string value.
 
     Args:
         value: The value to add the suffix to.
-        suffix: The suffix string.
-        strict: Whether to only add the suffix if the value is truthy.
+        suffix: The suffix to add.
+        strict: Whether to return empty string if the value or suffix is falsy.
 
     Returns:
         The suffixed string.
     """
-    if strict and not value:
+    if strict and (not value or not suffix):
         return ""
-    value = "" if (value is None or isinstance(value, bool)) else value
-    if not isinstance(value, str):
-        value = str(value)
-    return f"{value}{suffix}"
+    return f"{_str(value)}{_str(suffix)}"
 
 
 # register custom filters

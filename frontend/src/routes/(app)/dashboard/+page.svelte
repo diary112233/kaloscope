@@ -149,7 +149,9 @@
 
       // load the resources
       const resp = await api
-        .post(`flow/graph/${id}/execute`, { json: { $start: 'board_start' } })
+        .post(`flow/graph/${id}/execute`, {
+          json: { $start: 'board_start' }
+        })
         .json<Resp<Resources[]>>();
       board.resources = resp.data || [];
 

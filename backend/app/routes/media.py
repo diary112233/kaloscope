@@ -11,14 +11,22 @@ from tortoise.expressions import Q, RawSQL
 
 from app.core.decorators import authorize
 from app.core.exceptions import BadRequestException
-from app.core.media.shelver import gen_nfo, nfo_type, parse_nfo, update_metadata
+from app.core.media.shelver import (
+    gen_nfo,
+    get_nfo_path,
+    get_nfo_type,
+    parse_nfo,
+    update_metadata,
+)
 from app.core.media.watcher import LibWatcher
 from app.models.base import IDs, Range
 from app.models.flow import GraphCategory
 from app.models.media import (
+    LibType,
     MediaItem,
     MediaLib,
     MediaLibUpsert,
+    MediaMetadata,
     MediaQuery,
     MediaResource,
 )
@@ -141,7 +149,8 @@ async def get_item_details(_, id: int) -> HTTPResponse:
 
 @media.post("/<id:int>/gen_nfo")
 @authorize(role=UserRole.ADMIN)
-async def generate_nfo(request: Request, id: int) -> HTTPResponse:
+@validate(json=MediaMetadata)
+async def generate_nfo(_, body: MediaMetadata, id: int) -> HTTPResponse:
     """Generate the NFO file for the media item."""
     item = await MediaItem.get_or_none(
         id=id,
@@ -151,10 +160,13 @@ async def generate_nfo(request: Request, id: int) -> HTTPResponse:
         raise BadRequestException
     # overwrite the NFO file and update the metadata immediately
     lib = item.lib
-    path = item.nfo_path
-    metadata = request.json
-    if await gen_nfo(nfo_type(lib.lib_type), path, metadata, overwrite=True):
-        await update_metadata(lib, path)
+    nfo_type = get_nfo_type(lib.lib_type)
+    nfo_path = item.nfo_path or get_nfo_path(item.path)
+    if await gen_nfo(nfo_type, nfo_path, body.metadata, overwrite=True):
+        await update_metadata(lib, nfo_path, alternative=body.metadata)
+    # also update the metadata of the child episodes if it's a TV show
+    if lib.lib_type == LibType.TV_SHOW:
+        await MediaItemService.refresh_episodes(item, body)
     return empty()
 
 

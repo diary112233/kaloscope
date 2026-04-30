@@ -61,7 +61,9 @@
   function toggle(rule: URLRule, field: 'secure_dns' | 'http_proxy') {
     const value = !rule[field];
     rule[field] = value;
-    api.post('network/rule/toggle', { json: { id: rule.id, [field]: value } });
+    api.post('network/rule/toggle', {
+      json: { id: rule.id, [field]: value }
+    });
   }
 
   /**

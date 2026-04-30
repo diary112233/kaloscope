@@ -1,10 +1,13 @@
+from pathlib import Path
+
+from sanic import Sanic
 from tortoise.expressions import Q
 from tortoise.transactions import atomic
 
 from app.core.exceptions import ErrorCode, KaloscopeException
 from app.core.media.handlers.base import MetaKeywords
 from app.models.flow import FlowTrigger, GraphCategory
-from app.models.media import MediaItem, MediaLib, MediaLibUpsert
+from app.models.media import MediaItem, MediaLib, MediaLibUpsert, MediaMetadata, NFOType
 from app.models.user import PermType, UserPermission
 from app.services.base import BaseService
 from app.services.flow import FlowTriggerService
@@ -129,3 +132,57 @@ class MediaItemService(BaseService[MediaItem], model=MediaItem):
             },
         )
         return item
+
+    @classmethod
+    async def refresh_episodes(cls, season: MediaItem, season_meta: MediaMetadata):
+        """Refresh the metadata of the episodes under a season.
+
+        Args:
+            season: The season media item.
+            season_meta: The metadata of the season.
+        """
+        from app.core.media.shelver import gen_nfo, get_nfo_path
+
+        refresh_all = True
+        metadata = season_meta.metadata
+        series_id = metadata.get("id")
+        if series_id and str(series_id) == str(season.uniqueid):
+            # only refresh the episodes that don't have valid NFO files
+            refresh_all = False
+
+        # get the flow engine from the app context
+        engine = Sanic.get_app().ctx.flow_engine
+
+        # get the episodes under the season
+        episodes = await MediaItem.filter(parent_id=season.id)
+        for episode in episodes:
+            nfo_path = episode.nfo_path
+            if not refresh_all and nfo_path and Path(nfo_path).exists():
+                # skip the episode if it already has a valid NFO file
+                continue
+
+            # execute the flow to get the metadata for the episode
+            results = await engine.execute(
+                graph_id=season_meta.graph_id,
+                bootparams={
+                    "$manual": True,
+                    "series_id": series_id,
+                    "item_path": episode.path,
+                    "item_name": episode.name,
+                    "nfo_type": NFOType.EPISODE,
+                    "language": season.lib.language,
+                    "title": metadata.get("title", season.title),
+                    "year": metadata.get("year", season.year),
+                    "season": metadata.get("season", season.season),
+                    "episode": episode.episode,
+                    "page_num": 1,
+                    "page_size": 1,
+                },
+            )
+
+            # generate the NFO file for the episode
+            if isinstance(results, list) and len(results) > 0:
+                result = results[0]
+                if isinstance(result, dict):
+                    nfo_path = nfo_path or get_nfo_path(episode.path)
+                    await gen_nfo(NFOType.EPISODE, nfo_path, result, overwrite=True)

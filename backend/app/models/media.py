@@ -137,5 +137,10 @@ class MediaQuery(Pageable):
     path: str | None = None
 
 
+class MediaMetadata(BaseModel):
+    graph_id: PositiveInt
+    metadata: dict
+
+
 class MediaResource(BaseModel):
     path: str

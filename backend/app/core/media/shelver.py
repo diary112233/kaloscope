@@ -1,6 +1,7 @@
 import mimetypes
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import Any
 
 import aiofiles
 from lxml import etree
@@ -56,7 +57,7 @@ def is_locked(path: Path | str) -> bool:
         return False
 
 
-def nfo_type(lib_type: LibType) -> str:
+def get_nfo_type(lib_type: LibType) -> str:
     """Get the corresponding NFO type for the given library type.
 
     Args:
@@ -72,7 +73,23 @@ def nfo_type(lib_type: LibType) -> str:
     return ""
 
 
-def nfo_context(context: Context) -> tuple[str, str, dict]:
+def get_nfo_path(item_path: str) -> str:
+    """Get the corresponding NFO path for the given media item path.
+
+    Args:
+        item_path: The media item path.
+
+    Returns:
+        The corresponding NFO path.
+    """
+    path = Path(item_path)
+    if path.is_dir():
+        return str(path / f"{path.name}.nfo")
+    else:
+        return str(path.parent / f"{path.stem}.nfo")
+
+
+def nfo_context(flow_ctx: Context) -> tuple[str, str, dict]:
     """Extract the NFO context from the flow context.
 
     Args:
@@ -82,14 +99,14 @@ def nfo_context(context: Context) -> tuple[str, str, dict]:
         A tuple of (NFO type, NFO path, NFO data).
     """
     # ensure we have NFO type and path
-    bootparams = context.bootparams
+    bootparams = flow_ctx.bootparams
     nfo_type = bootparams.get("nfo_type")
     nfo_path = bootparams.get("nfo_path")
     if not isinstance(nfo_type, str) or not isinstance(nfo_path, str):
         return "", "", {}
 
     # ensure we have return value
-    retval = context.get(RETVAL_KEY)
+    retval = flow_ctx.get(RETVAL_KEY)
     if not retval or not isinstance(retval, list) or not isinstance(retval[0], dict):
         return "", "", {}
 
@@ -172,16 +189,27 @@ def parse_nfo(lib_type: LibType, path: Path | str) -> MediaMeta | None:
     return meta
 
 
-async def update_metadata(lib: MediaLib, path: Path | str):
+async def update_metadata(
+    lib: MediaLib, path: Path | str, *, alternative: dict | None = None
+):
     """Update the metadata of the media item corresponding to the given NFO file.
 
     Args:
         lib: The media library instance.
         path: The path to the NFO file.
+        alternative: An alternative metadata dictionary.
     """
+
+    # helper function to get the value from the alternative metadata
+    def _alternative(key: str) -> Any:
+        return alternative.get(key) if alternative else None
+
+    # parse the NFO file to get the metadata
     if not isinstance(path, Path):
         path = Path(path)
     meta = parse_nfo(lib.lib_type, path)
+
+    # update the media item in the database
     if meta is not None:
         data = {
             "nfo_path": meta.nfo_path,
@@ -193,12 +221,12 @@ async def update_metadata(lib: MediaLib, path: Path | str):
             "backdrop": meta.backdrop,
             "rating": meta.rating,
         }
-        if meta.year is not None:
-            data["year"] = meta.year
-        if meta.season is not None:
-            data["season"] = meta.season
-        if meta.episode is not None:
-            data["episode"] = meta.episode
+        if (year := meta.year or _alternative("year")) is not None:
+            data["year"] = year
+        if (season := meta.season or _alternative("season")) is not None:
+            data["season"] = season
+        if (episode := meta.episode or _alternative("episode")) is not None:
+            data["episode"] = episode
 
         # match the media item by library, directory and name
         await MediaItem.filter(
