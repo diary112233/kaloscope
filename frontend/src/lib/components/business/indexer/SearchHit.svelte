@@ -200,62 +200,64 @@
   {@const transClass = 'transition-opacity duration-300'}
   {@const btnClass = 'border-0 bg-black/60 text-white hover:bg-base-300 hover:text-base-content'}
   {@const ratio = coverRatio ?? '16/9'}
-  <!-- svelte-ignore a11y_click_events_have_key_events -->
-  <div tabindex="0" role="button" class="group @container relative {pointerClass}" onclick={() => gotoDetails(rsrc)}>
-    <Rating score={rsrc.rating} class="absolute top-1 left-1 z-1 text-[clamp(0.75rem,7cqw,0.875rem)]" />
-    <div class="absolute top-0 right-0 z-1 flex gap-2 p-1 opacity-0 group-hover:opacity-100 {transClass}">
-      {#if detailsConfig && rsrc.favorite !== undefined}
-        <Button
-          icon={rsrc.favorite ? icons.starFilled : icons.star}
-          class="{rsrc.favorite ? '[&_iconify-icon]:text-yellow-500' : ''} {btnClass}"
-          onclick={(event) => {
-            event.stopPropagation();
-            rsrc.favorite ? unfavorite(rsrc) : favorite(rsrc);
-          }}
-        />
-      {/if}
-      {#if rsrc.link && $user?.role === 'admin'}
-        <Button
-          icon={icons.download}
-          class={btnClass}
-          onclick={(event) => {
-            event.stopPropagation();
-            downloadPrompt(rsrc.link);
-          }}
-        />
-      {/if}
-      {#if searchButton}
-        <Button
-          icon={icons.search}
-          class={btnClass}
-          onclick={(event) => {
-            event.stopPropagation();
-            globalSearch(rsrc.title);
-          }}
-        />
-      {/if}
-    </div>
-    <Image src={rsrc.cover} width="100%" {ratio} class="rounded-b-none group-hover:opacity-80 {transClass}" />
-    {#if rsrc.category || rsrc.misc}
-      <div class="absolute bottom-0 h-8 w-full bg-linear-to-t from-black/50 to-transparent">
-        <div class="flex h-full items-end justify-between gap-4 px-2 pb-1 text-xs text-white">
-          <span class="whitespace-nowrap">{rsrc.category}</span>
-          <span class="truncate" title={rsrc.misc}>{rsrc.misc}</span>
-        </div>
-      </div>
-    {/if}
-  </div>
-  <div class="@container flex flex-col gap-2 p-2">
+  <div class="flex h-full flex-col">
     <!-- svelte-ignore a11y_click_events_have_key_events -->
-    <div
-      tabindex="0"
-      role="button"
-      class="line-clamp-2 h-10 text-[clamp(0.75rem,7cqw,0.875rem)] font-medium {pointerClass}"
-      title={rsrc.title}
-      onclick={() => gotoDetails(rsrc)}
-    >
-      {rsrc.title}
+    <div tabindex="0" role="button" class="group @container relative {pointerClass}" onclick={() => gotoDetails(rsrc)}>
+      <Rating score={rsrc.rating} class="absolute top-1 left-1 z-1 text-[clamp(0.75rem,7cqw,0.875rem)]" />
+      <div class="absolute top-0 right-0 z-1 flex gap-2 p-1 opacity-0 group-hover:opacity-100 {transClass}">
+        {#if detailsConfig && rsrc.favorite !== undefined}
+          <Button
+            icon={rsrc.favorite ? icons.starFilled : icons.star}
+            class="{rsrc.favorite ? '[&_iconify-icon]:text-yellow-500' : ''} {btnClass}"
+            onclick={(event) => {
+              event.stopPropagation();
+              rsrc.favorite ? unfavorite(rsrc) : favorite(rsrc);
+            }}
+          />
+        {/if}
+        {#if rsrc.link && $user?.role === 'admin'}
+          <Button
+            icon={icons.download}
+            class={btnClass}
+            onclick={(event) => {
+              event.stopPropagation();
+              downloadPrompt(rsrc.link);
+            }}
+          />
+        {/if}
+        {#if searchButton}
+          <Button
+            icon={icons.search}
+            class={btnClass}
+            onclick={(event) => {
+              event.stopPropagation();
+              globalSearch(rsrc.title);
+            }}
+          />
+        {/if}
+      </div>
+      <Image src={rsrc.cover} width="100%" {ratio} class="rounded-b-none group-hover:opacity-80 {transClass}" />
+      {#if rsrc.category || rsrc.misc}
+        <div class="absolute bottom-0 h-8 w-full bg-linear-to-t from-black/50 to-transparent">
+          <div class="flex h-full items-end justify-between gap-4 px-2 pb-1 text-xs text-white">
+            <span class="whitespace-nowrap">{rsrc.category}</span>
+            <span class="truncate" title={rsrc.misc}>{rsrc.misc}</span>
+          </div>
+        </div>
+      {/if}
     </div>
-    <Uploader up={rsrc.uploader} at={rsrc.uploaded_at} extra={rsrc.size} />
+    <div class="@container flex grow flex-col justify-between gap-2 p-2">
+      <!-- svelte-ignore a11y_click_events_have_key_events -->
+      <div
+        tabindex="0"
+        role="button"
+        class="line-clamp-2 text-[clamp(0.75rem,7cqw,0.875rem)] font-medium {pointerClass}"
+        title={rsrc.title}
+        onclick={() => gotoDetails(rsrc)}
+      >
+        {rsrc.title}
+      </div>
+      <Uploader up={rsrc.uploader} at={rsrc.uploaded_at} extra={rsrc.size} />
+    </div>
   </div>
 {/if}
