@@ -285,7 +285,8 @@ export type Actor = {
  */
 export type MediaMeta = {
   nfo_path: string;
-  uniqueid: string | null;
+  nfo_source: string | null;
+  unique_id: string | null;
   title: string | null;
   originaltitle: string | null;
   tagline: string | null;

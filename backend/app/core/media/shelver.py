@@ -215,7 +215,7 @@ async def update_metadata(
             "nfo_path": meta.nfo_path,
             "nfo_mtime": datetime.fromtimestamp(path.stat().st_mtime, tz=UTC),
             "nfo_source": meta.nfo_source,
-            "uniqueid": meta.uniqueid,
+            "unique_id": meta.unique_id,
             "title": meta.title,
             "aired": meta.aired,
             "poster": meta.poster,

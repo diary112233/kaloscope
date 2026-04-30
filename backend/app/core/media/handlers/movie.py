@@ -57,7 +57,7 @@ class MovieMediaHandler(MediaHandler):
         uniqueid = get_element(root, "uniqueid", {"default": "true"})
         if uniqueid is not None:
             meta.nfo_source = uniqueid.get("type")
-            meta.uniqueid = uniqueid.text
+            meta.unique_id = uniqueid.text
         meta.title = get_text(root, "title")
         meta.originaltitle = get_text(root, "originaltitle")
         meta.tagline = get_text(root, "tagline")

@@ -134,46 +134,51 @@ class MediaItemService(BaseService[MediaItem], model=MediaItem):
         return item
 
     @classmethod
-    async def refresh_episodes(cls, season: MediaItem, season_meta: MediaMetadata):
+    async def refresh_episodes(cls, item: MediaItem, meta: MediaMetadata):
         """Refresh the metadata of the episodes under a season.
 
         Args:
-            season: The season media item.
-            season_meta: The metadata of the season.
+            item: The season media item.
+            meta: The season metadata object.
         """
         from app.core.media.shelver import gen_nfo, get_nfo_path
 
-        refresh_all = True
-        metadata = season_meta.metadata
+        metadata = meta.metadata
         series_id = metadata.get("id")
-        if series_id and str(series_id) == str(season.uniqueid):
-            # only refresh the episodes that don't have valid NFO files
-            refresh_all = False
+        season = metadata.get("season", item.season)
+        title = metadata.get("title", item.title)
+        year = metadata.get("year", item.year)
+
+        # check if the series_id is the same as the current one
+        same_series = series_id and str(series_id) == str(item.unique_id)
 
         # get the flow engine from the app context
         engine = Sanic.get_app().ctx.flow_engine
 
         # get the episodes under the season
-        episodes = await MediaItem.filter(parent_id=season.id)
+        episodes = await MediaItem.filter(parent_id=item.id)
         for episode in episodes:
             nfo_path = episode.nfo_path
-            if not refresh_all and nfo_path and Path(nfo_path).exists():
-                # skip the episode if it already has a valid NFO file
-                continue
+
+            # skip if the season is the same and the NFO file already exists
+            if same_series and nfo_path and Path(nfo_path).exists():
+                same_season = episode.season == season
+                if same_season:
+                    continue
 
             # execute the flow to get the metadata for the episode
             results = await engine.execute(
-                graph_id=season_meta.graph_id,
+                graph_id=meta.graph_id,
                 bootparams={
                     "$manual": True,
                     "series_id": series_id,
                     "item_path": episode.path,
                     "item_name": episode.name,
                     "nfo_type": NFOType.EPISODE,
-                    "language": season.lib.language,
-                    "title": metadata.get("title", season.title),
-                    "year": metadata.get("year", season.year),
-                    "season": metadata.get("season", season.season),
+                    "language": item.lib.language,
+                    "title": title,
+                    "year": year,
+                    "season": season,
                     "episode": episode.episode,
                     "page_num": 1,
                     "page_size": 1,

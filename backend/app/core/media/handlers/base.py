@@ -60,7 +60,7 @@ class MediaMeta:
 
     nfo_path: str = field(init=False)
     nfo_source: str | None = None
-    uniqueid: str | None = None
+    unique_id: str | None = None
     title: str | None = None
     originaltitle: str | None = None
     tagline: str | None = None
