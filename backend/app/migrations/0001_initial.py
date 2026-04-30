@@ -364,6 +364,7 @@ class Migration(migrations.Migration):
                 ('visible', fields.BooleanField(default=True)),
                 ('nfo_path', fields.CharField(null=True, max_length=4096)),
                 ('nfo_mtime', fields.DatetimeField(null=True, auto_now=False, auto_now_add=False)),
+                ('nfo_source', fields.CharField(null=True, max_length=64)),
                 ('uniqueid', fields.CharField(null=True, max_length=255)),
                 ('title', fields.CharField(null=True, max_length=255)),
                 ('year', fields.IntField(null=True)),

@@ -59,6 +59,7 @@ class MediaMeta:
     """The metadata of a media item parsed from an NFO file."""
 
     nfo_path: str = field(init=False)
+    nfo_source: str | None = None
     uniqueid: str | None = None
     title: str | None = None
     originaltitle: str | None = None

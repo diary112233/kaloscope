@@ -12,7 +12,7 @@ from app.core.media.handlers.base import (
 from app.models.media import LibType, MediaLib, NFOType
 from app.services.media import MediaItemService
 from app.utils.extractor import extract_title, extract_year
-from app.utils.xml import get_all_text, get_decimal, get_integer, get_text
+from app.utils.xml import get_all_text, get_decimal, get_element, get_integer, get_text
 
 
 class MovieMediaHandler(MediaHandler):
@@ -54,7 +54,10 @@ class MovieMediaHandler(MediaHandler):
         """
         meta = MediaMeta()
         root = data.getroot()
-        meta.uniqueid = get_text(root, "uniqueid")
+        uniqueid = get_element(root, "uniqueid", {"default": "true"})
+        if uniqueid is not None:
+            meta.nfo_source = uniqueid.get("type")
+            meta.uniqueid = uniqueid.text
         meta.title = get_text(root, "title")
         meta.originaltitle = get_text(root, "originaltitle")
         meta.tagline = get_text(root, "tagline")

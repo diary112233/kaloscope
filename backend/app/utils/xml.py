@@ -4,6 +4,31 @@ from lxml import etree
 from sanic.log import logger
 
 
+def get_element(
+    element: etree._Element | None,
+    tag_name: str,
+    attrs: dict[str, str] | None = None,
+) -> etree._Element | None:
+    """Get the first matching sub-element, optionally filtered by attributes.
+
+    Args:
+        element: The parent XML element.
+        tag_name: The tag name of the sub-element.
+        attrs: Optional attribute key-value pairs to filter by.
+
+    Returns:
+        The first matching sub-element, or None if not found.
+    """
+    if element is None:
+        return None
+    if not attrs:
+        return element.find(tag_name)
+    for tag in element.findall(tag_name):
+        if all(tag.get(k) == v for k, v in attrs.items()):
+            return tag
+    return None
+
+
 def get_text(element: etree._Element | None, tag_name: str) -> str | None:
     """Get the text content of the first matching sub-element.
 

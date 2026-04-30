@@ -82,6 +82,7 @@ class MediaItem(TortoiseModel):
     visible = BooleanField(default=True)
     nfo_path = CharField(max_length=4096, null=True)
     nfo_mtime = DatetimeField(null=True)
+    nfo_source = CharField(max_length=64, null=True)
     uniqueid = CharField(max_length=255, null=True)
     title = CharField(max_length=255, null=True)
     year = IntField(null=True)
