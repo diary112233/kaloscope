@@ -94,11 +94,11 @@
         </label>
       </div>
       <div class="flex gap-2">
-        <div class="w-3/4">
+        <div class="w-3/4 space-y-1.5">
           <Label required>{$_('field.host')}</Label>
           <input placeholder="127.0.0.1" class="input w-full" bind:value={host} {...schema.host} />
         </div>
-        <div class="w-1/4">
+        <div class="w-1/4 space-y-1.5">
           <Label required>{$_('field.port')}</Label>
           <input placeholder="7890" class="input w-full" bind:value={port} {...schema.port} />
         </div>

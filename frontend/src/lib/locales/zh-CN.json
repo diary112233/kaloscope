@@ -171,6 +171,8 @@
     "http_proxy": "HTTP 代理",
     "secure_dns": "安全 DNS",
     "nameserver": "域名服务器",
+    "danmaku_server": "弹幕服务器",
+    "danmaku_ttl": "弹幕缓存（小时）",
     "created": "创建时间",
     "updated": "更新时间",
     "actions": "操作"

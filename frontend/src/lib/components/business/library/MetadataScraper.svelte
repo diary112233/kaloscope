@@ -179,7 +179,7 @@
     <input placeholder={$_('field.title')} class="input w-full" bind:value={title} />
     <div class="px-1 text-xs opacity-50">{item?.path}</div>
     <div class="flex flex-wrap gap-2">
-      <div class="flex-1">
+      <div class="flex-1 space-y-1.5">
         <Label>{$_('field.year')}</Label>
         <input
           type="number"
@@ -191,7 +191,7 @@
         />
       </div>
       {#if item?.lib?.lib_type === 'tv_show'}
-        <div class="flex-1">
+        <div class="flex-1 space-y-1.5">
           <Label>{$_('field.season')}</Label>
           <input
             type="number"
@@ -203,7 +203,7 @@
           />
         </div>
       {/if}
-      <div class="flex-1">
+      <div class="flex-1 space-y-1.5">
         <Label>{$_('field.language')}</Label>
         <Select bind:value={language} class="w-full">
           <option value="">{$_('enum.none')}</option>

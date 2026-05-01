@@ -47,12 +47,12 @@ class Language(StrEnum):
 # -------------------- ORM Models --------------------
 class MediaLib(TortoiseModel):
     lib_type = CharEnumField(max_length=16, enum_type=LibType)
-    name = CharField(max_length=64, unique=True)
     dir = CharField(max_length=4096, unique=True)
+    name = CharField(max_length=64, unique=True)
     language = CharEnumField(max_length=16, enum_type=Language, null=True)
     priority = IntField(unique=True)
     danmaku_server = CharField(max_length=255, null=True)
-    danmaku_cache_hours = IntField(default=24)
+    danmaku_ttl = IntField(default=24)
     # relational fields
     items: ReverseRelation["MediaItem"]
     events: ReverseRelation["MediaEvent"]
@@ -124,8 +124,8 @@ class MediaEvent(TortoiseModel):
 class MediaLibUpsert(BaseModel):
     id: PositiveInt | None = None
     lib_type: LibType | None = None
-    name: str = Field(min_length=1, max_length=64)
     dir: str | None = Field(min_length=1, max_length=4096, default=None)
+    name: str = Field(min_length=1, max_length=64)
     language: str | None = None
     triggers: list[GraphRef] | None = None
 

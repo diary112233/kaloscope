@@ -361,21 +361,21 @@
         <Select disabled options={[{ value: 'hours', label: $_('duration.hours') }]} class="w-1/2" />
       </div>
       <div class="flex min-w-0 gap-2 *:min-w-0">
-        <div class="w-1/2">
+        <div class="w-1/2 space-y-1.5">
           <Label>{$_('field.interval_start')}</Label>
           <input class="input w-full" bind:value={interval_start} {...schema.interval_start} />
         </div>
-        <div class="w-1/2">
+        <div class="w-1/2 space-y-1.5">
           <Label>{$_('field.interval_end')}</Label>
           <input class="input w-full" bind:value={interval_end} {...schema.interval_end} />
         </div>
       </div>
       <div class="flex gap-2">
-        <div class="w-1/2">
+        <div class="w-1/2 space-y-1.5">
           <Label required>{$_('field.batch_limit')}</Label>
           <input class="input w-full" bind:value={batch_limit} {...schema.batch_limit} />
         </div>
-        <div class="w-1/2">
+        <div class="w-1/2 space-y-1.5">
           <Label>{$_('field.total_limit')}</Label>
           <input class="input w-full" bind:value={total_limit} {...schema.total_limit} />
         </div>
@@ -383,7 +383,7 @@
 
       <!-- downloader and save directory -->
       <div class="mt-6 flex gap-2">
-        <div class="w-[clamp(3rem,20rem,100%)] max-w-40">
+        <div class="w-[clamp(3rem,20rem,100%)] max-w-40 space-y-1.5">
           <Label required>{$_('download.downloader.title')}</Label>
           <Select
             required
@@ -396,7 +396,7 @@
             class="w-full select-sm"
           />
         </div>
-        <div class="w-full">
+        <div class="w-full space-y-1.5">
           <Label required>{$_('download.dir')}</Label>
           {#if directory}
             <button

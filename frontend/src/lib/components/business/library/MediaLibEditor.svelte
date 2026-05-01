@@ -5,9 +5,11 @@
   type MediaLibEditorProps = Partial<{
     id: number;
     lib_type: keyof typeof LibType;
-    name: string;
     dir: string;
+    name: string;
     language: string | null;
+    danmaku_server: string;
+    danmaku_ttl: number;
     triggers: FlowTrigger[];
     onsave: (result: MediaLib) => void;
   }>;
@@ -21,7 +23,17 @@
   import { _, locales } from '$lib/i18n';
   import { icons } from '$lib/icons';
 
-  let { id, lib_type, name, dir, language = '', triggers, onsave }: MediaLibEditorProps = $props();
+  let {
+    id,
+    lib_type,
+    dir,
+    name,
+    language = '',
+    danmaku_server,
+    danmaku_ttl = 24,
+    triggers,
+    onsave
+  }: MediaLibEditorProps = $props();
 
   // the file tree instance
   let fileTree: FileTree;
@@ -32,9 +44,11 @@
 
   // the loading state and form schema
   const loading = createLoading();
-  const schema = createFormSchema(({ text }) => ({
+  const schema = createFormSchema(({ text, number }) => ({
+    dir: text().maxlength(4096),
     name: text().maxlength(64),
-    dir: text().maxlength(4096)
+    danmaku_server: text().maxlength(255),
+    danmaku_ttl: number().min(0).max(8760)
   }));
 
   /**
@@ -84,11 +98,11 @@
         disabled={!!id}
       />
       <div class="flex gap-2">
-        <div class="w-3/5">
+        <div class="w-3/5 space-y-1.5">
           <Label required>{$_('field.name')}</Label>
           <input placeholder={$_('field.name')} class="input w-full truncate" bind:value={name} {...schema.name} />
         </div>
-        <div class="w-2/5">
+        <div class="w-2/5 space-y-1.5">
           <Label>{$_('field.language')}</Label>
           <Select bind:value={language} name="language" class="w-full">
             <option value="">{$_('enum.none')}</option>
@@ -118,6 +132,26 @@
         />
         <input type="text" class="hidden" name="dir" value={dir} />
       </button>
+      <div class="flex gap-2">
+        <div class="w-3/5 space-y-1.5">
+          <Label>{$_('field.danmaku_server')}</Label>
+          <input
+            placeholder={$_('field.danmaku_server')}
+            class="input w-full truncate"
+            bind:value={danmaku_server}
+            {...schema.danmaku_server}
+          />
+        </div>
+        <div class="w-2/5 space-y-1.5">
+          <Label>{$_('field.danmaku_ttl')}</Label>
+          <input
+            placeholder={$_('field.danmaku_ttl')}
+            class="input w-full truncate"
+            bind:value={danmaku_ttl}
+            {...schema.danmaku_ttl}
+          />
+        </div>
+      </div>
       <FlowTriggers class="mt-4" category="ingest" {triggers} onchange={(newTriggers) => (triggers = newTriggers)} />
     </fieldset>
     <div class="modal-action">

@@ -234,12 +234,12 @@ export type HTTPProxy = {
 export type MediaLib = {
   id: number;
   lib_type: keyof typeof LibType;
-  name: string;
   dir: string;
+  name: string;
   language: string | null;
   priority: number;
   danmaku_server: string | null;
-  danmaku_cache_hours: number;
+  danmaku_ttl: number;
   triggers: FlowTrigger[];
   scanning: boolean;
 };
