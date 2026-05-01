@@ -83,8 +83,21 @@
         class="w-full"
         disabled={!!id}
       />
-      <Label required>{$_('field.name')}</Label>
-      <input placeholder={$_('field.name')} class="input w-full truncate" bind:value={name} {...schema.name} />
+      <div class="flex gap-2">
+        <div class="w-3/5">
+          <Label required>{$_('field.name')}</Label>
+          <input placeholder={$_('field.name')} class="input w-full truncate" bind:value={name} {...schema.name} />
+        </div>
+        <div class="w-2/5">
+          <Label>{$_('field.language')}</Label>
+          <Select bind:value={language} name="language" class="w-full">
+            <option value="">{$_('enum.none')}</option>
+            {#each $locales.filter((l) => l !== 'languages') as code (code)}
+              <option value={code}>{$_(code, { locale: 'languages' })}</option>
+            {/each}
+          </Select>
+        </div>
+      </div>
       <Label required>{$_('field.dir')}</Label>
       <!-- svelte-ignore a11y_consider_explicit_label -->
       <button
@@ -105,13 +118,6 @@
         />
         <input type="text" class="hidden" name="dir" value={dir} />
       </button>
-      <Label>{$_('field.language')}</Label>
-      <Select bind:value={language} name="language" class="w-full">
-        <option value="">{$_('enum.none')}</option>
-        {#each $locales.filter((l) => l !== 'languages') as code (code)}
-          <option value={code}>{$_(code, { locale: 'languages' })}</option>
-        {/each}
-      </Select>
       <FlowTriggers class="mt-4" category="ingest" {triggers} onchange={(newTriggers) => (triggers = newTriggers)} />
     </fieldset>
     <div class="modal-action">

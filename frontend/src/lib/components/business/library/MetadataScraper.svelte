@@ -178,7 +178,7 @@
     <Label required>{$_('field.title')}</Label>
     <input placeholder={$_('field.title')} class="input w-full" bind:value={title} />
     <div class="px-1 text-xs opacity-50">{item?.path}</div>
-    <div class="flex flex-wrap gap-2 *:min-w-0">
+    <div class="flex flex-wrap gap-2">
       <div class="flex-1">
         <Label>{$_('field.year')}</Label>
         <input

@@ -238,10 +238,10 @@ export type MediaLib = {
   dir: string;
   language: string | null;
   priority: number;
-  triggers: FlowTrigger[];
-  scanning: boolean;
   danmaku_server: string | null;
   danmaku_cache_hours: number;
+  triggers: FlowTrigger[];
+  scanning: boolean;
 };
 
 /**
