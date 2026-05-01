@@ -171,7 +171,7 @@ def parse_nfo(lib_type: LibType, path: Path | str) -> MediaMeta | None:
         path = Path(path)
     if path.exists() and path.is_file():
         try:
-            data = etree.parse(path, parser=etree.XMLParser())
+            data = etree.parse(path, parser=etree.XMLParser(recover=True))
         except Exception:
             logger.error(
                 f"Failed to parse the NFO file: {Colors.RED}%s{Colors.END}",

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <episodedetails>
+{% autoescape true %}
   <lockdata>{{ lockdata|default(true)|lower }}</lockdata>
   <uniqueid type="{{ site }}" default="true">{{ id }}</uniqueid>
   <title>{{ title }}</title>
@@ -11,4 +12,5 @@
   <art>
     <poster>{{ poster }}</poster>
   </art>
+{% endautoescape %}
 </episodedetails>

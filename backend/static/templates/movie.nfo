@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <movie>
+{% autoescape true %}
   <lockdata>{{ lockdata|default(true)|lower }}</lockdata>
   <uniqueid type="{{ site }}" default="true">{{ id }}</uniqueid>
   <title>{{ title }}</title>
@@ -41,4 +42,5 @@
     <poster>{{ poster }}</poster>
     <fanart>{{ backdrop }}</fanart>
   </art>
+{% endautoescape %}
 </movie>
