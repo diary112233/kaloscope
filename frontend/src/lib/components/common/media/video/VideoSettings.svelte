@@ -2,7 +2,7 @@
   import { isWhite } from '$lib/utils';
   import { v4 as uuidv4 } from 'uuid';
 
-  import type { Danmaku, Definition } from '$lib/types';
+  import type { Danmaku, Definition, Resp } from '$lib/types';
   import type { IconifyIcon } from 'iconify-icon';
   import type Player from 'xgplayer';
   import type { IUrl } from 'xgplayer/es/defaultConfig';
@@ -70,6 +70,7 @@
 </script>
 
 <script lang="ts">
+  import { api } from '$lib/api';
   import { Modal, Range, Select } from '$lib/components';
   import { MEDIA_STREAM_PREFIX } from '$lib/constants';
   import { _ } from '$lib/i18n';
@@ -228,10 +229,16 @@
     if (!localMedia || !danmakuPlugin) {
       return;
     }
-    // TODO: load the danmaku data
-    const danmakus: Danmaku[] = [];
-    danmakuPlugin.clear();
-    danmakuPlugin.updateComments(formatDanmakus(danmakus), true);
+    const url = player?.config.url as string;
+    const path = decodeURIComponent(url.slice(MEDIA_STREAM_PREFIX.length));
+    api
+      .post('danmaku/match', { json: { path } })
+      .json<Resp<Danmaku[]>>()
+      .then((resp) => {
+        const danmakus = resp.data || [];
+        danmakuPlugin.clear();
+        danmakuPlugin.updateComments(formatDanmakus(danmakus), true);
+      });
   }
 </script>
 
