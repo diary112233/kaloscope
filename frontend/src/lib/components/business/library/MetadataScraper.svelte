@@ -126,7 +126,7 @@
           language: language || null,
           title: title.trim(),
           year: year || null,
-          season: season || 1,
+          season: season ?? 1,
           page_num: 1,
           page_size: 5
         }
@@ -198,7 +198,7 @@
             placeholder={$_('field.season')}
             class="input w-full"
             bind:value={season}
-            min={1}
+            min={0}
             max={99}
           />
         </div>

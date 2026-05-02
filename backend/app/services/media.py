@@ -186,12 +186,13 @@ class MediaItemService(BaseService[MediaItem], model=MediaItem):
 
         # get the episodes under the season
         episodes = await MediaItem.filter(parent_id=item.id)
-        for episode in episodes:
-            nfo_path = episode.nfo_path
+        for e in episodes:
+            episode = e.episode
+            nfo_path = e.nfo_path
 
             # skip if the season is the same and the NFO file already exists
             if same_series and nfo_path and Path(nfo_path).exists():
-                same_season = episode.season == season
+                same_season = e.season == season
                 if same_season:
                     continue
 
@@ -201,14 +202,14 @@ class MediaItemService(BaseService[MediaItem], model=MediaItem):
                 bootparams={
                     "$manual": True,
                     "series_id": series_id,
-                    "item_path": episode.path,
-                    "item_name": episode.name,
+                    "item_path": e.path,
+                    "item_name": e.name,
                     "nfo_type": NFOType.EPISODE,
                     "language": item.lib.language,
                     "title": title,
                     "year": year,
                     "season": season,
-                    "episode": episode.episode,
+                    "episode": episode,
                     "page_num": 1,
                     "page_size": 1,
                 },
@@ -218,5 +219,7 @@ class MediaItemService(BaseService[MediaItem], model=MediaItem):
             if isinstance(results, list) and len(results) > 0:
                 result = results[0]
                 if isinstance(result, dict):
-                    nfo_path = nfo_path or get_nfo_path(episode.path)
+                    result["season"] = _s if (_s := result.get("season")) else season
+                    result["episode"] = _e if (_e := result.get("episode")) else episode
+                    nfo_path = nfo_path or get_nfo_path(e.path)
                     await gen_nfo(NFOType.EPISODE, nfo_path, result, overwrite=True)
