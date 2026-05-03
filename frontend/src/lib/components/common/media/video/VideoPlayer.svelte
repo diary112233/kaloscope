@@ -108,6 +108,7 @@
 </script>
 
 <script lang="ts">
+  import { freeze } from '$lib/stores';
   import { sniffer } from '$lib/utils';
   import { onMount, tick } from 'svelte';
   import { v4 as uuidv4 } from 'uuid';
@@ -462,7 +463,10 @@
     if (isMobile) {
       window.addEventListener('orientationchange', onorientationchange);
     }
+    // freeze the background to prevent scrolling when the player is active
+    freeze.set(true);
     return () => {
+      freeze.set(false);
       // destroy the player instance
       recordHistory(player);
       player?.destroy();
