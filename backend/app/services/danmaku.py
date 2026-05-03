@@ -2,6 +2,7 @@ import contextlib
 from datetime import datetime
 from pathlib import Path
 from typing import Literal
+from urllib.parse import quote
 
 import aiofiles
 import httpx
@@ -47,6 +48,24 @@ class DanmakuService:
         if base_url.endswith(("/v2", "/api/v2")):
             return base_url
         return f"{base_url}/api/v2"
+
+    @classmethod
+    def _append_query(cls, url: str, query: str) -> str:
+        """Append query parameters to a URL.
+
+        Args:
+            url: The URL to append to.
+            query: The query string to append.
+
+        Returns:
+            The URL with the query string appended.
+        """
+        if not query.startswith("?"):
+            query = "?" + query
+        if "?" in url:
+            # proxy mode: append the query as a URL-encoded parameter
+            return f"{url}{quote(query)}"
+        return f"{url}{query}"
 
     @classmethod
     async def match_danmakus(cls, path: str) -> list[Danmaku]:
@@ -186,12 +205,13 @@ class DanmakuService:
         """
         client: httpx.AsyncClient = Sanic.get_app().ctx.httpx
         try:
-            url = f"{cls._base_url(server)}/comment/{episode_id}?withRelated=true"
+            url = f"{cls._base_url(server)}/comment/{episode_id}"
+            query = "withRelated=true"
             if language == Language.ZH_CN:
                 # request the converted simplified Chinese comments
-                url += "&chConvert=1"
+                query += "&chConvert=1"
 
-            response = await client.get(url)
+            response = await client.get(cls._append_query(url, query))
             if response.status_code == 200:
                 data = response.json()
                 comments = data.get("comments")
