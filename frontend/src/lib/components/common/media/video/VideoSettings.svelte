@@ -229,6 +229,9 @@
     if (!localMedia || !danmakuPlugin) {
       return;
     }
+    // clear the existing danmakus before loading new ones
+    danmakuPlugin.clear();
+    // fetch the danmakus matched with the current video
     const url = player?.config.url as string;
     const path = decodeURIComponent(url.slice(MEDIA_STREAM_PREFIX.length));
     api
@@ -236,8 +239,9 @@
       .json<Resp<Danmaku[]>>()
       .then((resp) => {
         const danmakus = resp.data || [];
-        danmakuPlugin.clear();
-        danmakuPlugin.updateComments(formatDanmakus(danmakus), true);
+        if (danmakus.length > 0) {
+          danmakuPlugin.updateComments(formatDanmakus(danmakus), true);
+        }
       });
   }
 </script>
