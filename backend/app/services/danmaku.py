@@ -10,7 +10,7 @@ from sanic import Sanic
 from sanic.log import logger
 
 from app.core.constants import ENCODING
-from app.models.media import MediaItem
+from app.models.media import Language, MediaItem
 from app.utils import json
 
 # the display mode of the danmaku
@@ -82,12 +82,14 @@ class DanmakuService:
         if (not cached or expired) and (server := media.lib.danmaku_server):
             danmaku_id = media.danmaku_id
             if not danmaku_id:
-                # try to match the episode ID on the danmaku server
+                # try to match the episode ID from the danmaku server
                 danmaku_id = await cls.match_episode_id(server, media)
 
             if danmaku_id:
                 # load danmakus from the danmaku server
-                danmakus = await cls.load_from_server(server, danmaku_id)
+                danmakus = await cls.load_from_server(
+                    server, danmaku_id, media.lib.language
+                )
                 if danmakus:
                     # save to local cache file
                     async with aiofiles.open(danmaku_path, "wb") as f:
@@ -106,7 +108,7 @@ class DanmakuService:
 
     @classmethod
     async def match_episode_id(cls, server: str, media: MediaItem) -> str | None:
-        """Match the episode ID for the given media item on the danmaku server.
+        """Match the episode ID for the given media item from the danmaku server.
 
         Args:
             server: The danmaku server base URL.
@@ -135,11 +137,12 @@ class DanmakuService:
                         data.get("errorMessage"),
                     )
                     return None
+
                 matches = data.get("matches")
                 if isinstance(matches, list) and matches:
                     episode_id = matches[0].get("episodeId")
                     logger.info(
-                        'Matched episode ID "%s" for media "%s" on server: %s',
+                        'Matched episode ID "%s" for media "%s" from: %s',
                         episode_id,
                         media.name,
                         server,
@@ -168,12 +171,15 @@ class DanmakuService:
         return [Danmaku.model_validate(danmaku) for danmaku in danmakus]
 
     @classmethod
-    async def load_from_server(cls, server: str, episode_id: str) -> list[Danmaku]:
+    async def load_from_server(
+        cls, server: str, episode_id: str, language: Language | None = None
+    ) -> list[Danmaku]:
         """Load danmakus from the danmaku server.
 
         Args:
             server: The danmaku server base URL.
             episode_id: The episode ID.
+            language: The optional language code.
 
         Returns:
             A list of danmakus loaded from the server.
@@ -181,6 +187,10 @@ class DanmakuService:
         client: httpx.AsyncClient = Sanic.get_app().ctx.httpx
         try:
             url = f"{cls._base_url(server)}/comment/{episode_id}?withRelated=true"
+            if language == Language.ZH_CN:
+                # request the converted simplified Chinese comments
+                url += "&chConvert=1"
+
             response = await client.get(url)
             if response.status_code == 200:
                 data = response.json()

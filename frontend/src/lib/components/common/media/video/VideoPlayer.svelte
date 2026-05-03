@@ -494,9 +494,9 @@
   <div
     bind:this={danmakuContainer}
     class="pointer-events-none absolute inset-0 layer-0 overflow-visible! text-stroke"
+    class:h-dvh={rotateFullscreen}
+    class:right-8={rotateFullscreen}
     class:top-10={!rotateFullscreen && !screenLocked}
-    style:height={rotateFullscreen ? '100dvh' : '100%'}
-    style:right={rotateFullscreen ? '32px' : '0'}
   ></div>
 </div>
 
