@@ -370,7 +370,8 @@
       "server": "弹幕服务器",
       "server_tip": "兼容 dandanplay API 格式的弹幕服务器地址。",
       "ttl": "弹幕缓存（小时）",
-      "cache": "本地缓存"
+      "cache": "本地缓存",
+      "manual": "手动搜索"
     },
     "xgplayer": {
       "error_types": {

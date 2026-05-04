@@ -70,7 +70,7 @@ class NetworkTransport(httpx.AsyncHTTPTransport):
         self._dns_cache = DNSCache()
         super().__init__(**kwargs)
 
-    async def aclose(self) -> None:
+    async def aclose(self):
         for transport in self._proxy_transports.values():
             await transport.aclose()
         self._proxy_transports.clear()

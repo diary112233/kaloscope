@@ -334,3 +334,19 @@ class DanmakuService:
             )
 
         return danmakus
+
+    @classmethod
+    async def delete_danmakus(cls, path: str):
+        """Delete the locally cached danmakus for the given media resource.
+
+        Args:
+            path: The media resource path.
+        """
+        # get the media item by the path
+        media = await MediaItem.filter(path=path).first()
+        if not media or not media.danmaku_path:
+            return
+        danmaku_path = Path(media.danmaku_path)
+        if danmaku_path.is_file():
+            danmaku_path.unlink()
+        await MediaItem.filter(id=media.id).update(danmaku_path=None)

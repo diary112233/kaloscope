@@ -1,4 +1,4 @@
-from sanic import Blueprint, HTTPResponse, json
+from sanic import Blueprint, HTTPResponse, empty, json
 from sanic_ext import validate
 
 from app.models.media import MediaResource
@@ -14,6 +14,14 @@ async def match_danmakus(_, body: MediaResource) -> HTTPResponse:
     """Match danmakus for the given media resource."""
     danmakus = await DanmakuService.match_danmakus(body.path)
     return json(danmakus.model_dump())
+
+
+@danmaku.post("/delete")
+@validate(json=MediaResource)
+async def delete_danmakus(_, body: MediaResource) -> HTTPResponse:
+    """Delete the danmakus for the given media resource."""
+    await DanmakuService.delete_danmakus(body.path)
+    return empty()
 
 
 @danmaku.post("/search/episodes")

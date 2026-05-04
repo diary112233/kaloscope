@@ -306,7 +306,7 @@ class UserHistoryService(BaseService[UserHistory], model=UserHistory):
         return history
 
     @classmethod
-    async def clean_expired(cls, user_id: int, rel_type: HistoryType) -> None:
+    async def clean_expired(cls, user_id: int, rel_type: HistoryType):
         """Delete expired history records based on user preferences.
 
         Reads `search_records` or `watch_records` from the user's preferences to

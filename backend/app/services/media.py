@@ -152,7 +152,7 @@ class MediaItemService(BaseService[MediaItem], model=MediaItem):
         return item
 
     @classmethod
-    async def update_file_info(cls, item_id: int, item_path: str) -> None:
+    async def update_file_info(cls, item_id: int, item_path: str):
         """Calculate and persist the hash and size of a media file.
 
         Args:

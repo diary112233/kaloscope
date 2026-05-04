@@ -86,7 +86,7 @@
 <script lang="ts">
   import { tooltip } from '$lib/actions';
   import { api } from '$lib/api';
-  import { Modal, Range, Select } from '$lib/components';
+  import { Button, Modal, Range, Select, confirm } from '$lib/components';
   import { MEDIA_STREAM_PREFIX } from '$lib/constants';
   import { _ } from '$lib/i18n';
   import { icons } from '$lib/icons';
@@ -244,7 +244,7 @@
    * Load the danmaku data for the current video.
    */
   export function loadLocalDanmakus() {
-    if (!localMedia || !danmakuPlugin) {
+    if (!localMedia || danmakuPlugin === null) {
       return;
     }
     // clear the existing danmakus before loading new ones
@@ -268,6 +268,26 @@
         }
         danmakuMeta = resp.data.metadata;
       });
+  }
+
+  /**
+   * Delete the locally cached danmakus for the current video.
+   */
+  function deleteLocalDanmakus() {
+    if (!localMedia || danmakuMeta === null) {
+      return;
+    }
+    const url = player?.config.url as string;
+    const path = decodeURIComponent(url.slice(MEDIA_STREAM_PREFIX.length));
+    confirm({
+      icon: icons.delete,
+      title: `${$_('action.delete', $_('media.danmaku.cache'))}`,
+      onconfirm: () => {
+        api.post('danmaku/delete', { json: { path } }).then(() => {
+          danmakuMeta = null;
+        });
+      }
+    });
   }
 </script>
 
@@ -427,7 +447,32 @@
     <!-- The danmaku match tab. -->
     {#if localMedia}
       {@render tabLabel('match', icons.boxMultipleSearchFilled, $_('media.danmaku.match'))}
-      <div class="tab-content"></div>
+      <div class="tab-content">
+        {#if danmakuMeta !== null}
+          <div class="flex-col items-start! gap-1!">
+            {@render optionLabel($_('media.danmaku.cache'))}
+            <div class="flex w-full items-center justify-between gap-4">
+              <div class="flex min-w-0 flex-col gap-0.5">
+                <span class="truncate text-xs font-medium text-white/50" title={danmakuMeta.anime_title}>
+                  {danmakuMeta.anime_title}
+                </span>
+                <span class="truncate text-xs text-white/30" title={danmakuMeta.episode_title}>
+                  {danmakuMeta.episode_title}
+                </span>
+              </div>
+              <Button
+                icon={icons.delete}
+                text={$_('action.delete')}
+                class="border-0 bg-primary/30 text-white hover:bg-base-300 hover:text-base-content"
+                onclick={() => deleteLocalDanmakus()}
+              />
+            </div>
+          </div>
+        {/if}
+        <div>
+          {@render optionLabel($_('media.danmaku.manual'))}
+        </div>
+      </div>
     {/if}
   </div>
 </Modal>
