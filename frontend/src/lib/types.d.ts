@@ -259,8 +259,6 @@ export type MediaItem = {
   hash: string | null;
   size: number | null;
   visible: boolean;
-  danmaku_id: string | null;
-  danmaku_path: string | null;
   nfo_path: string | null;
   nfo_mtime: string | null;
   nfo_source: string | null;

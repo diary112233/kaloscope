@@ -13,7 +13,7 @@ danmaku = Blueprint("danmaku", url_prefix="/danmaku")
 async def match_danmakus(_, body: MediaResource) -> HTTPResponse:
     """Match danmakus for the given media resource."""
     danmakus = await DanmakuService.match_danmakus(body.path)
-    return json([danmaku.model_dump() for danmaku in danmakus])
+    return json(danmakus.model_dump())
 
 
 @danmaku.post("/search/episodes")

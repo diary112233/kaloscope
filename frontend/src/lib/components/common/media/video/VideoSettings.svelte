@@ -39,6 +39,20 @@
     speed: 50
   });
 
+  // danmaku types
+  type DanmakuMeta = {
+    anime_id: number;
+    anime_title: string | null;
+    episode_id: number;
+    episode_title: string | null;
+    type: string;
+    type_description: string | null;
+  };
+  type DanmakuWrapper = {
+    metadata: DanmakuMeta | null;
+    comments: Danmaku[];
+  };
+
   /**
    * Formats the danmakus to the format required by the player.
    *
@@ -106,6 +120,9 @@
   let tabId: string = $state('video');
   // whether the player is in rotate fullscreen mode
   let rotateFullscreen: boolean = $state(false);
+
+  // the danmaku metadata matched with the current video
+  let danmakuMeta: DanmakuMeta | null = $state(null);
 
   /**
    * Show the settings modal.
@@ -231,22 +248,24 @@
     }
     // clear the existing danmakus before loading new ones
     danmakuPlugin.clear();
+    danmakuMeta = null;
     // fetch the danmakus matched with the current video
     const url = player?.config.url as string;
     const path = decodeURIComponent(url.slice(MEDIA_STREAM_PREFIX.length));
     api
       .post('danmaku/match', { json: { path } })
-      .json<Resp<Danmaku[]>>()
+      .json<Resp<DanmakuWrapper>>()
       .then((resp) => {
-        const danmakus = resp.data || [];
-        if (danmakus.length > 0) {
-          danmakuPlugin.updateComments(formatDanmakus(danmakus), true);
+        const comments = resp.data.comments;
+        if (comments && comments.length > 0) {
+          danmakuPlugin.updateComments(formatDanmakus(comments), true);
           // The font size needs to be reset after updating the comments;
           // this may be a bug in danmu.js where the style is reset after updating.
           if ($danmaku !== null) {
             danmakuPlugin.setFontSize($danmaku.fontSize, null);
           }
         }
+        danmakuMeta = resp.data.metadata;
       });
   }
 </script>

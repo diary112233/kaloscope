@@ -19,6 +19,8 @@ type Mode = Literal["scroll", "top", "bottom"]
 
 
 class Danmaku(BaseModel):
+    """The data model for a single danmaku."""
+
     # unique id
     id: str | None = None
     # comment text
@@ -29,6 +31,24 @@ class Danmaku(BaseModel):
     color: str | None = None
     # start time in milliseconds
     start: int | None = None
+
+
+class DanmakuMeta(BaseModel):
+    """The metadata for a danmaku collection."""
+
+    anime_id: int
+    anime_title: str | None = None
+    episode_id: int
+    episode_title: str | None = None
+    type: str
+    type_description: str | None = None
+
+
+class DanmakuWrapper(BaseModel):
+    """The wrapper for danmakus with additional metadata."""
+
+    metadata: DanmakuMeta | None = None
+    comments: list[Danmaku]
 
 
 class DanmakuService:
@@ -68,19 +88,19 @@ class DanmakuService:
         return f"{url}{query}"
 
     @classmethod
-    async def match_danmakus(cls, path: str) -> list[Danmaku]:
+    async def match_danmakus(cls, path: str) -> DanmakuWrapper:
         """Match danmakus for the given media resource.
 
         Args:
             path: The media resource path.
 
         Returns:
-            A list of matched danmakus.
+            The wrapped danmakus with metadata if available.
         """
         # get the media item by the path
         media = await MediaItem.filter(path=path).first().select_related("lib")
         if not media:
-            return []
+            return DanmakuWrapper(comments=[])
         danmaku_path = media.danmaku_path
 
         # default local cache path: {media_dir}/.{media_name}.json
@@ -99,15 +119,16 @@ class DanmakuService:
                 expired = True
 
         if (not cached or expired) and (server := media.lib.danmaku_server):
-            danmaku_id = media.danmaku_id
-            if not danmaku_id:
-                # try to match the episode ID from the danmaku server
-                danmaku_id = await cls.match_episode_id(server, media)
+            meta = media.danmaku_meta
+            if not meta:
+                # try to match the metadata from the danmaku server
+                meta = await cls.match_metadata(server, media)
 
-            if danmaku_id:
+            if meta:
                 # load danmakus from the danmaku server
+                meta = DanmakuMeta.model_validate(meta)
                 danmakus = await cls.load_from_server(
-                    server, danmaku_id, media.lib.language
+                    server, str(meta.episode_id), media.lib.language
                 )
                 if danmakus:
                     # save to local cache file
@@ -116,25 +137,29 @@ class DanmakuService:
 
                     # update the media item with the danmaku info
                     await MediaItem.filter(id=media.id).update(
-                        danmaku_id=danmaku_id,
+                        danmaku_meta=meta,
                         danmaku_path=str(danmaku_path),
                     )
 
-                    return danmakus
+                    return DanmakuWrapper(metadata=meta, comments=danmakus)
 
         # load danmakus from the local cache file
-        return await cls.load_from_cache(danmaku_path)
+        meta = media.danmaku_meta
+        return DanmakuWrapper(
+            metadata=DanmakuMeta.model_validate(meta) if meta else None,
+            comments=await cls.load_from_cache(danmaku_path),
+        )
 
     @classmethod
-    async def match_episode_id(cls, server: str, media: MediaItem) -> str | None:
-        """Match the episode ID for the given media item from the danmaku server.
+    async def match_metadata(cls, server: str, media: MediaItem) -> DanmakuMeta | None:
+        """Match the metadata for the given media item from the danmaku server.
 
         Args:
             server: The danmaku server base URL.
             media: The media item instance.
 
         Returns:
-            The matched episode ID, or None if not found.
+            The matched metadata, or None if not found.
         """
         client: httpx.AsyncClient = Sanic.get_app().ctx.httpx
         try:
@@ -147,26 +172,44 @@ class DanmakuService:
                     "fileSize": media.size,
                 },
             )
-            if response.status_code == 200:
-                data = response.json()
-                if not data.get("success"):
-                    logger.error(
-                        'Failed to match episode ID for media "%s": %s',
-                        media.name,
-                        data.get("errorMessage"),
-                    )
-                    return None
+            if response.status_code != 200:
+                logger.error(
+                    'Failed to match metadata for media "%s": HTTP %s',
+                    media.name,
+                    response.status_code,
+                )
+                return None
 
-                matches = data.get("matches")
-                if isinstance(matches, list) and matches:
-                    episode_id = matches[0].get("episodeId")
-                    logger.info(
-                        'Matched episode ID "%s" for media "%s" from: %s',
-                        episode_id,
-                        media.name,
-                        server,
-                    )
-                    return episode_id
+            data = response.json()
+            if not data.get("success"):
+                logger.error(
+                    'Failed to match metadata for media "%s": %s',
+                    media.name,
+                    data.get("errorMessage"),
+                )
+                return None
+
+            matches = data.get("matches")
+            if (
+                matches
+                and isinstance(matches, list)
+                and isinstance((m := matches[0]), dict)
+            ):
+                meta = DanmakuMeta(
+                    anime_id=m.get("animeId", 0),
+                    anime_title=m.get("animeTitle"),
+                    episode_id=m.get("episodeId", 0),
+                    episode_title=m.get("episodeTitle"),
+                    type=m.get("type", ""),
+                    type_description=m.get("typeDescription"),
+                )
+                logger.info(
+                    'Matched episode ID "%s" for media "%s" from: %s',
+                    meta.episode_id,
+                    media.name,
+                    server,
+                )
+                return meta
         except httpx.RequestError:
             logger.error("An error occurred while requesting %s.", url, exc_info=True)
 
@@ -212,11 +255,18 @@ class DanmakuService:
                 query += "&chConvert=1"
 
             response = await client.get(cls._append_query(url, query))
-            if response.status_code == 200:
-                data = response.json()
-                comments = data.get("comments")
-                if isinstance(comments, list) and comments:
-                    return cls.format_danmakus(comments)
+            if response.status_code != 200:
+                logger.error(
+                    'Failed to load danmakus for episode ID "%s": HTTP %s',
+                    episode_id,
+                    response.status_code,
+                )
+                return []
+
+            data = response.json()
+            comments = data.get("comments")
+            if comments and isinstance(comments, list):
+                return cls.format_danmakus(comments)
         except httpx.RequestError:
             logger.error("An error occurred while requesting %s.", url, exc_info=True)
 

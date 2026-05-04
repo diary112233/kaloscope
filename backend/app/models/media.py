@@ -1,5 +1,5 @@
 from enum import StrEnum, auto
-from typing import Self
+from typing import Any, Self
 
 from pydantic import BaseModel, Field, PositiveInt, model_validator
 from tortoise.fields import (
@@ -12,6 +12,7 @@ from tortoise.fields import (
     ForeignKeyNullableRelation,
     ForeignKeyRelation,
     IntField,
+    JSONField,
     ReverseRelation,
 )
 
@@ -82,11 +83,11 @@ class MediaItem(TortoiseModel):
     hash = CharField(max_length=32, null=True)
     size = IntField(null=True)
     visible = BooleanField(default=True)
-    danmaku_id = CharField(max_length=255, null=True)
-    danmaku_path = CharField(max_length=4096, null=True)
     nfo_path = CharField(max_length=4096, null=True)
     nfo_mtime = DatetimeField(null=True)
     nfo_source = CharField(max_length=64, null=True)
+    danmaku_path = CharField(max_length=4096, null=True)
+    danmaku_meta = JSONField[dict[str, Any] | None](null=True)
     unique_id = CharField(max_length=255, null=True)
     title = CharField(max_length=255, null=True)
     year = IntField(null=True)
