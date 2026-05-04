@@ -369,7 +369,8 @@
       "match": "Match",
       "server": "Danmaku Server",
       "server_tip": "Must be compatible with the dandanplay API.",
-      "ttl": "Danmaku TTL (h)"
+      "ttl": "Danmaku TTL (h)",
+      "cache": "Local Cache"
     },
     "xgplayer": {
       "error_types": {

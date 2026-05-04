@@ -84,6 +84,7 @@
 </script>
 
 <script lang="ts">
+  import { tooltip } from '$lib/actions';
   import { api } from '$lib/api';
   import { Modal, Range, Select } from '$lib/components';
   import { MEDIA_STREAM_PREFIX } from '$lib/constants';
@@ -281,7 +282,7 @@
     {@render tabLabel('video', icons.videoFill, $_('media.video.settings'))}
     <div class="tab-content">
       <div>
-        {@render optionName($_('media.video.speed'))}
+        {@render optionLabel($_('media.video.speed'))}
         <span
           class="join grid rounded-field"
           style="grid-template-columns: repeat({Object.keys(playbackRates).length}, minmax(0, 1fr));"
@@ -297,7 +298,7 @@
         </span>
       </div>
       <div>
-        {@render optionName($_('media.video.rotate'))}
+        {@render optionLabel($_('media.video.rotate'))}
         <span
           class="join grid rounded-field"
           style="grid-template-columns: repeat({rotateDegrees.length}, minmax(0, 1fr));"
@@ -313,7 +314,7 @@
         </span>
       </div>
       <div>
-        {@render optionName($_('media.video.definition'))}
+        {@render optionLabel($_('media.video.definition'))}
         {#if definitions.length > 0}
           <Select
             native={!rotateFullscreen}
@@ -328,7 +329,7 @@
       </div>
       {#if $video !== null}
         <div>
-          {@render optionName($_('media.video.landscape.title'), true)}
+          {@render optionLabel($_('media.video.landscape.title'), $_('media.video.landscape.tip'))}
           <Select
             native={!rotateFullscreen}
             options={[
@@ -347,7 +348,7 @@
     <div class="tab-content">
       {#if $danmaku !== null && danmakuPlugin !== null}
         <div>
-          {@render optionName($_('media.danmaku.toggle'), true)}
+          {@render optionLabel($_('media.danmaku.toggle'))}
           <input
             type="checkbox"
             class="toggle"
@@ -358,7 +359,7 @@
           />
         </div>
         <div>
-          {@render optionName($_('media.danmaku.block'), true)}
+          {@render optionLabel($_('media.danmaku.block'))}
           <div class="flex-center gap-6">
             {@render danmakuBlock('scroll', icons.mist)}
             {@render danmakuBlock('top', icons.alignBoxCenterTop)}
@@ -367,7 +368,7 @@
           </div>
         </div>
         <div>
-          {@render optionName($_('media.danmaku.area'), true)}
+          {@render optionLabel($_('media.danmaku.area'))}
           <Range
             bind:value={$danmaku.area}
             values={[10, 25, 50, 75, 100]}
@@ -380,7 +381,7 @@
           />
         </div>
         <div>
-          {@render optionName($_('media.danmaku.opacity'), true)}
+          {@render optionLabel($_('media.danmaku.opacity'))}
           <Range
             bind:value={$danmaku.opacity}
             class="pt-2"
@@ -392,7 +393,7 @@
           />
         </div>
         <div>
-          {@render optionName($_('media.danmaku.font_size'), true)}
+          {@render optionLabel($_('media.danmaku.font_size'))}
           <Range
             bind:value={$danmaku.fontSize}
             min={5}
@@ -407,7 +408,7 @@
           />
         </div>
         <div>
-          {@render optionName($_('media.danmaku.speed'), true)}
+          {@render optionLabel($_('media.danmaku.speed'))}
           <Range
             bind:value={$danmaku.speed}
             values={[0.5, 0.75, '1.0', 1.25, 1.5]}
@@ -442,9 +443,16 @@
   </label>
 {/snippet}
 
-<!-- The option name rendering snippet. -->
-{#snippet optionName(name: string, global: boolean = false)}
-  <span class="max-w-40 min-w-20 shrink-0 font-semibold text-white/60 {global ? '' : 'italic'}">{name}</span>
+<!-- The option label rendering snippet. -->
+{#snippet optionLabel(name: string, tip?: string)}
+  <div class="flex max-w-40 min-w-20 shrink-0 gap-1 text-white/60">
+    <span class="text-base font-semibold">{name}</span>
+    {#if tip}
+      <span class="flex-center cursor-help text-lg" use:tooltip={{ content: tip, followCursor: true }}>
+        <iconify-icon icon={icons.questionCircle}></iconify-icon>
+      </span>
+    {/if}
+  </div>
 {/snippet}
 
 <!-- The danmaku block rendering snippet. -->
