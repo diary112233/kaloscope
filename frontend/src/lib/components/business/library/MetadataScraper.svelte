@@ -142,7 +142,7 @@
    * Confirm the selected metadata result.
    */
   function confirm() {
-    if (index < 0) {
+    if ($confirming !== null || index < 0) {
       return;
     }
     const result = results[index];

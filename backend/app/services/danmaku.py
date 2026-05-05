@@ -2,7 +2,7 @@ import contextlib
 from datetime import datetime
 from pathlib import Path
 from typing import Literal
-from urllib.parse import quote
+from urllib.parse import quote, urlencode
 
 import aiofiles
 import httpx
@@ -11,7 +11,7 @@ from sanic import Sanic
 from sanic.log import logger
 
 from app.core.constants import ENCODING
-from app.models.media import Language, MediaItem
+from app.models.media import Language, LibType, MediaItem, MediaResource
 from app.utils import json
 
 # the display mode of the danmaku
@@ -51,6 +51,18 @@ class DanmakuWrapper(BaseModel):
     comments: list[Danmaku]
 
 
+class EpisodeQuery(MediaResource):
+    """The query model for searching episodes from the danmaku server."""
+
+    title: str
+
+
+class EpisodeConfirm(MediaResource):
+    """The model for confirming the danmaku match for a media resource."""
+
+    metadata: DanmakuMeta
+
+
 class DanmakuService:
     """The service class for all danmaku related operations."""
 
@@ -70,22 +82,20 @@ class DanmakuService:
         return f"{base_url}/api/v2"
 
     @classmethod
-    def _append_query(cls, url: str, query: str) -> str:
+    def _append_query(cls, url: str, params: dict) -> str:
         """Append query parameters to a URL.
 
         Args:
             url: The URL to append to.
-            query: The query string to append.
+            params: The query parameters to append.
 
         Returns:
-            The URL with the query string appended.
+            The URL with the query parameters appended.
         """
-        if not query.startswith("?"):
-            query = "?" + query
         if "?" in url:
-            # proxy mode: append the query as a URL-encoded parameter
-            return f"{url}{quote(query)}"
-        return f"{url}{query}"
+            # proxy mode: encode the entire query string as a single value
+            return f"{url}{quote('?' + urlencode(params))}"
+        return f"{url}?{urlencode(params)}"
 
     @classmethod
     async def match_danmakus(cls, path: str) -> DanmakuWrapper:
@@ -101,14 +111,12 @@ class DanmakuService:
         media = await MediaItem.filter(path=path).first().select_related("lib")
         if not media:
             return DanmakuWrapper(comments=[])
-        danmaku_path = media.danmaku_path
 
         # default local cache path: {media_dir}/.{media_name}.json
-        if not danmaku_path:
-            danmaku_path = Path(media.dir) / f".{media.name}.json"
+        danmaku_path = media.danmaku_path
+        danmaku_path = Path(danmaku_path or (Path(media.dir) / f".{media.name}.json"))
 
         # check if the local cache file exists
-        danmaku_path = Path(danmaku_path)
         cached = danmaku_path.exists()
 
         # check if the local cache file is expired
@@ -249,12 +257,12 @@ class DanmakuService:
         client: httpx.AsyncClient = Sanic.get_app().ctx.httpx
         try:
             url = f"{cls._base_url(server)}/comment/{episode_id}"
-            query = "withRelated=true"
+            params = {"withRelated": "true"}
             if language == Language.ZH_CN:
                 # request the converted simplified Chinese comments
-                query += "&chConvert=1"
+                params["chConvert"] = "1"
 
-            response = await client.get(cls._append_query(url, query))
+            response = await client.get(cls._append_query(url, params))
             if response.status_code != 200:
                 logger.error(
                     'Failed to load danmakus for episode ID "%s": HTTP %s',
@@ -350,3 +358,196 @@ class DanmakuService:
         if danmaku_path.is_file():
             danmaku_path.unlink()
         await MediaItem.filter(id=media.id).update(danmaku_path=None)
+
+    @classmethod
+    async def search_episodes(cls, path: str, title: str) -> list[DanmakuMeta]:
+        """Search for episodes matching the given title from the danmaku server.
+
+        Args:
+            path: The media resource path.
+            title: The search title.
+
+        Returns:
+            A flat list of DanmakuMeta items from the search results.
+        """
+        media = await MediaItem.filter(path=path).first().select_related("lib")
+        if not media or not (server := media.lib.danmaku_server):
+            return []
+
+        # determine episode filter based on lib type
+        episode: str | None = None
+        if media.lib.lib_type == LibType.MOVIE:
+            episode = "movie"
+        elif media.episode is not None:
+            episode = str(media.episode)
+
+        client: httpx.AsyncClient = Sanic.get_app().ctx.httpx
+        try:
+            url = f"{cls._base_url(server)}/search/episodes"
+            params = {"anime": title}
+            if episode:
+                params["episode"] = episode
+
+            response = await client.get(cls._append_query(url, params))
+            if response.status_code != 200:
+                logger.error(
+                    'Failed to search episodes for "%s": HTTP %s',
+                    title,
+                    response.status_code,
+                )
+                return []
+
+            data = response.json()
+            if not data.get("success"):
+                logger.error(
+                    'Failed to search episodes for "%s": %s',
+                    title,
+                    data.get("errorMessage"),
+                )
+                return []
+
+            results: list[DanmakuMeta] = []
+            for a in data.get("animes", []):
+                for e in a.get("episodes", []):
+                    results.append(
+                        DanmakuMeta(
+                            anime_id=a.get("animeId", 0),
+                            anime_title=a.get("animeTitle"),
+                            episode_id=e.get("episodeId", 0),
+                            episode_title=e.get("episodeTitle"),
+                            type=a.get("type", ""),
+                            type_description=a.get("typeDescription"),
+                        )
+                    )
+            return results
+        except httpx.RequestError:
+            logger.error("An error occurred while requesting %s.", url, exc_info=True)
+
+        return []
+
+    @classmethod
+    async def confirm_episode(cls, path: str, meta: DanmakuMeta) -> DanmakuWrapper:
+        """Confirm the episode match result for the given media resource.
+
+        Args:
+            path: The media resource path.
+            meta: The confirmed metadata.
+
+        Returns:
+            The wrapped danmakus with the confirmed metadata.
+        """
+        result = DanmakuWrapper(metadata=meta, comments=[])
+        media = await MediaItem.filter(path=path).first().select_related("lib")
+        if not media or not (server := media.lib.danmaku_server):
+            return result
+
+        # load danmakus from the danmaku server
+        danmakus = await cls.load_from_server(
+            server, str(meta.episode_id), media.lib.language
+        )
+        if danmakus:
+            result.comments = danmakus
+            # save to local cache file
+            danmaku_path = media.danmaku_path
+            danmaku_path = Path(
+                danmaku_path or (Path(media.dir) / f".{media.name}.json")
+            )
+            async with aiofiles.open(danmaku_path, "wb") as f:
+                await f.write(json.dumps([d.model_dump() for d in danmakus]))
+
+            # update the media item with the danmaku info
+            await MediaItem.filter(id=media.id).update(
+                danmaku_meta=meta,
+                danmaku_path=str(danmaku_path),
+            )
+
+        # also refresh the danmaku metadata of sibling episodes if it's a TV show
+        if media.lib.lib_type == LibType.TV_SHOW:
+            await cls.refresh_episodes(media, meta)
+
+        return result
+
+    @classmethod
+    async def refresh_episodes(cls, item: MediaItem, meta: DanmakuMeta):
+        """Refresh the danmaku metadata of the episodes under an anime.
+
+        Args:
+            item: The episode media item.
+            meta: The confirmed danmaku metadata.
+        """
+        if not item.parent_id or not (server := item.lib.danmaku_server):
+            return
+
+        anime_id = meta.anime_id
+        if item.danmaku_meta and item.danmaku_meta.get("anime_id") == anime_id:
+            # skip if the anime ID hasn't changed
+            return
+
+        # get sibling episodes under the same parent item
+        db_episodes = await MediaItem.filter(
+            parent_id=item.parent_id, id__not=item.id, episode__not_isnull=True
+        ).all()
+        if not db_episodes:
+            return
+
+        # get bangumi info from the danmaku server to find the corresponding episode IDs
+        client: httpx.AsyncClient = Sanic.get_app().ctx.httpx
+        try:
+            url = f"{cls._base_url(server)}/bangumi/{anime_id}"
+            response = await client.get(url)
+            if response.status_code != 200:
+                logger.error(
+                    'Failed to get bangumi info for anime ID "%s": HTTP %s',
+                    anime_id,
+                    response.status_code,
+                )
+                return
+
+            data = response.json()
+            if not data.get("success"):
+                logger.error(
+                    'Failed to get bangumi info for anime ID "%s": %s',
+                    anime_id,
+                    data.get("errorMessage"),
+                )
+                return
+
+            api_episodes = data.get("bangumi", {}).get("episodes", [])
+            if not api_episodes:
+                return
+
+            # build a map from episodeNumber -> episode data
+            ep_data: dict[str, dict] = {
+                str(num): e
+                for e in api_episodes
+                if (num := e.get("episodeNumber")) is not None
+            }
+
+            # match each sibling episode by its episode number and update danmaku_meta
+            for db_episode in db_episodes:
+                ep = ep_data.get(str(db_episode.episode))
+                if not ep:
+                    continue
+
+                # delete the old cached danmaku file if exists
+                if db_episode.danmaku_path:
+                    danmaku_path = Path(db_episode.danmaku_path)
+                    if danmaku_path.is_file():
+                        danmaku_path.unlink()
+
+                # update the danmaku_meta with the new episode ID and title
+                danmaku_meta = DanmakuMeta(
+                    anime_id=meta.anime_id,
+                    anime_title=meta.anime_title,
+                    episode_id=ep.get("episodeId", 0),
+                    episode_title=ep.get("episodeTitle"),
+                    type=meta.type,
+                    type_description=meta.type_description,
+                )
+
+                await MediaItem.filter(id=db_episode.id).update(
+                    danmaku_path=None, danmaku_meta=danmaku_meta
+                )
+
+        except httpx.RequestError:
+            logger.error("An error occurred while requesting %s.", url, exc_info=True)

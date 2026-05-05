@@ -2,7 +2,11 @@ from sanic import Blueprint, HTTPResponse, empty, json
 from sanic_ext import validate
 
 from app.models.media import MediaResource
-from app.services.danmaku import DanmakuService
+from app.services.danmaku import (
+    DanmakuService,
+    EpisodeConfirm,
+    EpisodeQuery,
+)
 
 # subroutes for all danmaku related operations
 danmaku = Blueprint("danmaku", url_prefix="/danmaku")
@@ -19,20 +23,22 @@ async def match_danmakus(_, body: MediaResource) -> HTTPResponse:
 @danmaku.post("/delete")
 @validate(json=MediaResource)
 async def delete_danmakus(_, body: MediaResource) -> HTTPResponse:
-    """Delete the danmakus for the given media resource."""
+    """Delete the locally cached danmakus for the given media resource."""
     await DanmakuService.delete_danmakus(body.path)
     return empty()
 
 
-@danmaku.post("/search/episodes")
-async def search_episodes(_) -> HTTPResponse:
-    """Search for episodes matching the given criteria."""
-    # TODO: implement episode search API
-    return json({})
+@danmaku.post("/search")
+@validate(json=EpisodeQuery)
+async def search_episodes(_, body: EpisodeQuery) -> HTTPResponse:
+    """Search for episodes matching the given title from the danmaku server."""
+    episodes = await DanmakuService.search_episodes(body.path, body.title)
+    return json([e.model_dump() for e in episodes])
 
 
-@danmaku.get("/comment/<episode_id:int>")
-async def get_danmakus(_, episode_id: int) -> HTTPResponse:
-    """Get the danmakus for the given episode ID."""
-    # TODO: implement comment retrieval API
-    return json({})
+@danmaku.post("/confirm")
+@validate(json=EpisodeConfirm)
+async def confirm_episode(_, body: EpisodeConfirm) -> HTTPResponse:
+    """Confirm the episode match result for the given media resource."""
+    danmakus = await DanmakuService.confirm_episode(body.path, body.metadata)
+    return json(danmakus.model_dump())

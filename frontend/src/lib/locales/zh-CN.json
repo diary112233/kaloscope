@@ -152,6 +152,7 @@
     "year": "年份",
     "season": "季数",
     "episode": "集数",
+    "episode_title": "剧集标题",
     "plot": "简介",
     "rating": "评分",
     "trigger": "触发方式",

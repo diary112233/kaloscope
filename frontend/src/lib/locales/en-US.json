@@ -152,6 +152,7 @@
     "year": "Year",
     "season": "Season",
     "episode": "Episode",
+    "episode_title": "Episode Title",
     "plot": "Plot",
     "rating": "Rating",
     "trigger": "Trigger",

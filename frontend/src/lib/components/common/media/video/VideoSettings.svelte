@@ -86,8 +86,9 @@
 <script lang="ts">
   import { tooltip } from '$lib/actions';
   import { api } from '$lib/api';
-  import { Button, Modal, Range, Select, confirm } from '$lib/components';
-  import { MEDIA_STREAM_PREFIX } from '$lib/constants';
+  import { Button, Modal, Overlay, Range, Select, confirm } from '$lib/components';
+  import { EMPTY_SIGN, MEDIA_STREAM_PREFIX } from '$lib/constants';
+  import { createLoading } from '$lib/helpers';
   import { _ } from '$lib/i18n';
   import { icons } from '$lib/icons';
   import { persisted } from '$lib/stores';
@@ -124,6 +125,13 @@
 
   // the danmaku metadata matched with the current video
   let danmakuMeta: DanmakuMeta | null = $state(null);
+
+  // the manual danmaku search states
+  let animeTitle: string = $derived.by(() => danmakuMeta?.anime_title ?? '');
+  let results: DanmakuMeta[] = $state([]);
+  let index: number = $state(-1);
+  const searching = createLoading();
+  const confirming = createLoading();
 
   /**
    * Show the settings modal.
@@ -289,6 +297,66 @@
       }
     });
   }
+
+  /**
+   * Search for episodes matching the given title.
+   */
+  function searchEpisodes() {
+    if (!localMedia || $searching !== null || !animeTitle.trim()) {
+      return;
+    }
+    searching.start();
+    results = [];
+    index = -1;
+    const url = player?.config.url as string;
+    const path = decodeURIComponent(url.slice(MEDIA_STREAM_PREFIX.length));
+    api
+      .post('danmaku/search', {
+        json: { path, title: animeTitle.trim() }
+      })
+      .json<Resp<DanmakuMeta[]>>()
+      .then((resp) => {
+        results = resp.data;
+      })
+      .finally(() => {
+        searching.end();
+      });
+  }
+
+  /**
+   * Confirm the selected episode match result.
+   */
+  function confirmEpisode() {
+    if (!localMedia || danmakuPlugin === null || $confirming !== null || index < 0) {
+      return;
+    }
+    const result = results[index];
+    if (!result) {
+      return;
+    }
+    confirming.start();
+    const url = player?.config.url as string;
+    const path = decodeURIComponent(url.slice(MEDIA_STREAM_PREFIX.length));
+    api
+      .post('danmaku/confirm', {
+        json: { path, metadata: result }
+      })
+      .json<Resp<DanmakuWrapper>>()
+      .then((resp) => {
+        const comments = resp.data.comments;
+        if (comments && comments.length > 0) {
+          danmakuPlugin.updateComments(formatDanmakus(comments), true);
+          if ($danmaku !== null) {
+            danmakuPlugin.setFontSize($danmaku.fontSize, null);
+          }
+        }
+        danmakuMeta = resp.data.metadata;
+        index = -1;
+      })
+      .finally(() => {
+        confirming.end();
+      });
+  }
 </script>
 
 <Modal
@@ -446,10 +514,13 @@
 
     <!-- The danmaku match tab. -->
     {#if localMedia}
+      {@const btnClass = 'border-0 bg-primary/30 text-white shadow-none hover:bg-base-300 hover:text-base-content'}
+      {@const btnDisabledClass = 'disabled:bg-primary/15 disabled:text-white/15'}
+
       {@render tabLabel('match', icons.boxMultipleSearchFilled, $_('media.danmaku.match'))}
       <div class="tab-content">
         {#if danmakuMeta !== null}
-          <div class="flex-col items-start! gap-1!">
+          <div class="mb-4 flex-col items-start! gap-1!">
             {@render optionLabel($_('media.danmaku.cache'))}
             <div class="flex w-full items-center justify-between gap-4">
               <div class="flex min-w-0 flex-col gap-0.5">
@@ -463,14 +534,86 @@
               <Button
                 icon={icons.delete}
                 text={$_('action.delete')}
-                class="border-0 bg-primary/30 text-white hover:bg-base-300 hover:text-base-content"
+                class={btnClass}
                 onclick={() => deleteLocalDanmakus()}
               />
             </div>
           </div>
         {/if}
-        <div>
+        <div class="flex-col items-start! gap-1!">
           {@render optionLabel($_('media.danmaku.manual'))}
+          <div class="flex w-full gap-2">
+            <input class="input grow" placeholder={$_('field.title')} bind:value={animeTitle} />
+            <Button
+              ghost={false}
+              square={false}
+              icon={icons.search}
+              text={$_('action.search')}
+              class="min-w-18 {btnClass} {btnDisabledClass}"
+              disabled={$searching || !animeTitle.trim()}
+              onclick={() => searchEpisodes()}
+            />
+          </div>
+          <div
+            class="relative mt-2 h-40 overflow-y-auto rounded-box border"
+            style="border-color: color-mix(in oklab, #fff 10%, transparent) !important;"
+          >
+            <Overlay loading={$searching} fixed={false} animation="spinner" />
+            <table class="table table-fixed table-xs">
+              <thead>
+                <tr class="text-xs font-semibold text-white/40 uppercase">
+                  <th class="w-6"></th>
+                  <th class="w-16">{$_('field.type')}</th>
+                  <th class="w-1/3">{$_('field.title')}</th>
+                  <th>{$_('field.episode_title')}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {#if results.length > 0}
+                  {#each results as result, i (i)}
+                    <tr
+                      class="cursor-pointer hover:bg-white/5 {index === i ? 'bg-primary/15' : ''}"
+                      onclick={() => (index = index === i ? -1 : i)}
+                    >
+                      <td>
+                        <input
+                          type="radio"
+                          class="pointer-events-none radio border-white/10 radio-xs"
+                          checked={index === i}
+                        />
+                      </td>
+                      <td class="truncate text-white/40" title={result.type_description}>
+                        {result.type_description || EMPTY_SIGN}
+                      </td>
+                      <td class="truncate font-medium text-white/80" title={result.anime_title}>
+                        {result.anime_title || EMPTY_SIGN}
+                      </td>
+                      <td class="truncate text-white/60" title={result.episode_title}>
+                        {result.episode_title || EMPTY_SIGN}
+                      </td>
+                    </tr>
+                  {/each}
+                {:else}
+                  <tr>
+                    <td colspan="4" class="h-32 text-center text-sm text-white/20">
+                      {$_('data.nodata')}
+                    </td>
+                  </tr>
+                {/if}
+              </tbody>
+            </table>
+          </div>
+          <div class="mt-2 flex w-full justify-end">
+            <Button
+              ghost={false}
+              square={false}
+              text={$_('message.confirm')}
+              class="min-w-18 {btnClass} {btnDisabledClass}"
+              loading={$confirming}
+              disabled={$confirming !== null || index < 0}
+              onclick={() => confirmEpisode()}
+            />
+          </div>
         </div>
       </div>
     {/if}
@@ -596,6 +739,18 @@
       color: color-mix(in oklab, #fff 80%, transparent);
       border-color: hsla(0, 0%, 30%, 0.9);
       background-color: hsla(0, 0%, 30%, 0.9);
+    }
+  }
+
+  .input {
+    --size: 2rem;
+    font-size: 0.75rem;
+    color: color-mix(in oklab, #fff 80%, transparent);
+    border-color: color-mix(in oklab, #fff 10%, transparent);
+    background-color: color-mix(in oklab, #fff 5%, transparent);
+    box-shadow: 0 0 #0000;
+    &::placeholder {
+      color: color-mix(in oklab, #fff 20%, transparent);
     }
   }
 </style>
