@@ -8,7 +8,7 @@
     dir: string;
     name: string;
     language: string | null;
-    danmaku_server: string;
+    danmaku_server: string | null;
     danmaku_ttl: number;
     triggers: FlowTrigger[];
     onsave: (result: MediaLib) => void;
