@@ -1,15 +1,15 @@
 # ============================================================
 # Stage 1: build the frontend
 # ============================================================
-FROM node:25-slim AS frontend
+FROM node:24-slim AS frontend
 
 # install pnpm via npm
-RUN npm install -g pnpm
+RUN npm install -g pnpm@latest-11
 
 WORKDIR /pages
 
 # copy dependency manifests first for better layer caching
-COPY frontend/.npmrc frontend/package.json frontend/pnpm-lock.yaml frontend/pnpm-workspace.yaml ./
+COPY frontend/package.json frontend/pnpm-lock.yaml frontend/pnpm-workspace.yaml ./
 
 # install frontend dependencies
 RUN pnpm install --frozen-lockfile
@@ -49,7 +49,7 @@ RUN curl -fsSL "https://dl.filippo.io/mkcert/latest?for=linux/amd64" -o /usr/loc
     && chmod +x /usr/local/bin/mkcert
 
 # install poetry via pip
-RUN python -m pip install --no-cache-dir setuptools poetry
+RUN python -m pip install --no-cache-dir setuptools "poetry~=2.0"
 
 WORKDIR /app
 
@@ -72,6 +72,7 @@ COPY backend/ ./backend/
 COPY --from=frontend /pages/build/ ./frontend/build/
 
 # environment variables
+ENV CONTAINER=true
 ENV PUID=0
 ENV PGID=0
 ENV UMASK=022
@@ -95,20 +96,20 @@ PGID=${PGID:-0}
 if [ "$PUID" != "0" ] && [ "$(id -u)" = "0" ]; then
   getent group "$PGID" > /dev/null 2>&1 || groupadd -g "$PGID" kaloscope
   id -u "$PUID" > /dev/null 2>&1 || useradd -u "$PUID" -g "$PGID" -m -s /bin/sh kaloscope
-  chown -R "$PUID":"$PGID" /app
+  chown -R "$PUID":"$PGID" /app /workspace
   exec gosu "$PUID" "$0" "$@"
 fi
 
 # set up root CA path for mkcert if AUTO_TLS is enabled
 if [ "$AUTO_TLS" = "true" ]; then
-  export CAROOT=/app/workspace/mkcert
+  export CAROOT=/workspace/mkcert
   mkdir -p "$CAROOT"
 fi
 
 # start aria2 if enabled
 if [ "$ENABLE_ARIA2" = "true" ]; then
-  mkdir -p /app/workspace/downloads /app/workspace/aria2
-  ARIA2_SESSION=/app/workspace/aria2/aria2.session
+  mkdir -p /workspace/aria2 /workspace/downloads
+  ARIA2_SESSION=/workspace/aria2/aria2.session
   touch "$ARIA2_SESSION"
   aria2c \
     --enable-rpc \
@@ -121,7 +122,7 @@ if [ "$ENABLE_ARIA2" = "true" ]; then
     --input-file="$ARIA2_SESSION" \
     --save-session="$ARIA2_SESSION" \
     --save-session-interval=60 \
-    --dir=/app/workspace/downloads \
+    --dir=/workspace/downloads \
     --daemon
 fi
 
@@ -140,5 +141,5 @@ RUN chmod +x /app/entrypoint.sh
 EXPOSE 8000
 EXPOSE 6888
 EXPOSE 6888/udp
-VOLUME /app/workspace
+VOLUME /workspace
 ENTRYPOINT ["/app/entrypoint.sh"]

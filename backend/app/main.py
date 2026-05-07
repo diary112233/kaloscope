@@ -1,5 +1,6 @@
 import logging
 import multiprocessing
+import os
 from multiprocessing.managers import SyncManager
 from pathlib import Path
 
@@ -28,7 +29,10 @@ APP_PATH = Path(__file__).resolve().parent
 ROOT_PATH = APP_PATH.parents[1]
 
 # load the configuration file
-app_config = KaloscopeConfig(APP_PATH / "config.toml", ROOT_PATH)
+app_config = KaloscopeConfig(
+    APP_PATH / "config.toml",
+    None if os.environ.get("CONTAINER") == "true" else ROOT_PATH,
+)
 tortoise_config = app_config.tortoise
 
 # create the Sanic app

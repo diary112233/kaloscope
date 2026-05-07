@@ -12,16 +12,16 @@ class KaloscopeConfig:
 
     _config: Self | None = None
 
-    def __init__(self, toml: Path, root: Path):
+    def __init__(self, toml: Path, root: Path | None = None):
         """Initializes the configuration class.
 
         Args:
             toml: The path to the configuration file.
-            root: The path to the root of the project.
+            root: The root path to be used for formatting workspace paths.
         """
         with open(toml, "rb") as f:
             self.toml_config = tomllib.load(f)
-        self.root = root
+        self.root = str(root) if root else ""
 
     def _upper_key(self, obj: dict[str, Any]) -> dict[str, Any]:
         """Converts the keys of the dictionary to uppercase.
