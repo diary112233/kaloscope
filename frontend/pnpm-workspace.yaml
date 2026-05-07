@@ -1,3 +1,9 @@
+engineStrict: true
+publicHoistPattern:
+  - '@lezer/*'
+  - '@codemirror/*'
+  - 'workbox-*'
+  - 'vite-plugin-pwa'
 allowBuilds:
   core-js: true
   es5-ext: true
