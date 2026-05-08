@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+"""A simple script to detect if the backend and frontend are ready."""
+
 import socket
 import time
 

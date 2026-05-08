@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+"""Scan project dependencies to generate a comprehensive LICENSES.md file."""
+
 import json
 import re
 import subprocess
