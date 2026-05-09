@@ -8,7 +8,7 @@ from tortoise.expressions import Q
 from tortoise.transactions import atomic
 
 from app.core.exceptions import ErrorCode, KaloscopeException
-from app.core.media.handlers.base import MetaKeywords
+from app.core.media.handlers.base import MediaPathInfo
 from app.models.flow import FlowTrigger, GraphCategory
 from app.models.media import MediaItem, MediaLib, MediaLibUpsert, MediaMetadata, NFOType
 from app.models.user import PermType, UserPermission
@@ -121,38 +121,41 @@ class MediaItemService(BaseService[MediaItem], model=MediaItem):
 
     @classmethod
     async def create(
-        cls, lib_id: int, parent_id: int | None, m: MetaKeywords
+        cls, lib_id: int, *, parent_id: int | None = None, path_info: MediaPathInfo
     ) -> MediaItem:
         """Get or create a media item.
 
         Args:
             lib_id: The media library ID.
             parent_id: The parent media item ID, if any.
-            m: The metadata keywords for the media item.
+            path_info: The information parsed from the media item path.
 
         Returns:
             The media item instance.
         """
+        item_path = path_info.item_path
         item, created = await MediaItem.get_or_create(
             lib_id=lib_id,
-            path=m.item_path,
+            path=item_path,
             defaults={
-                "dir": m.item_dir,
-                "name": m.item_name,
+                "dir": path_info.item_dir,
+                "name": path_info.item_name,
                 "parent_id": parent_id,
-                "year": m.year,
-                "season": m.season,
-                "episode": m.episode,
+                "year": path_info.year,
+                "season": path_info.season,
+                "episode": path_info.episode,
                 "visible": True,
             },
         )
+
+        # calculate hash and size for the newly created item
         if created:
-            asyncio.create_task(cls.update_file_info(item.id, m.item_path))
+            asyncio.create_task(cls._hash_and_size(item.id, item_path))
 
         return item
 
     @classmethod
-    async def update_file_info(cls, item_id: int, item_path: str):
+    async def _hash_and_size(cls, item_id: int, item_path: str):
         """Calculate and persist the hash and size of a media file.
 
         Args:

@@ -20,8 +20,8 @@ from app.models.media import Language, LibType, MediaLib, NFOType
 
 
 @dataclass(kw_only=True)
-class MetaKeywords:
-    """The keywords for a media item parsed from the file path."""
+class MediaPathInfo:
+    """The information parsed from the media item path."""
 
     path: Path = field(kw_only=False)
     nfo_path: Path | None = None
@@ -100,7 +100,7 @@ class MediaHandler(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def gen_items(self, lib: MediaLib, path: Path) -> list[MetaKeywords]:
+    async def gen_items(self, lib: MediaLib, path: Path) -> list[MediaPathInfo]:
         raise NotImplementedError
 
     def filter_event(

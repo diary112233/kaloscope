@@ -7,7 +7,7 @@ from app.core.media.handlers.base import (
     Actor,
     MediaHandler,
     MediaMeta,
-    MetaKeywords,
+    MediaPathInfo,
 )
 from app.models.media import LibType, MediaLib, NFOType
 from app.services.media import MediaItemService
@@ -106,7 +106,7 @@ class TVShowMediaHandler(MediaHandler):
         meta.episode = get_integer(root, "episode")
         return meta
 
-    async def gen_items(self, lib: MediaLib, path: Path) -> list[MetaKeywords]:
+    async def gen_items(self, lib: MediaLib, path: Path) -> list[MediaPathInfo]:
         """Generate the media items for a TV show.
 
         Args:
@@ -114,57 +114,65 @@ class TVShowMediaHandler(MediaHandler):
             path: The path to generate from.
 
         Returns:
-            The list of metadata keywords for the media items.
+            The list of media path info for the media items.
         """
         result = []
 
-        def _parent(path: Path, *, series: str, season: int | None) -> MetaKeywords:
-            m = MetaKeywords(path)
-            m.nfo_path = Path(m.item_dir) / f"{m.item_name}.nfo"
-            if not m.nfo_path.exists():
-                m.nfo_type = NFOType.TV_SHOW
-            m.language = lib.language
-            m.title = extract_title(series)
-            m.year = extract_year(series)
-            m.season = season
-            return m
+        # helper function to create parent media path info
+        def _parent(path: Path, *, series: str, season: int | None) -> MediaPathInfo:
+            info = MediaPathInfo(path)
+            info.nfo_path = Path(info.item_dir) / f"{info.item_name}.nfo"
+            if not info.nfo_path.exists():
+                info.nfo_type = NFOType.TV_SHOW
+            info.language = lib.language
+            info.title = extract_title(series)
+            info.year = extract_year(series)
+            info.season = season
+            return info
 
-        def _child(path: Path, *, parent: MetaKeywords) -> MetaKeywords:
-            m = MetaKeywords(path)
-            if m.item_name != (dir := Path(m.item_dir)).name:
-                m.nfo_path = dir / f"{m.item_name}.nfo"
-                if not m.nfo_path.exists():
-                    m.nfo_type = NFOType.EPISODE
-            m.language = lib.language
-            m.title = parent.title
-            m.year = parent.year
-            m.season = parent.season
-            m.episode = extract_episode(m.item_name)
-            return m
+        # helper function to create child media path info
+        def _child(path: Path, *, parent: MediaPathInfo) -> MediaPathInfo:
+            info = MediaPathInfo(path)
+            if info.item_name != (dir := Path(info.item_dir)).name:
+                info.nfo_path = dir / f"{info.item_name}.nfo"
+                if not info.nfo_path.exists():
+                    info.nfo_type = NFOType.EPISODE
+            info.language = lib.language
+            info.title = parent.title
+            info.year = parent.year
+            info.season = parent.season
+            info.episode = extract_episode(info.item_name)
+            return info
 
         dir = Path(lib.dir)
         parts = path.relative_to(dir).parts
         series = parts[0]
-        # extract metadata for the parent item
+        # extract season number based on the directory structure
         if len(parts) == 2:
-            m1 = _parent(
-                dir / series, series=series, season=extract_season(series) or 1
+            parent_info = _parent(
+                dir / series,
+                series=series,
+                season=extract_season(series) or 1,
             )
         elif len(parts) == 3:
             season = parts[1]
-            m1 = _parent(
-                dir / series / season, series=series, season=extract_season(season)
+            parent_info = _parent(
+                dir / series / season,
+                series=series,
+                season=extract_season(season),
             )
         else:
             return result
 
         # create parent item for the directory
-        p = await MediaItemService.create(lib.id, None, m1)
-        result.append(m1)
+        parent_item = await MediaItemService.create(lib.id, path_info=parent_info)
+        result.append(parent_info)
         # create child item for the file
-        m2 = _child(path, parent=m1)
-        await MediaItemService.create(lib.id, p.id, m2)
-        result.append(m2)
+        child_info = _child(path, parent=parent_info)
+        await MediaItemService.create(
+            lib.id, parent_id=parent_item.id, path_info=child_info
+        )
+        result.append(child_info)
 
         return result
 

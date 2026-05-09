@@ -32,7 +32,7 @@ from watchdog.observers import Observer
 from watchdog.observers.api import BaseObserver
 
 from app.core.exceptions import ErrorCode, KaloscopeException
-from app.core.media.handlers.base import MetaKeywords, get_handler
+from app.core.media.handlers.base import MediaPathInfo, get_handler
 from app.core.media.shelver import is_nfo, update_metadata
 from app.models.flow import GraphCategory
 from app.models.media import MediaEvent, MediaItem, MediaLib
@@ -398,7 +398,7 @@ async def consume_event(event: MediaEvent):
     Args:
         event: The media event.
     """
-    result: list[MetaKeywords] | None = None
+    result: list[MediaPathInfo] | None = None
     async with in_transaction("default"):
         # delete the consumed event
         await event.delete()
@@ -413,9 +413,9 @@ async def consume_event(event: MediaEvent):
             result = await _handle_created(event)
 
     if result:
-        for keywords in result:
+        for path_info in result:
             # parse the NFO file if it exists
-            nfo_path = keywords.nfo_path
+            nfo_path = path_info.nfo_path
             if nfo_path is not None:
                 await update_metadata(event.lib, nfo_path)
 
@@ -424,15 +424,15 @@ async def consume_event(event: MediaEvent):
                 GraphCategory.INGEST,
                 event.lib_id,
                 bootparams={
-                    "item_path": keywords.item_path,
-                    "item_name": keywords.item_name,
+                    "item_path": path_info.item_path,
+                    "item_name": path_info.item_name,
                     "nfo_path": str(nfo_path) if nfo_path else None,
-                    "nfo_type": keywords.nfo_type,
-                    "language": keywords.language,
-                    "title": keywords.title,
-                    "year": keywords.year,
-                    "season": keywords.season,
-                    "episode": keywords.episode,
+                    "nfo_type": path_info.nfo_type,
+                    "language": path_info.language,
+                    "title": path_info.title,
+                    "year": path_info.year,
+                    "season": path_info.season,
+                    "episode": path_info.episode,
                     "page_num": 1,
                     "page_size": 1,
                 },
@@ -502,11 +502,15 @@ async def _handle_deleted(event: MediaEvent):
                     _trash_nfo(parent_item.nfo_path)
 
 
-async def _handle_moved(event: MediaEvent) -> list[MetaKeywords] | None:
+async def _handle_moved(event: MediaEvent) -> list[MediaPathInfo] | None:
     """Handle the movement event.
 
     Args:
         event: The media event.
+
+    Returns:
+        A list of media path info generated from the moved media items,
+        or None if the destination path is not accepted by the handler.
     """
     # delete the source media item if it exists
     await _handle_deleted(event)
@@ -514,11 +518,15 @@ async def _handle_moved(event: MediaEvent) -> list[MetaKeywords] | None:
     return await _handle_created(event)
 
 
-async def _handle_created(event: MediaEvent) -> list[MetaKeywords] | None:
+async def _handle_created(event: MediaEvent) -> list[MediaPathInfo] | None:
     """Handle the creation event.
 
     Args:
         event: The media event.
+
+    Returns:
+        A list of media path info generated from the created media items,
+        or None if the destination path is not accepted by the handler.
     """
     # check if the destination path exists
     path = Path(event.dest_path or event.src_path)

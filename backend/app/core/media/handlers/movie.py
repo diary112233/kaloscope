@@ -7,7 +7,7 @@ from app.core.media.handlers.base import (
     Actor,
     MediaHandler,
     MediaMeta,
-    MetaKeywords,
+    MediaPathInfo,
 )
 from app.models.media import LibType, MediaLib, NFOType
 from app.services.media import MediaItemService
@@ -91,7 +91,7 @@ class MovieMediaHandler(MediaHandler):
         meta.backdrop = get_text(art, "fanart")
         return meta
 
-    async def gen_items(self, lib: MediaLib, path: Path) -> list[MetaKeywords]:
+    async def gen_items(self, lib: MediaLib, path: Path) -> list[MediaPathInfo]:
         """Generate the media items for a movie.
 
         Args:
@@ -99,36 +99,39 @@ class MovieMediaHandler(MediaHandler):
             path: The path to generate from.
 
         Returns:
-            The list of metadata keywords for the media items.
+            The list of media path info for the media items.
         """
         result = []
 
-        def _meta_keywords(path: Path, *, nfo: bool = False) -> MetaKeywords:
-            m = MetaKeywords(path)
+        # helper function to create media path info from a path
+        def _path_info(path: Path, *, nfo: bool = False) -> MediaPathInfo:
+            info = MediaPathInfo(path)
             if nfo:
-                m.nfo_path = Path(m.item_dir) / f"{m.item_name}.nfo"
-                if not m.nfo_path.exists():
-                    m.nfo_type = NFOType.MOVIE
-            m.language = lib.language
-            m.title = extract_title(m.item_name)
-            m.year = extract_year(m.item_name)
-            return m
+                info.nfo_path = Path(info.item_dir) / f"{info.item_name}.nfo"
+                if not info.nfo_path.exists():
+                    info.nfo_type = NFOType.MOVIE
+            info.language = lib.language
+            info.title = extract_title(info.item_name)
+            info.year = extract_year(info.item_name)
+            return info
 
         dir = Path(lib.dir)
         parts = path.relative_to(dir).parts
         if len(parts) == 1:
-            m = _meta_keywords(path, nfo=True)
-            await MediaItemService.create(lib.id, None, m)
-            result.append(m)
+            info = _path_info(path, nfo=True)
+            await MediaItemService.create(lib.id, path_info=info)
+            result.append(info)
         elif len(parts) == 2:
             # create parent item for the directory
-            m1 = _meta_keywords(dir / parts[0], nfo=True)
-            p = await MediaItemService.create(lib.id, None, m1)
-            result.append(m1)
+            parent_info = _path_info(dir / parts[0], nfo=True)
+            parent_item = await MediaItemService.create(lib.id, path_info=parent_info)
+            result.append(parent_info)
             # create child item for the file
-            m2 = _meta_keywords(path)
-            await MediaItemService.create(lib.id, p.id, m2)
-            result.append(m2)
+            child_info = _path_info(path)
+            await MediaItemService.create(
+                lib.id, parent_id=parent_item.id, path_info=child_info
+            )
+            result.append(child_info)
 
         return result
 
