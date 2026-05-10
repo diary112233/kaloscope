@@ -129,7 +129,7 @@ class MovieMediaHandler(MediaHandler):
             # create child item for the file
             child_info = _path_info(path)
             await MediaItemService.create(
-                lib.id, parent_id=parent_item.id, path_info=child_info
+                lib.id, path_info=child_info, parent_id=parent_item.id
             )
             result.append(child_info)
 

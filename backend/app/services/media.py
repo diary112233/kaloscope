@@ -121,14 +121,20 @@ class MediaItemService(BaseService[MediaItem], model=MediaItem):
 
     @classmethod
     async def create(
-        cls, lib_id: int, *, parent_id: int | None = None, path_info: MediaPathInfo
+        cls,
+        lib_id: int,
+        *,
+        path_info: MediaPathInfo,
+        parent_id: int | None = None,
+        default_title: str | None = None,
     ) -> MediaItem:
         """Get or create a media item.
 
         Args:
             lib_id: The media library ID.
+            path_info: The media path info object.
             parent_id: The parent media item ID, if any.
-            path_info: The information parsed from the media item path.
+            default_title: The default title to use if the media item is created.
 
         Returns:
             The media item instance.
@@ -138,9 +144,10 @@ class MediaItemService(BaseService[MediaItem], model=MediaItem):
             lib_id=lib_id,
             path=item_path,
             defaults={
+                "parent_id": parent_id,
                 "dir": path_info.item_dir,
                 "name": path_info.item_name,
-                "parent_id": parent_id,
+                "title": default_title,
                 "year": path_info.year,
                 "season": path_info.season,
                 "episode": path_info.episode,

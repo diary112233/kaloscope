@@ -170,7 +170,10 @@ class TVShowMediaHandler(MediaHandler):
         # create child item for the file
         child_info = _child(path, parent=parent_info)
         await MediaItemService.create(
-            lib.id, parent_id=parent_item.id, path_info=child_info
+            lib.id,
+            path_info=child_info,
+            parent_id=parent_item.id,
+            default_title=extract_title(child_info.item_name),
         )
         result.append(child_info)
 
