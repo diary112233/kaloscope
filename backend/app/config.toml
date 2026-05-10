@@ -10,11 +10,10 @@ keep_alive_timeout = 120
 fallback_error_format = "json"
 
 # https://sanic.dev/en/plugins/sanic-ext/openapi/ui.html
-oas_ui_default = "swagger"
 oas_ui_redoc = false
+oas_ui_default = "swagger"
 
 [workspace]
-database = "{root}/workspace/database"
-images = "{root}/workspace/images"
-downloads = "{root}/workspace/downloads"
-repositories = "{root}/workspace/repositories"
+images = "{workspace}/images"
+database = "{workspace}/database"
+repositories = "{workspace}/repositories"

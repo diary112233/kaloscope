@@ -21,7 +21,7 @@ class KaloscopeConfig:
         """
         with open(toml, "rb") as f:
             self.toml_config = tomllib.load(f)
-        self.root = str(root) if root else ""
+        self._workspace = f"{str(root) if root else ''}/workspace"
 
     def _upper_key(self, obj: dict[str, Any]) -> dict[str, Any]:
         """Converts the keys of the dictionary to uppercase.
@@ -43,7 +43,7 @@ class KaloscopeConfig:
         workspace = self.toml_config["workspace"]
         return self._upper_key(
             {
-                k: (v.format(root=self.root) if isinstance(v, str) else v)
+                k: (v.format(workspace=self._workspace) if isinstance(v, str) else v)
                 for k, v in workspace.items()
             }
         )

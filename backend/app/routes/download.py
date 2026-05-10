@@ -1,5 +1,7 @@
 import asyncio
+import os
 from datetime import datetime
+from pathlib import Path
 
 from sanic import Blueprint, HTTPResponse, Request, empty, json
 from sanic.log import logger
@@ -133,7 +135,29 @@ async def list_directories(_) -> HTTPResponse:
     """List the download directories."""
     directories = await DownloadDir.all().order_by("-last_used").limit(3).values("path")
     if not directories:
-        directories = [{"path": KaloscopeConfig.get_workspace("downloads")}]
+        # check if the path is readable
+        def readable(p: Path) -> bool:
+            try:
+                return p.is_dir() and os.access(p, os.R_OK)
+            except OSError:
+                return False
+
+        # find the first readable path from the candidates
+        path = None
+        for p in [Path("/downloads"), Path.home() / "Downloads"]:
+            if readable(p):
+                path = p
+                break
+
+        # if no readable path is found, use the workspace downloads directory
+        if path is None:
+            path = Path(KaloscopeConfig.get()._workspace) / "downloads"
+            if not path.exists():
+                path.mkdir(parents=True, exist_ok=True)
+
+        directories = [{"path": str(path.resolve())}]
+
+    # attach the free space for each directory
     for directory in directories:
         directory["free"] = disk_usage(directory["path"]).free_space()
     return json(directories)
