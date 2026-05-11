@@ -155,7 +155,11 @@ class FlowGraph(TortoiseModel):
         nodes = self.definition.get("nodes") if self.definition else None
         if not isinstance(nodes, list):
             return []
-        return [node["data"]["$schema"] for node in nodes]
+        return [
+            node_type
+            for node in nodes
+            if isinstance((node_type := node["data"]["$schema"]), str)
+        ]
 
     class Meta:
         table = "flow_graph"
