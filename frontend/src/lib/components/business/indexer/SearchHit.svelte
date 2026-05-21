@@ -157,7 +157,7 @@
         </div>
       </div>
     {:else if rsrc.category}
-      <Badge class="w-18">{rsrc.category}</Badge>
+      <Badge class="line-clamp-2 w-20 text-center">{rsrc.category}</Badge>
     {/if}
     <div class="flex w-full flex-col gap-4">
       <div class={detailsConfig ? 'transition-colors group-hover:text-primary' : ''}>
