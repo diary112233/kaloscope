@@ -141,7 +141,7 @@
     "state": "状态",
     "status": "状态",
     "avatar": "头像",
-    "keyword": "关键字",
+    "keyword": "关键词",
     "language": "语言",
     "category": "类别",
     "username": "用户名",
@@ -324,7 +324,7 @@
     "supported": "支持磁力链接或哈希值",
     "delete_local": "同时删除本地文件",
     "transfer": {
-      "title": "下载完成后转移",
+      "title": "完成后转移",
       "none": "不转移",
       "method": "转移方式",
       "substitution": "文件名替换",
