@@ -17,8 +17,12 @@
    * Calculate the height for a cover image based on the given aspect ratio.
    *
    * @param ratio - A CSS aspect-ratio string, e.g. "16/9", "9/16", "0.75", "auto".
+   * @returns The height in rem units, or undefined if the ratio is "auto".
    */
-  function coverHeight(ratio: string): string {
+  function coverHeight(ratio: string): string | undefined {
+    if (ratio === 'auto') {
+      return undefined;
+    }
     const r = aspectRatio(ratio);
     return !r || r >= 1 ? '3.5rem' : `${(3.5 / r).toFixed(4)}rem`;
   }
@@ -157,7 +161,7 @@
         </div>
       </div>
     {:else if rsrc.category}
-      <Badge class="line-clamp-2 w-20 text-center">{rsrc.category}</Badge>
+      <Badge class="line-clamp-2 w-18 text-center">{rsrc.category}</Badge>
     {/if}
     <div class="flex w-full flex-col gap-4">
       <div class={detailsConfig ? 'transition-colors group-hover:text-primary' : ''}>

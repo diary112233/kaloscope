@@ -117,8 +117,8 @@
 
   // the default size of the image
   let size = $derived.by(() => {
-    if (width && height) {
-      return null;
+    if (aspectRatio === 'auto' || (width && height)) {
+      return undefined;
     } else if (!width && !height) {
       return '2.5rem';
     } else if (!ratio) {
