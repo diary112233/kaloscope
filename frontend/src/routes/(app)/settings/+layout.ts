@@ -30,7 +30,7 @@ export const load: LayoutLoad = async () => {
       routes: [
         {
           title: 'nav.settings.help.doc',
-          path: 'https://github.com/kaloscope/kaloscope',
+          path: 'https://kaloscope.org/docs/faq',
           icon: icons.bookQuestionMark
         },
         {
