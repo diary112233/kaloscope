@@ -63,7 +63,7 @@
         "templates": "Templates",
         "variables": "Variables",
         "graphs": "Graphs",
-        "schedule": "Schedule"
+        "schedules": "Schedules"
       },
       "help": {
         "title": "Help",

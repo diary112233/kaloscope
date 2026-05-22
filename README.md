@@ -17,8 +17,8 @@ _以可视化工作流驱动的本地媒体库管理工具_
 [![Telegram Group](https://img.shields.io/badge/Telegram-696969?logo=telegram)](https://t.me/kaloscope_official)
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/kaloscope/kaloscope)
 
-| <img align="center" src="screenshots/workflow.png" /> | <img align="center" src="screenshots/dashboard.png" /> |
-| ----------------------------------------------------- | ------------------------------------------------------ |
+| <img align="center" src="screenshots/workflow-simple.png" /> | <img align="center" src="screenshots/dashboard.png" /> |
+| ------------------------------------------------------------ | ------------------------------------------------------ |
 
 </div>
 
