@@ -171,11 +171,13 @@
   {/snippet}
   {#snippet item(tmpl)}
     {@const category = GraphCategory[tmpl.category]}
-    <div class="flex p-4">
+    <div class="relative p-4 pt-5">
       <div class="flex-center gap-2">
         <Image src={tmpl.icon} icon={icons.box3d} width="3.5rem" shadow transparent />
-        <div class="flex h-full flex-col justify-between">
-          <div class="text-lg font-bold opacity-90 text-shadow-xs">{tmpl.name}</div>
+        <div class="w-full min-w-0 space-y-1">
+          <div class="text-lg font-bold opacity-90 text-shadow-xs truncate" title={tmpl.name}>
+            {tmpl.name}
+          </div>
           <div class="flex flex-wrap items-baseline gap-1">
             <Image circle src={tmpl.repo.owner_avatar} width="1rem" class="my-auto opacity-90" />
             <a href={tmpl.repo.repo_url} target="_blank" class="link text-sm font-medium link-hover opacity-70">
@@ -189,7 +191,7 @@
           </div>
         </div>
       </div>
-      <Badge class="absolute top-2 right-2" icon={category.icon} iconColor={category.iconColor}>
+      <Badge class="absolute top-1 right-1" icon={category.icon} iconColor={category.iconColor}>
         {$_(category.label)}
       </Badge>
     </div>
