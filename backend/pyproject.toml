@@ -6,7 +6,7 @@ authors = [{ name = "Xylitol", email = "jam.xylitol@gmail.com" }]
 license = { text = "GPL-3.0-or-later" }
 requires-python = ">=3.13,<4.0"
 dependencies = [
-  "sanic[ext] (>=25.12.0,<26.0.0)",
+  "sanic[ext] (>=25.12.1,<26.0.0)",
   "pydantic[email] (>=2.13.4,<3.0.0)",
   "tortoise-orm[accel] (>=1.1.7,<2.0.0)",
   "httpx[http2,socks,brotli,zstd] (>=0.28.1,<0.29.0)",
@@ -28,7 +28,7 @@ dependencies = [
   "gitpython (>=3.1.50,<4.0.0)",
   "torrentool (>=1.2.0,<2.0.0)",
   "send2trash (>=2.1.0,<3.0.0)",
-  "filelock (>=3.29.0,<4.0.0)",
+  "filelock (>=3.29.1,<4.0.0)",
 ]
 
 [tool.poetry]
@@ -36,10 +36,10 @@ package-mode = false
 packages = [{ include = "app" }]
 
 [tool.poetry.group.dev.dependencies]
-ruff = "^0.15.15"
+ruff = "^0.15.16"
 pytest = "^9.0.3"
 pre-commit = "^4.6.0"
-commitizen = "^4.16.2"
+commitizen = "^4.16.3"
 pip-licenses = "^5.5.5"
 
 [tool.tortoise]
