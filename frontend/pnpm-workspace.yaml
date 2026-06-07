@@ -1,4 +1,5 @@
 engineStrict: true
+minimumReleaseAge: 1440
 publicHoistPattern:
   - '@lezer/*'
   - '@codemirror/*'
@@ -9,5 +10,3 @@ allowBuilds:
   es5-ext: true
   esbuild: true
   sharp: true
-minimumReleaseAgeExclude:
-  - '@types/node@25.9.2'
