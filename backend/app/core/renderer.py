@@ -20,6 +20,7 @@ from lxml import etree
 from app.core.constants import ENCODING
 from app.utils import json
 from app.utils.deep import deep_strip
+from app.utils.disk import format_bytes
 
 # create a new Jinja2 environment
 # https://jinja.palletsprojects.com/en/stable/api/#jinja2.Environment
@@ -180,11 +181,47 @@ def jsonpath_all(obj: Any, expr: str) -> list:
     return [match.value for match in matches]
 
 
-def xpath_first(obj: Any, expr: str) -> Any:
-    """Find first match in an HTML string or object using an XPath expression.
+def _cleanup_namespaces(tree: Any) -> Any:
+    """Remove XML namespaces from all element tags in place.
 
     Args:
-        obj: The HTML string or object to search.
+        tree: The parsed lxml element tree.
+
+    Returns:
+        The cleaned-up tree.
+    """
+    for elem in tree.iter():
+        elem.tag = etree.QName(elem).localname
+    etree.cleanup_namespaces(tree)
+    return tree
+
+
+def _parse_xml_or_html(string: str) -> Any:
+    """Parse an XML or HTML string into an lxml element tree.
+
+    Uses XMLParser for XML content (detected by `<?xml` declaration)
+    to preserve element semantics like `<link>` that are void elements
+    in HTML but container elements in XML. Falls back to HTMLParser for
+    HTML content.
+
+    Args:
+        string: The XML/HTML string to parse.
+
+    Returns:
+        The parsed lxml element tree.
+    """
+    content = string.lstrip()
+    if content.startswith("<?xml"):
+        tree = etree.fromstring(string.encode(ENCODING), parser=etree.XMLParser())
+        return _cleanup_namespaces(tree)
+    return etree.fromstring(string.encode(ENCODING), parser=etree.HTMLParser())
+
+
+def xpath_first(obj: Any, expr: str) -> Any:
+    """Find first match in an XML/HTML string or object using an XPath expression.
+
+    Args:
+        obj: The XML/HTML string or object to search.
         expr: The XPath expression.
 
     Returns:
@@ -192,7 +229,7 @@ def xpath_first(obj: Any, expr: str) -> Any:
     """
     xpath = compile_xpath(expr)
     if isinstance(obj, str):
-        obj = etree.fromstring(obj, parser=etree.HTMLParser())
+        obj = _parse_xml_or_html(obj)
     result = xpath(obj)
     if isinstance(result, list):
         return result[0] if result else None
@@ -200,10 +237,10 @@ def xpath_first(obj: Any, expr: str) -> Any:
 
 
 def xpath_all(obj: Any, expr: str) -> list:
-    """Find all matches in an HTML string or object using an XPath expression.
+    """Find all matches in an XML/HTML string or object using an XPath expression.
 
     Args:
-        obj: The HTML string or object to search.
+        obj: The XML/HTML string or object to search.
         expr: The XPath expression.
 
     Returns:
@@ -211,7 +248,7 @@ def xpath_all(obj: Any, expr: str) -> list:
     """
     xpath = compile_xpath(expr)
     if isinstance(obj, str):
-        obj = etree.fromstring(obj, parser=etree.HTMLParser())
+        obj = _parse_xml_or_html(obj)
     result = xpath(obj)
     if not isinstance(result, list):
         return [result] if result is not None else []
@@ -596,6 +633,7 @@ ENV.filters["xpath"] = partial(_find, expr_type="xpath")
 ENV.filters["regex_first"] = regex_first
 ENV.filters["regex_all"] = regex_all
 ENV.filters["regex"] = partial(_find, expr_type="regex")
+ENV.filters["size"] = lambda x: format_bytes(int(float(x))) if x else ""
 ENV.filters["s2t"] = s2t
 ENV.filters["t2s"] = t2s
 ENV.filters["duration"] = duration
