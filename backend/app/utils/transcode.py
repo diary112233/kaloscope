@@ -161,7 +161,11 @@ async def _vaapi_device() -> str | None:
         The render device path if it exists, or `None` if not.
     """
     dev = await GlobalConfig.get_or_none(key="vaapi.device")
-    path = dev.value if dev and isinstance(dev.value, str) else "/dev/dri/renderD128"
+    path = (
+        dev.value
+        if dev and dev.value and isinstance(dev.value, str)
+        else "/dev/dri/renderD128"
+    )
     return path if Path(path).exists() else None
 
 
