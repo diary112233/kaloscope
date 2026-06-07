@@ -44,7 +44,7 @@
 
   // the URL wrapper instance
   let urlWrapper: URLWrapper | null = $state(null);
-  let secure: boolean = $state(false);
+  let secure: boolean = $state(true);
 
   // the loading state and form schema
   const loading = createLoading();
@@ -147,7 +147,12 @@
         <div class="flex-3/5 space-y-1.5">
           <Label tip={$_('media.danmaku.server_tip')}>{$_('media.danmaku.server')}</Label>
           <URLWrapper bind:secure bind:this={urlWrapper}>
-            <input class="grow truncate" bind:value={danmaku_server} {...schema.danmaku_server} />
+            <input
+              placeholder="danmaku.kaloscope.org"
+              class="grow truncate"
+              bind:value={danmaku_server}
+              {...schema.danmaku_server}
+            />
           </URLWrapper>
         </div>
         <div class="grow space-y-1.5">
