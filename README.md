@@ -18,8 +18,8 @@ _以可视化工作流驱动的本地媒体库管理工具_
 [![Python Version](https://img.shields.io/badge/Python-3.13+-3776AB?logo=python)](https://www.python.org/)
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/kaloscope/kaloscope)
 
-| <img align="center" src="screenshots/workflow-complex.png" /> | <img align="center" src="screenshots/dashboard.png" /> |
-| ------------------------------------------------------------- | ------------------------------------------------------ |
+| <img align="center" src="screenshots/workflow-graphs.png" /> | <img align="center" src="screenshots/dashboard.png" /> |
+| ------------------------------------------------------------ | ------------------------------------------------------ |
 
 </div>
 
