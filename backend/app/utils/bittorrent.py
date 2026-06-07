@@ -32,7 +32,7 @@ async def standardize_magnet(link: str) -> MagnetLink | None:
     if not link:
         return None
     # HTTP/HTTPS link
-    if link.startswith(("http://", "https://")):
+    if link.lower().startswith(("http://", "https://")):
         return await _http_to_magnet(link)
     # Magnet link
     if link.startswith("magnet:"):
