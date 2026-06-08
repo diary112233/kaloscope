@@ -1,25 +1,17 @@
 <div align="center">
 
-<img src="frontend/static/logo.svg" alt="logo" width="128">
+![kaloscope](https://socialify.git.ci/kaloscope/kaloscope/image?custom_description=%E4%BB%A5%E5%8F%AF%E8%A7%86%E5%8C%96%E5%B7%A5%E4%BD%9C%E6%B5%81%E9%A9%B1%E5%8A%A8%E7%9A%84%E6%9C%AC%E5%9C%B0%E5%AA%92%E4%BD%93%E5%BA%93%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7&description=1&font=KoHo&forks=1&issues=1&logo=https%3A%2F%2Fraw.githubusercontent.com%2Fkaloscope%2Fkaloscope%2Frefs%2Fheads%2Fmain%2Ffrontend%2Fstatic%2Flogo.png&name=1&owner=1&pattern=Signal&pulls=1&stargazers=1&theme=Auto)
+[![GitHub Release](https://img.shields.io/github/v/release/kaloscope/kaloscope?label=Release&color=green&style=flat-square)](https://github.com/kaloscope/kaloscope/releases)
+[![Docker Pulls](https://img.shields.io/docker/pulls/kaloscope/kaloscope?logo=docker&label=Docker%20Pulls&color=2496ED&style=flat-square)](https://hub.docker.com/r/kaloscope/kaloscope)
+[![xyflow Version](https://img.shields.io/badge/xyflow-v1.6.0-1A192B?logo=xyflow&style=flat-square)](https://xyflow.com/)
+[![Svelte Version](https://img.shields.io/badge/Svelte-v5.56.2-FF3E00?logo=svelte&style=flat-square)](https://svelte.dev/)
+[![Sanic Version](https://img.shields.io/badge/Sanic-v25.12.1-FF0D68?logo=sanic&style=flat-square)](https://sanic.dev/)
+[![Python Version](https://img.shields.io/badge/Python-3.13+-3776AB?logo=python&style=flat-square)](https://www.python.org/)
+[![GPLv3 License](https://img.shields.io/badge/License-GPLv3-BD0000?style=flat-square)](LICENSE)
+[![Telegram Group](https://img.shields.io/badge/Telegram-696969?logo=telegram&style=flat-square)](https://t.me/kaloscope_official)
 
-# Kaloscope
-
-_以可视化工作流驱动的本地媒体库管理工具_
-
-[![GitHub Release](https://img.shields.io/github/v/release/kaloscope/kaloscope?label=Release&color=green)](https://github.com/kaloscope/kaloscope/releases)
-[![GitHub Stars](https://img.shields.io/github/stars/kaloscope/kaloscope?logo=github&label=Stars&style=flat&color=yellow)](https://github.com/kaloscope/kaloscope/stargazers)
-[![Docker Pulls](https://img.shields.io/docker/pulls/kaloscope/kaloscope?logo=docker&label=Docker%20Pulls&color=2496ED)](https://hub.docker.com/r/kaloscope/kaloscope)
-[![GPLv3 License](https://img.shields.io/badge/License-GPLv3-BD0000)](LICENSE)
-[![Telegram Group](https://img.shields.io/badge/Telegram-696969?logo=telegram)](https://t.me/kaloscope_official)
-
-[![xyflow Version](https://img.shields.io/badge/xyflow-v1.6.0-1A192B?logo=xyflow)](https://xyflow.com/)
-[![Svelte Version](https://img.shields.io/badge/Svelte-v5.56.2-FF3E00?logo=svelte)](https://svelte.dev/)
-[![Sanic Version](https://img.shields.io/badge/Sanic-v25.12.1-FF0D68?logo=sanic)](https://sanic.dev/)
-[![Python Version](https://img.shields.io/badge/Python-3.13+-3776AB?logo=python)](https://www.python.org/)
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/kaloscope/kaloscope)
-
-| <img align="center" src="screenshots/workflow-graphs.png" /> | <img align="center" src="screenshots/dashboard.png" /> |
-| ------------------------------------------------------------ | ------------------------------------------------------ |
+| <img align="center" src="screenshots/workflow-complex.png" /> | <img align="center" src="screenshots/workflow-graphs.png" /> | <img align="center" src="screenshots/dashboard.png" /> |
+| ------------------------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------ |
 
 </div>
 
