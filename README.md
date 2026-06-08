@@ -19,6 +19,60 @@
 
 Kaloscope 是一款基于可视化工作流引擎的本地媒体库管理工具。其资源搜索与元数据刮削等能力均由可编辑的工作流来驱动，可灵活对接任意资源站点与元数据来源。
 
+## 快速开始
+
+通过命令行直接拉取并运行单个 Kaloscope 容器的示例：
+
+```bash
+docker run -d \
+  --name kaloscope \
+  --add-host=host.docker.internal:host-gateway \
+  -e PUID=1026 \
+  -e PGID=100 \
+  -e UMASK=022 \
+  -e TZ=Asia/Shanghai \
+  -e AUTO_TLS=true \
+  -e TLS_HOSTNAME=192.168.31.2 \
+  -e ENABLE_ARIA2=true \
+  -v /volume1/kaloscope/workspace:/workspace \
+  -v /volume1/kaloscope/downloads:/downloads \
+  -v /volume1/kaloscope/animes:/animes \
+  -p 8000:8000 \
+  -p 6888:6888 \
+  -p 6888:6888/udp \
+  --restart unless-stopped \
+  kaloscope/kaloscope:latest
+```
+
+### 环境变量
+
+容器支持通过以下环境变量进行配置：
+
+| 变量名         | 默认值  | 说明                                                                                                        |
+| -------------- | ------- | ----------------------------------------------------------------------------------------------------------- |
+| `PUID`         | `0`     | 进程运行 UID，NAS 环境建议设为媒体目录所有者                                                                |
+| `PGID`         | `0`     | 进程运行 GID，NAS 环境建议设为媒体目录所属用户组                                                            |
+| `UMASK`        | `022`   | 文件创建掩码，影响容器内新建文件的默认权限                                                                  |
+| `TZ`           | 无      | 容器时区，如 `Asia/Shanghai`、`UTC` 等                                                                      |
+| `AUTO_TLS`     | `false` | 使用 [mkcert](https://github.com/FiloSottile/mkcert) 自动签发本地 TLS 证书，适合需要局域网 HTTPS 访问的用户 |
+| `TLS_HOSTNAME` | 无      | 指定 TLS 证书绑定的主机名或 IP，`AUTO_TLS=true` 时生效                                                      |
+| `ENABLE_ARIA2` | `false` | 在容器内启动内置的 aria2 服务，适合不想单独部署下载器的用户                                                 |
+| `DEBUG_MODE`   | `false` | 以 DEBUG 模式启动，会输出更多日志，普通用户不需要开启                                                       |
+
+### 端口映射
+
+容器需要映射以下端口以提供服务：
+
+| 端口   | 协议    | 说明                                                               |
+| ------ | ------- | ------------------------------------------------------------------ |
+| `8000` | TCP     | Kaloscope Web UI 访问端口                                          |
+| `6888` | TCP/UDP | 内置 aria2 DHT 与 BT 监听端口（仅 `ENABLE_ARIA2=true` 时需要映射） |
+
+### 数据卷
+
+Dockerfile 唯一声明的持久化目录是 `/workspace`，**必须挂载**，以保证容器重启后数据不丢失。
+下载文件目录（如 `/downloads`）和媒体库目录（如 `/animes`）等没有在 Dockerfile 中显式声明，按需挂载即可。
+
 ## 功能特性
 
 ### :wrench: 工作流
