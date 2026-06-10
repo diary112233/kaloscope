@@ -57,9 +57,9 @@
           }
         })
         .json<Resp<Page<Favorite>>>()
-        .then((resp) => {
-          if (resp.data && resp.data.items) {
-            const favorites = resp.data.items.map((f) => f.rsrc_id);
+        .then(({ data }) => {
+          if (data && data.items) {
+            const favorites = data.items.map((f) => f.rsrc_id);
             // update the resources with the favorite status
             rsrcs.forEach((r) => {
               r.favorite = r.id ? favorites.includes(r.id) : false;

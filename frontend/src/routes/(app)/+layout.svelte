@@ -117,7 +117,7 @@
       api
         .get('auth/current')
         .json<Resp<User>>()
-        .then((resp) => user.set(resp.data));
+        .then(({ data }) => user.set(data));
     }
   });
 

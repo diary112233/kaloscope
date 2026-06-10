@@ -94,13 +94,13 @@
     api
       .get('filesystem/stats', { searchParams: { path: path ?? current } })
       .json<Resp<PathStats>>()
-      .then((resp) => {
-        if (onlyDirs && !resp.data.writable) {
+      .then(({ data }) => {
+        if (onlyDirs && !data.writable) {
           alert({ level: 'error', message: 'permission_denied' });
           return;
         }
         modal.close();
-        onconfirm?.(resp.data);
+        onconfirm?.(data);
       })
       .finally(() => {
         loading.end();

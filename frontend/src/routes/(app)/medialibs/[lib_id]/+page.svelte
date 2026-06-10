@@ -91,9 +91,9 @@
         }
       })
       .json<Resp<Page<MediaItem>>>()
-      .then((resp) => {
-        items = resp.data.items;
-        pagination.total = resp.data.total;
+      .then(({ data }) => {
+        items = data.items;
+        pagination.total = data.total;
       })
       .catch((error) => {
         if (error.name === 'AbortError') {

@@ -181,19 +181,19 @@
         }
       })
       .json<Resp<Page<Resource>>>()
-      .then((resp) => {
-        if (!resp.data || !resp.data.items) {
+      .then(({ data }) => {
+        if (!data || !data.items) {
           resources = [];
           pagination.total = null;
           return;
         }
-        resources = resp.data.items;
+        resources = data.items;
         markFavorites(indexerId, resources);
-        if (resp.data.total === null || resp.data.total === undefined) {
+        if (data.total === null || data.total === undefined) {
           pagination.total = resources.length;
           pagination.simpleMode = true;
         } else {
-          pagination.total = resp.data.total;
+          pagination.total = data.total;
           pagination.simpleMode = false;
         }
       })

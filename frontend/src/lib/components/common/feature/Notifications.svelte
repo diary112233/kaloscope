@@ -43,8 +43,8 @@
     api
       .get('notification/list')
       .json<Resp<Notification[]>>()
-      .then((resp) => {
-        notifications = resp.data;
+      .then(({ data }) => {
+        notifications = data;
         onrefresh?.(unread);
       });
   }

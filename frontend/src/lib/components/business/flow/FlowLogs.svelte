@@ -52,8 +52,8 @@
     api
       .get(`flow/graph/${graphId}/logs`)
       .json<Resp<FlowLog[][]>>()
-      .then((resp) => {
-        groups = resp.data;
+      .then(({ data }) => {
+        groups = data;
       })
       .finally(() => {
         loading.end();

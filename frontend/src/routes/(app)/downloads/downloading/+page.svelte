@@ -59,11 +59,11 @@
         ]
       })
       .json<Resp<Page<DownloadTask>>>()
-      .then((resp) => {
+      .then(({ data }) => {
         pagination.current = page;
         pagination.size = size;
-        pagination.total = resp.data.total;
-        tasks = resp.data.items;
+        pagination.total = data.total;
+        tasks = data.items;
       })
       .finally(() => {
         loading.end();
@@ -123,8 +123,8 @@
     api
       .get('download/manager/list')
       .json<Resp<Downloader[]>>()
-      .then((resp) => {
-        downloaders = resp.data;
+      .then(({ data }) => {
+        downloaders = data;
       });
     // refresh every second
     const refreshInterval = setInterval(() => {

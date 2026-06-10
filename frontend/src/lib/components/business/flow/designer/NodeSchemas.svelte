@@ -122,7 +122,7 @@
       api
         .get('flow/node/schemas', { searchParams: { category: graph.category } })
         .json<Resp<Record<string, NodeSchema[]>>>()
-        .then((resp) => (schemas = resp.data))
+        .then(({ data }) => (schemas = data))
         .finally(() => loading.end());
     }
   });

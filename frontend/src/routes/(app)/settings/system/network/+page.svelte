@@ -35,7 +35,7 @@
     api
       .get('network/rule/list', { searchParams: { pattern } })
       .json<Resp<URLRule[]>>()
-      .then((resp) => (rules = resp.data))
+      .then(({ data }) => (rules = data))
       .finally(() => loading.end());
   }
 
@@ -118,7 +118,7 @@
     api
       .get('network/dns/list')
       .json<Resp<DNSResolver[]>>()
-      .then((resp) => (resolvers = resp.data));
+      .then(({ data }) => (resolvers = data));
   }
 
   /**
@@ -148,7 +148,7 @@
     api
       .get('network/proxy/list')
       .json<Resp<HTTPProxy[]>>()
-      .then((resp) => (proxies = resp.data));
+      .then(({ data }) => (proxies = data));
   }
 
   /**

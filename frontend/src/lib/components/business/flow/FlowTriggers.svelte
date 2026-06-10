@@ -68,8 +68,8 @@
         ]
       })
       .json<Resp<Page<FlowGraph>>>()
-      .then((resp) => {
-        graphs = resp.data.items;
+      .then(({ data }) => {
+        graphs = data.items;
       });
   });
 </script>

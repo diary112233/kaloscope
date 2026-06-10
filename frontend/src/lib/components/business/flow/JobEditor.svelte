@@ -99,9 +99,9 @@
     api
       .post('flow/job/upsert', { json })
       .json<Resp<FlowJob>>()
-      .then((resp) => {
+      .then(({ data }) => {
         modal.close();
-        onsave?.(resp.data);
+        onsave?.(data);
         // reset the form
         setTimeout(() => {
           trigger = 'cron';
@@ -131,8 +131,8 @@
           ]
         })
         .json<Resp<Page<FlowGraph>>>()
-        .then((resp) => {
-          graphOptions = resp.data.items.map((g) => ({ value: g.id, label: g.name }));
+        .then(({ data }) => {
+          graphOptions = data.items.map((g) => ({ value: g.id, label: g.name }));
         });
     }
   });

@@ -45,9 +45,9 @@
     api
       .post('variable/upsert', { json })
       .json<Resp<GlobalVariable>>()
-      .then((resp) => {
+      .then(({ data }) => {
         modal.close();
-        onsave?.(resp.data);
+        onsave?.(data);
         setTimeout(() => form.reset(), 200);
       })
       .finally(() => {

@@ -33,8 +33,8 @@ export const load: LayoutLoad = async () => {
       ]
     })
     .json<Resp<Page<FlowGraph>>>()
-    .then((resp) => {
-      let graphs = resp.data.items;
+    .then(({ data }) => {
+      let graphs = data.items;
       graphs = graphs.filter((g) => g.node_types.includes('search_start'));
       menus.push({
         title: 'nav.websearch.indexers',

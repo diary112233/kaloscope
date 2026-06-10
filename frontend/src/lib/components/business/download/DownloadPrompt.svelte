@@ -75,7 +75,7 @@
             return api
               .post('download/validate', { body: text })
               .json<Resp<boolean>>()
-              .then((resp) => (resp.data ? text : null));
+              .then(({ data }) => (data ? text : null));
           })
           .then((text) => {
             if (text) {

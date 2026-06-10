@@ -348,8 +348,8 @@
     api
       .post('danmaku/match', { json: { path } })
       .json<Resp<DanmakuWrapper>>()
-      .then((resp) => {
-        const comments = resp.data.comments;
+      .then(({ data }) => {
+        const comments = data.comments;
         if (comments && comments.length > 0) {
           danmakuPlugin.updateComments(
             formatDanmakus(comments, danmakuPlugin.danmujs?.container, danmakuPlugin.danmujs?.direction),
@@ -361,7 +361,7 @@
             danmakuPlugin.setFontSize($danmaku.fontSize, null);
           }
         }
-        danmakuMeta = resp.data.metadata;
+        danmakuMeta = data.metadata;
       });
   }
 
@@ -402,8 +402,8 @@
         json: { path, title: animeTitle.trim() }
       })
       .json<Resp<DanmakuMeta[]>>()
-      .then((resp) => {
-        results = resp.data;
+      .then(({ data }) => {
+        results = data;
       })
       .finally(() => {
         searching.end();
@@ -429,8 +429,9 @@
         json: { path, metadata: result }
       })
       .json<Resp<DanmakuWrapper>>()
-      .then((resp) => {
-        const comments = resp.data.comments;
+      .then(({ data }) => {
+        s;
+        const comments = data.comments;
         if (comments && comments.length > 0) {
           danmakuPlugin.updateComments(
             formatDanmakus(comments, danmakuPlugin.danmujs?.container, danmakuPlugin.danmujs?.direction),
@@ -440,7 +441,7 @@
             danmakuPlugin.setFontSize($danmaku.fontSize, null);
           }
         }
-        danmakuMeta = resp.data.metadata;
+        danmakuMeta = data.metadata;
         index = -1;
       })
       .finally(() => {

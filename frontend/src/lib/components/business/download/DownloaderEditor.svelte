@@ -80,9 +80,9 @@ methods:
     api
       .post('download/manager/upsert', { json })
       .json<Resp<Downloader>>()
-      .then((resp) => {
+      .then(({ data }) => {
         modal.close();
-        onsave?.(resp.data);
+        onsave?.(data);
         setTimeout(() => form.reset(), 200);
       })
       .finally(() => {
@@ -95,7 +95,7 @@ methods:
       api
         .get('download/manager/presets')
         .json<Resp<Record<string, string>>>()
-        .then((resp) => (presets = resp.data));
+        .then(({ data }) => (presets = data));
     }
   });
 </script>

@@ -70,9 +70,9 @@
     api
       .post('media/lib/upsert', { json })
       .json<Resp<MediaLib>>()
-      .then((resp) => {
+      .then(({ data }) => {
         modal.close();
-        onsave?.(resp.data);
+        onsave?.(data);
         setTimeout(() => form.reset(), 200);
       })
       .finally(() => {

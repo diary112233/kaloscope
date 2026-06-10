@@ -27,9 +27,9 @@
     api
       .post('auth/login', { body: data })
       .json<Resp<Token>>()
-      .then((resp) => {
-        user.set(resp.data.user);
-        token.set(resp.data.token);
+      .then(({ data }) => {
+        user.set(data.user);
+        token.set(data.token);
         goto('/');
       })
       .finally(() => {
@@ -48,8 +48,8 @@
     api
       .get('user/count')
       .json<Resp<number>>()
-      .then((resp) => {
-        if (!resp.data) {
+      .then(({ data }) => {
+        if (!data) {
           goto('/setup');
         }
       });

@@ -42,9 +42,9 @@
         }
       })
       .json<Resp<Page<Favorite>>>()
-      .then((resp) => {
-        pagination.total = resp.data.total;
-        favorites = resp.data.items;
+      .then(({ data }) => {
+        pagination.total = data.total;
+        favorites = data.items;
       })
       .finally(() => {
         loading.end();

@@ -44,9 +44,9 @@
     api
       .post('network/dns/upsert', { json })
       .json<Resp<DNSResolver>>()
-      .then((resp) => {
+      .then(({ data }) => {
         modal.close();
-        onsave?.(resp.data);
+        onsave?.(data);
         setTimeout(() => {
           // reset the form
           name = '';

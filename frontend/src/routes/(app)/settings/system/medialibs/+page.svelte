@@ -35,8 +35,8 @@
     api
       .get('media/lib/list')
       .json<Resp<MediaLib[]>>()
-      .then((resp) => {
-        libs = resp.data;
+      .then(({ data }) => {
+        libs = data;
         // if any library is scanning, retry search after some time
         if (libs.some((lib) => lib.scanning) && retryCount < 5) {
           retryTimer = setTimeout(

@@ -43,8 +43,8 @@
     api
       .get('user/count')
       .json<Resp<number>>()
-      .then((resp) => {
-        if (resp.data > 0) {
+      .then(({ data }) => {
+        if (data > 0) {
           goto('/login');
         }
       });

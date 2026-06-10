@@ -339,8 +339,8 @@
     api
       .get(`flow/graph/${graphId}`)
       .json<Resp<FlowGraph>>()
-      .then((resp) => {
-        graph = resp.data;
+      .then(({ data }) => {
+        graph = data;
         if (graph.draft) {
           nodes = graph.draft.nodes;
           edges = graph.draft.edges;

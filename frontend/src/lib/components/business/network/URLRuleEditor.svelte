@@ -60,9 +60,9 @@
     api
       .post('network/rule/upsert', { json })
       .json<Resp<URLRule>>()
-      .then((resp) => {
+      .then(({ data }) => {
         modal.close();
-        onsave?.(resp.data);
+        onsave?.(data);
         setTimeout(() => {
           form.reset();
           proxy_id = null;

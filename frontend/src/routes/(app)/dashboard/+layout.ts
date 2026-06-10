@@ -16,8 +16,8 @@ export const load: LayoutLoad = async () => {
       ]
     })
     .json<Resp<Page<FlowGraph>>>()
-    .then((resp) => {
-      const items = resp.data.items;
+    .then(({ data }) => {
+      const items = data.items;
       graphs = items.filter((g) => g.node_types.includes('board_start'));
     });
 

@@ -64,11 +64,11 @@
         }
       })
       .json<Resp<Page<FlowJob>>>()
-      .then((resp) => {
+      .then(({ data }) => {
         pagination.current = page;
         pagination.size = size;
-        pagination.total = resp.data.total;
-        jobs = resp.data.items;
+        pagination.total = data.total;
+        jobs = data.items;
         // if any job is pending, retry search after some time
         if (jobs.some((job) => !JobState[job.state]) && retryCount < 5) {
           retryTimer = setTimeout(

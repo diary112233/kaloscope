@@ -131,8 +131,8 @@
         }
       })
       .json<Resp<ScrapeResult[]>>()
-      .then((resp) => {
-        results = resp.data;
+      .then(({ data }) => {
+        results = data;
       })
       .finally(() => {
         searching.end();

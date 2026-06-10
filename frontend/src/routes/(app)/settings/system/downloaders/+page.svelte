@@ -23,7 +23,7 @@
     api
       .get('download/manager/list')
       .json<Resp<Downloader[]>>()
-      .then((resp) => (downloaders = resp.data))
+      .then(({ data }) => (downloaders = data))
       .finally(() => loading.end());
   }
 

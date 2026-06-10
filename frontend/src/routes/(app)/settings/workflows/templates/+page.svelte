@@ -56,11 +56,11 @@
         }
       })
       .json<Resp<Page<FlowTemplate>>>()
-      .then((resp) => {
+      .then(({ data }) => {
         pagination.current = page;
         pagination.size = size;
-        pagination.total = resp.data.total;
-        tmpls = resp.data.items;
+        pagination.total = data.total;
+        tmpls = data.items;
       })
       .finally(() => {
         loading.end();
@@ -78,8 +78,8 @@
     api
       .get('flow/graph/name', { searchParams: { name: tmpl.name } })
       .json<Resp<string>>()
-      .then((resp) => {
-        callback(resp.data);
+      .then(({ data }) => {
+        callback(data);
       })
       .finally(() => {
         refId = null;

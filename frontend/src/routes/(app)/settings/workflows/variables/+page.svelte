@@ -45,11 +45,11 @@
         }
       })
       .json<Resp<Page<GlobalVariable>>>()
-      .then((resp) => {
+      .then(({ data }) => {
         pagination.current = page;
         pagination.size = size;
-        pagination.total = resp.data.total;
-        variables = resp.data.items;
+        pagination.total = data.total;
+        variables = data.items;
       })
       .finally(() => {
         loading.end();

@@ -21,7 +21,7 @@
     api
       .get('auth/online')
       .json<Resp<User[]>>()
-      .then((resp) => (sessions = resp.data))
+      .then(({ data }) => (sessions = data))
       .finally(() => loading.end());
   }
 

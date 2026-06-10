@@ -47,9 +47,9 @@
         }
       })
       .json<Resp<Resource>>()
-      .then((resp) => {
+      .then(({ data }) => {
         refresh && (refreshKey = new Date().getTime());
-        tick().then(() => onload(resp.data));
+        tick().then(() => onload(data));
       })
       .finally(() => {
         loading.end();

@@ -9,11 +9,11 @@ export const load: LayoutLoad = async () => {
   await api
     .get('media/lib/list')
     .json<Resp<MediaLib[]>>()
-    .then((resp) => {
-      if (resp.data.length > 0) {
+    .then(({ data }) => {
+      if (data.length > 0) {
         menus.push({
           title: 'nav.medialibs.title',
-          routes: resp.data.map((lib) => ({
+          routes: data.map((lib) => ({
             title: lib.name,
             path: `/medialibs/${lib.id}`,
             icon: LibType[lib.lib_type].icon

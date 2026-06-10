@@ -51,11 +51,11 @@
         }
       })
       .json<Resp<Page<DownloadPlan>>>()
-      .then((resp) => {
+      .then(({ data }) => {
         pagination.current = page;
         pagination.size = size;
-        pagination.total = resp.data.total;
-        plans = resp.data.items;
+        pagination.total = data.total;
+        plans = data.items;
       })
       .finally(() => loading.end());
   }
@@ -90,8 +90,8 @@
         ]
       })
       .json<Resp<Page<FlowGraph>>>()
-      .then((resp) => {
-        const items = resp.data.items;
+      .then(({ data }) => {
+        const items = data.items;
         graphs = items.filter((g) => g.node_types.includes('search_start') && !g.only_preview);
       });
   });

@@ -60,11 +60,11 @@
         }
       })
       .json<Resp<Page<FlowGraph>>>()
-      .then((resp) => {
+      .then(({ data }) => {
         pagination.current = page;
         pagination.size = size;
-        pagination.total = resp.data.total;
-        graphs = resp.data.items;
+        pagination.total = data.total;
+        graphs = data.items;
       })
       .finally(() => {
         loading.end();
@@ -161,13 +161,13 @@
     api
       .post('flow/graph/import', { body: formData })
       .json<Resp<number>>()
-      .then((resp) => {
+      .then(({ data }) => {
         graphName = '';
         graphState = null;
         graphCategory = null;
         search();
-        if (resp.data) {
-          alert({ level: 'success', message: $_('alert.import_items_success', resp.data) });
+        if (data) {
+          alert({ level: 'success', message: $_('alert.import_items_success', data) });
         }
       })
       .catch(() => loading.end());

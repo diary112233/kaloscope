@@ -49,9 +49,9 @@
     api
       .post('network/proxy/upsert', { json })
       .json<Resp<HTTPProxy>>()
-      .then((resp) => {
+      .then(({ data }) => {
         modal.close();
-        onsave?.(resp.data);
+        onsave?.(data);
         setTimeout(() => {
           // reset the form
           name = '';

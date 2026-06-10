@@ -201,10 +201,10 @@
     api
       .post(`flow/graph/${graph?.id}/save`, { json: data })
       .json<Resp<FlowGraph>>()
-      .then((resp) => {
+      .then(({ data }) => {
         const timeout = Math.max(0, 450 - (new Date().getTime() - startTime));
         setTimeout(() => {
-          graph = resp.data;
+          graph = data;
           jsonGraph = JSON.stringify(data);
           savedHistoryId = historyId;
           autoSaveSignal = false;
@@ -255,10 +255,10 @@
     api
       .post(`flow/graph/${graph?.id}/publish`, { json: data })
       .json<Resp<FlowGraph>>()
-      .then((resp) => {
+      .then(({ data }) => {
         const timeout = Math.max(0, 450 - (new Date().getTime() - startTime));
         setTimeout(() => {
-          graph = resp.data;
+          graph = data;
           jsonGraph = JSON.stringify(data);
           savedHistoryId = historyId;
           publishing = false;

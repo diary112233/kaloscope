@@ -56,9 +56,9 @@
     api
       .post('flow/repo/add', { json: { repo: url } })
       .json<Resp<FlowRepo>>()
-      .then((resp) => {
-        if (repos.every((r) => r.id !== resp.data.id)) {
-          repos.push(resp.data);
+      .then(({ data }) => {
+        if (repos.every((r) => r.id !== data.id)) {
+          repos.push(data);
         }
         onchange?.(repos);
         changed = true;
@@ -94,8 +94,8 @@
     api
       .get('flow/repo/list')
       .json<Resp<FlowRepo[]>>()
-      .then((resp) => {
-        repos = resp.data;
+      .then(({ data }) => {
+        repos = data;
         onchange?.(repos);
       });
   });

@@ -61,9 +61,9 @@
     api
       .post('flow/graph/upsert', { body: data })
       .json<Resp<FlowGraph>>()
-      .then((resp) => {
+      .then(({ data }) => {
         cropSrc = null;
-        onsave?.(resp.data);
+        onsave?.(data);
         id ? modal.close() : setTimeout(() => form.reset(), 200);
       })
       .finally(() => {

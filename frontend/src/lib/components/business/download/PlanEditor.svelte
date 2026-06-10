@@ -158,8 +158,8 @@
         }
       })
       .json<Resp<Page<Resource>>>()
-      .then((resp) => {
-        resources = resp.data?.items ?? [];
+      .then(({ data }) => {
+        resources = data?.items ?? [];
       })
       .catch((error) => {
         if (error.name !== 'AbortError') {
@@ -197,9 +197,9 @@
         }
       })
       .json<Resp<DownloadPlan>>()
-      .then((resp) => {
+      .then(({ data }) => {
         modal.close();
-        onsave?.(resp.data);
+        onsave?.(data);
         // reset the form
         if (!id) {
           setTimeout(() => {
@@ -236,8 +236,8 @@
           ]
         })
         .json<Resp<Page<FlowGraph>>>()
-        .then((resp) => {
-          graphOptions = resp.data.items
+        .then(({ data }) => {
+          graphOptions = data.items
             .filter((g) => g.node_types.includes('search_start') && !g.only_preview)
             .map((g) => ({ value: g.id, label: g.name }));
           graph_id = graphOptions[0]?.value as number | undefined;
