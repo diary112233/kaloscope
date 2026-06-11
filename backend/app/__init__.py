@@ -49,10 +49,12 @@ def _patch_hishel_headers():
     explicitly forbids for `Set-Cookie`.
     """
     import hishel._async_httpx as _async
+    from hishel import Request as _HishelRequest
     from hishel import Response as _HishelResponse
     from hishel._core._headers import Headers as _HishelHeaders
 
     def _httpx_to_hishel_headers(httpx_headers) -> _HishelHeaders:
+        """Convert httpx Headers → hishel Headers, preserving multi-value."""
         raw: dict[str, list[str]] = {}
         for k, v in httpx_headers.multi_items():
             raw.setdefault(k.lower(), []).append(v)
@@ -60,12 +62,14 @@ def _patch_hishel_headers():
         return _HishelHeaders(raw)
 
     def _hishel_to_header_tuples(h: _HishelHeaders) -> list[tuple[str, str]]:
+        """Convert hishel Headers → list of individual (key, value) tuples."""
         pairs: list[tuple[str, str]] = []
         for key in h:
             for v in h.get_list(key) or []:
                 pairs.append((key, v))
         return pairs
 
+    # replace _httpx_to_internal
     _orig_httpx_to_internal = _async._httpx_to_internal
 
     def _httpx_to_internal(value):
@@ -100,20 +104,29 @@ def _patch_hishel_headers():
             metadata={},
         )
 
+    # replace _internal_to_httpx
     _orig_internal_to_httpx = _async._internal_to_httpx
 
     def _internal_to_httpx(value):
-        if not isinstance(value, _HishelResponse):
-            return _orig_internal_to_httpx(value)
-
         from hishel._async_httpx import _IteratorStream
 
-        return httpx.Response(
-            status_code=value.status_code,
-            headers=_hishel_to_header_tuples(value.headers),
-            stream=_IteratorStream(value._aiter_stream()),
-            extensions=value.metadata,
-        )
+        if isinstance(value, _HishelRequest):
+            return httpx.Request(
+                method=value.method,
+                url=value.url,
+                headers=_hishel_to_header_tuples(value.headers),
+                stream=_IteratorStream(value._aiter_stream()),
+                extensions=value.metadata,
+            )
+        elif isinstance(value, _HishelResponse):
+            return httpx.Response(
+                status_code=value.status_code,
+                headers=_hishel_to_header_tuples(value.headers),
+                stream=_IteratorStream(value._aiter_stream()),
+                extensions=value.metadata,
+            )
+        else:
+            return _orig_internal_to_httpx(value)
 
     _async._httpx_to_internal = _httpx_to_internal
     _async._internal_to_httpx = _internal_to_httpx
