@@ -1,6 +1,6 @@
 # Third-Party License Notices
 
-> This document was automatically generated on June 06, 2026, 10:20 AM UTC
+> This document was automatically generated on June 14, 2026, 04:49 PM UTC
 
 ## Frontend Dependencies
 
@@ -8,7 +8,7 @@
 
 | Package                                                                                    | Version      | License           | Description                                                                                                                        |
 | ------------------------------------------------------------------------------------------ | ------------ | ----------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| [@codemirror/autocomplete](https://code.haverbeke.berlin/codemirror/autocomplete)          | 6.20.2       | MIT               | Autocompletion for the CodeMirror code editor                                                                                      |
+| [@codemirror/autocomplete](https://code.haverbeke.berlin/codemirror/autocomplete)          | 6.20.3       | MIT               | Autocompletion for the CodeMirror code editor                                                                                      |
 | [@codemirror/commands](https://github.com/codemirror/commands)                             | 6.10.3       | MIT               | Collection of editing commands for the CodeMirror code editor                                                                      |
 | [@codemirror/lang-javascript](https://github.com/codemirror/lang-javascript)               | 6.2.5        | MIT               | JavaScript language support for the CodeMirror code editor                                                                         |
 | [@codemirror/lang-json](https://github.com/codemirror/lang-json)                           | 6.0.2        | MIT               | JSON language support for the CodeMirror code editor                                                                               |
@@ -20,7 +20,7 @@
 | [@codemirror/search](https://code.haverbeke.berlin/codemirror/search)                      | 6.7.0        | MIT               | Search functionality for the CodeMirror code editor                                                                                |
 | [@codemirror/state](https://github.com/codemirror/state)                                   | 6.6.0        | MIT               | Editor state data structures for the CodeMirror code editor                                                                        |
 | [@codemirror/theme-one-dark](https://github.com/codemirror/theme-one-dark)                 | 6.1.3        | MIT               | One Dark theme for the CodeMirror code editor                                                                                      |
-| [@codemirror/view](https://code.haverbeke.berlin/codemirror/view)                          | 6.42.0       | MIT               | DOM view component for the CodeMirror code editor                                                                                  |
+| [@codemirror/view](https://code.haverbeke.berlin/codemirror/view)                          | 6.43.0       | MIT               | DOM view component for the CodeMirror code editor                                                                                  |
 | [@eslint/compat](https://github.com/eslint/rewrite)                                        | 2.1.0        | Apache-2.0        | Compatibility utilities for ESLint                                                                                                 |
 | [@eslint/js](https://github.com/eslint/eslint)                                             | 10.0.1       | MIT               | ESLint JavaScript language implementation                                                                                          |
 | [@fontsource-variable/noto-sans-sc](https://github.com/fontsource/font-files)              | 5.2.10       | OFL-1.1           | Self-host the Noto Sans SC font in a neatly bundled NPM package.                                                                   |
@@ -33,7 +33,7 @@
 | [@lezer/javascript](https://github.com/lezer-parser/javascript)                            | 1.5.4        | MIT               | lezer-based JavaScript grammar                                                                                                     |
 | [@lezer/json](https://github.com/lezer-parser/json)                                        | 1.0.3        | MIT               | lezer-based JSON grammar                                                                                                           |
 | [@lezer/lr](https://code.haverbeke.berlin/lezer/lr)                                        | 1.4.10       | MIT               | Incremental parser                                                                                                                 |
-| [@lezer/python](https://github.com/lezer-parser/python)                                    | 1.1.18       | MIT               | Lezer-based Python grammar                                                                                                         |
+| [@lezer/python](https://code.haverbeke.berlin/lezer/python)                                | 1.1.19       | MIT               | Lezer-based Python grammar                                                                                                         |
 | [@lezer/yaml](https://github.com/lezer-parser/yaml)                                        | 1.0.4        | MIT               | Lezer-based YAML grammar                                                                                                           |
 | [@sveltejs/adapter-static](https://github.com/sveltejs/kit)                                | 3.0.10       | MIT               | Adapter for SvelteKit apps that prerenders your entire site as a collection of static files                                        |
 | [@sveltejs/kit](https://github.com/sveltejs/kit)                                           | 2.63.0       | MIT               | SvelteKit is the fastest way to build Svelte apps                                                                                  |
@@ -47,7 +47,7 @@
 | [cally](https://github.com/WickyNilliams/cally)                                            | 0.9.2        | MIT               | small, feature-rich calendar components                                                                                            |
 | [codemirror](https://github.com/codemirror/basic-setup)                                    | 6.0.2        | MIT               | Basic configuration for the CodeMirror code editor                                                                                 |
 | [cropperjs](https://github.com/fengyuanchen/cropperjs)                                     | 2.1.1        | MIT               | JavaScript image cropper.                                                                                                          |
-| [daisyui](https://github.com/saadeghi/daisyui)                                             | 5.5.20       | MIT               | daisyUI 5 - The Tailwind CSS Component Library                                                                                     |
+| [daisyui](https://github.com/saadeghi/daisyui)                                             | 5.5.23       | MIT               | daisyUI 5 - The Tailwind CSS Component Library                                                                                     |
 | [eslint-config-prettier](https://github.com/prettier/eslint-config-prettier)               | 10.1.8       | MIT               | Turns off all rules that are unnecessary or might conflict with Prettier.                                                          |
 | [eslint-plugin-svelte](https://github.com/sveltejs/eslint-plugin-svelte)                   | 3.19.0       | MIT               | ESLint plugin for Svelte using AST                                                                                                 |
 | [eslint](https://github.com/eslint/eslint)                                                 | 10.4.1       | MIT               | An AST-based pattern checker for JavaScript.                                                                                       |
