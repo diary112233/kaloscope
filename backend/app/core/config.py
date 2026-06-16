@@ -89,7 +89,7 @@ class KaloscopeConfig:
 
         When enabled, Python-type ScriptNode nodes restrict builtins
         to prevent risky operations (e.g. __import__, open, eval, exec).
-        Read from SCRIPT_STRICT_MODE env var once at first access;
+        Read from the `SCRIPT_STRICT_MODE` env var once at first access;
         cached thereafter and cannot be changed for the server's lifetime.
 
         Returns:
