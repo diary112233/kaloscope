@@ -1,6 +1,6 @@
 # Third-Party License Notices
 
-> This document was automatically generated on June 15, 2026, 05:45 AM UTC
+> This document was automatically generated on June 16, 2026, 05:44 AM UTC
 
 ## Frontend Dependencies
 
@@ -36,7 +36,7 @@
 | [@lezer/python](https://code.haverbeke.berlin/lezer/python)                                | 1.1.19       | MIT               | Lezer-based Python grammar                                                                                                         |
 | [@lezer/yaml](https://github.com/lezer-parser/yaml)                                        | 1.0.4        | MIT               | Lezer-based YAML grammar                                                                                                           |
 | [@sveltejs/adapter-static](https://github.com/sveltejs/kit)                                | 3.0.10       | MIT               | Adapter for SvelteKit apps that prerenders your entire site as a collection of static files                                        |
-| [@sveltejs/kit](https://github.com/sveltejs/kit)                                           | 2.65.0       | MIT               | SvelteKit is the fastest way to build Svelte apps                                                                                  |
+| [@sveltejs/kit](https://github.com/sveltejs/kit)                                           | 2.65.1       | MIT               | SvelteKit is the fastest way to build Svelte apps                                                                                  |
 | [@sveltejs/vite-plugin-svelte](https://github.com/sveltejs/vite-plugin-svelte)             | 7.1.2        | MIT               | The official [Svelte](https://svelte.dev) plugin for [Vite](https://vitejs.dev).                                                   |
 | [@tailwindcss/typography](https://github.com/tailwindlabs/tailwindcss-typography)          | 0.5.20       | MIT               | A Tailwind CSS plugin for automatically styling plain HTML content with beautiful typographic defaults.                            |
 | [@tailwindcss/vite](https://github.com/tailwindlabs/tailwindcss)                           | 4.3.1        | MIT               | A utility-first CSS framework for rapidly building custom user interfaces.                                                         |
