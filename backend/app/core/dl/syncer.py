@@ -265,7 +265,7 @@ async def sync_tasks(downloader: Downloader, tasks: list[DownloadTask]):
             files = [str(f).removeprefix(f"{task.dir}/") for f in files if f]
 
         # update the download task
-        unique_id = str(item.get("unique_id") or task.unique_id)
+        unique_id = str(item.get("unique_id") or task.unique_id or "")
         await DownloadTask.filter(id=task.id).update(
             name=name,
             unique_id=unique_id,
