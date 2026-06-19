@@ -88,7 +88,7 @@ class Range:
 class TortoiseModel(Model):
     """The base class for all Tortoise ORM models."""
 
-    id = IntField(pk=True)
+    id = IntField(primary_key=True)
     created_at = DatetimeField(null=True, auto_now_add=True)
     updated_at = DatetimeField(null=True, auto_now=True)
 
