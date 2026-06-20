@@ -357,7 +357,7 @@ async def unfavorite_resource(
 ) -> HTTPResponse:
     """Unfavorite the resource."""
     user: UserInfo = request.ctx.user
-    await UserFavoriteService.unfavorite(user.id, id, body.rsrc_id)
+    await UserFavoriteService.unfavorite(user.id, id, body)
     return empty()
 
 

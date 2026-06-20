@@ -221,16 +221,16 @@ class UserFavoriteService(BaseService[UserFavorite], model=UserFavorite):
         )
 
     @classmethod
-    async def unfavorite(cls, user_id: int, indexer_id: int, rsrc_id: str):
+    async def unfavorite(cls, user_id: int, indexer_id: int, rsrc: IndexerResource):
         """Remove a favorite of the user.
 
         Args:
             user_id: The user ID.
             indexer_id: The indexer ID.
-            rsrc_id: The resource ID to unfavorite.
+            rsrc: The resource to unfavorite.
         """
         await UserFavorite.filter(
-            user_id=user_id, indexer_id=indexer_id, rsrc_id=rsrc_id
+            user_id=user_id, indexer_id=indexer_id, rsrc_id=rsrc.rsrc_id
         ).delete()
 
 
