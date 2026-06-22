@@ -44,7 +44,7 @@ class ErrorCode(StrEnum):
 class KaloscopeException(SanicException):
     """The base exception class for Kaloscope application."""
 
-    status_code = 520
+    status_code = 500
     quiet = False
 
 

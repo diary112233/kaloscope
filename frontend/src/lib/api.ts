@@ -13,6 +13,11 @@ import { get } from 'svelte/store';
 export const api = ky.create({
   prefix: '/_api',
   timeout: 60000,
+  retry: {
+    limit: 2,
+    // remove 500 from retry status codes
+    statusCodes: [408, 413, 429, 502, 503, 504]
+  },
   hooks: {
     beforeRequest: [
       ({ request }) => {
