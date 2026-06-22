@@ -1,5 +1,6 @@
 import builtins as _builtins
 import copy
+import json
 from typing import Any
 
 from quickjs_rs import Runtime
@@ -141,20 +142,16 @@ class ScriptNode(Node):
             context_copy = copy.deepcopy(dict(context.items()))
             context_keys = set(context.storage.keys())
 
-            def _set_handle_items(handle, data: dict[str, Any]):
-                for key, value in data.items():
-                    handle.set(key, value)
+            def _eval_data_handle(data: dict[str, Any]):
+                # quickjs-rs 0.2.0 fails when setting Python empty strings directly
+                return js_ctx.eval_handle(f"({json.dumps(data)})")
 
             with Runtime() as runtime, runtime.new_context() as js_ctx:
                 js_ctx.eval(script_code)
                 with (
-                    js_ctx.eval_handle("({})") as node_data_handle,
-                    js_ctx.eval_handle("({})") as context_handle,
+                    _eval_data_handle(node_data_copy) as node_data_handle,
+                    _eval_data_handle(context_copy) as context_handle,
                 ):
-                    # set the node data and context onto the QuickJS handles
-                    _set_handle_items(node_data_handle, node_data_copy)
-                    _set_handle_items(context_handle, context_copy)
-
                     # execute the "execute" function defined in the JavaScript code
                     with js_ctx.eval_handle("execute") as execute:
                         execute.call(node_id, node_data_handle, context_handle)
