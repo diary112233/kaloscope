@@ -357,6 +357,7 @@
     "prompt": "输入 URI 或选择种子文件",
     "supported": "支持磁力链接或哈希值",
     "delete_local": "同时删除本地文件",
+    "batch_delete_title": "删除 {0} 个下载任务",
     "transfer": {
       "title": "完成后转移",
       "none": "不转移",

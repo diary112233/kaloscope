@@ -16,6 +16,11 @@
     modal.show();
   };
 
+  // the modal dialog title
+  const title = $derived(
+    taskIds.length > 1 ? $_('download.batch_delete_title', taskIds.length) : $_('action.delete', $_('entity.download'))
+  );
+
   // the loading state
   const loading = createLoading();
 
@@ -42,7 +47,7 @@
   }
 </script>
 
-<Modal icon={icons.delete} title={$_('action.delete', $_('entity.download'))} bind:this={modal}>
+<Modal icon={icons.delete} {title} bind:this={modal}>
   <form
     method="post"
     use:enhance={({ formElement, formData, cancel }) => {

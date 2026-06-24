@@ -357,6 +357,7 @@
     "prompt": "Enter URI or choose a torrent file",
     "supported": "Magnet link or info-hash are supported",
     "delete_local": "Also delete the local files",
+    "batch_delete_title": "Delete {0} Downloads",
     "transfer": {
       "title": "Transfer after download",
       "none": "No transfer",
