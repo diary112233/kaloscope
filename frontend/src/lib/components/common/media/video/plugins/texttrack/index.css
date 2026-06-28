@@ -53,6 +53,18 @@
     text-align: center;
   }
 
+  xg-text-track.xg-text-track.text-track-stroke xg-text-track-inner {
+    text-shadow:
+      1px 0 hsla(0, 0%, 0%, 0.75),
+      -1px 0 hsla(0, 0%, 0%, 0.75),
+      0 1px hsla(0, 0%, 0%, 0.75),
+      0 -1px hsla(0, 0%, 0%, 0.75),
+      1px 1px hsla(0, 0%, 0%, 0.75),
+      -1px -1px hsla(0, 0%, 0%, 0.75),
+      1px -1px hsla(0, 0%, 0%, 0.75),
+      -1px 1px hsla(0, 0%, 0%, 0.75);
+  }
+
   &.xgplayer-mobile {
     .xg-options-list.xgplayer-texttrack {
       padding: 16px 0;
@@ -119,6 +131,11 @@
       .xg-options-list.xgplayer-texttrack.xg-side-list.xg-right-side {
         width: 50%;
         right: -25%;
+      }
+      xg-text-track.xg-text-track.text-track-stroke xg-text-track-inner {
+        text-shadow:
+          0 1px 2px hsla(0, 0%, 0%, 0.9),
+          0 0 2px hsla(0, 0%, 0%, 0.75);
       }
     }
     @media only screen and (orientation: landscape) {
