@@ -13,6 +13,10 @@
       text-overflow: ellipsis;
       background-color: hsla(0, 0%, 30%, 0.3);
     }
+    .xg-texttrak-open,
+    .xg-texttrak-close {
+      display: none !important;
+    }
     .xg-options-list {
       width: fit-content;
       min-width: 80px;
@@ -102,7 +106,7 @@
         width: 30px;
         min-width: 30px;
         max-width: 30px;
-        .icon-text {
+        .xgplayer-icon {
           display: inline-flex;
           align-items: center;
           justify-content: center;
@@ -110,23 +114,30 @@
           min-width: 30px;
           max-width: 30px;
           padding: 0;
-          font-size: 0;
-          letter-spacing: 0;
           background: transparent;
-          &::before {
-            content: 'CC';
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 24px;
-            height: 18px;
-            border: 2px solid currentColor;
-            border-radius: 3px;
-            font-size: 10px;
-            font-weight: 800;
-            line-height: 1;
-            letter-spacing: 0;
+          .icon-text {
+            display: none;
           }
+          .xg-texttrak-open,
+          .xg-texttrak-close {
+            display: none !important;
+          }
+          svg {
+            width: 24px;
+            height: 24px;
+          }
+        }
+        &[data-state='open'] .xg-texttrak-open,
+        &[data-state='close'] .xg-texttrak-close {
+          display: block !important;
+        }
+        &[data-state='open'] .xg-texttrak-open {
+          color: color-mix(in oklab, #fff 80%, transparent);
+          opacity: 1;
+        }
+        &[data-state='close'] .xg-texttrak-close {
+          color: color-mix(in oklab, #fff 40%, transparent);
+          opacity: 1;
         }
       }
       .xg-options-list.xgplayer-texttrack.xg-side-list.xg-right-side {

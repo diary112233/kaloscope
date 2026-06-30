@@ -1,9 +1,10 @@
+import { icons, iconToSVG } from '$lib/icons';
 import { FULLSCREEN_CHANGE, VIDEO_RESIZE } from 'xgplayer/es/events';
 import TextTrack from 'xgplayer/es/plugins/track';
 import './index.css';
 
 /**
- * Internal subtitle layout metadata maintained by xgplayer-subtitles.
+ * Internal subtitle layout metadata maintained by the xgplayer subtitle renderer.
  */
 type SubtitleMeta = {
   scale: number;
@@ -14,7 +15,7 @@ type SubtitleMeta = {
 };
 
 /**
- * The subset of xgplayer-subtitles used by the styled texttrack plugin.
+ * The subset of the xgplayer subtitle renderer used by the styled subtitle plugin.
  */
 type SubtitleApi = {
   root?: HTMLElement;
@@ -28,7 +29,7 @@ type SubtitleApi = {
 type VideoSize = Pick<HTMLVideoElement, 'videoWidth' | 'videoHeight'>;
 
 /**
- * TextTrack plugin with rotate-fullscreen subtitle layout fixes.
+ * Styled subtitle plugin with rotate-fullscreen layout fixes.
  */
 export default class StyledTextTrack extends TextTrack {
   /**
@@ -37,12 +38,48 @@ export default class StyledTextTrack extends TextTrack {
   private lastRotateFullscreen = false;
 
   /**
-   * Initialize xgplayer TextTrack and subscribe to player size changes.
+   * Use the app subtitle icon instead of xgplayer's text fallback.
+   */
+  registerIcons() {
+    const icon = iconToSVG(icons.subtitlesFilled);
+    return {
+      textTrackOpen: {
+        icon,
+        class: 'xg-texttrak-open size-6'
+      },
+      textTrackClose: {
+        icon,
+        class: 'xg-texttrak-close size-6'
+      }
+    };
+  }
+
+  /**
+   * Initialize the xgplayer subtitle plugin and subscribe to player size changes.
    */
   afterCreate() {
     super.afterCreate();
+    this.ensureIconText();
     this.on([FULLSCREEN_CHANGE, VIDEO_RESIZE], this.scheduleSubtitleResize);
     this.scheduleSubtitleResize();
+  }
+
+  /**
+   * Keep text label for non-portrait layouts while using a custom icon in portrait.
+   */
+  private ensureIconText() {
+    const iconRoot = this.find('.xgplayer-icon');
+    if (!iconRoot || this.find('.icon-text')) {
+      return;
+    }
+
+    const iconText = document.createElement('span');
+    iconText.className = 'icon-text';
+    iconRoot.classList.add('btn-text');
+    iconRoot.appendChild(iconText);
+    this.unbind('click', this.onIconClick);
+    this.isIcons = false;
+    this.changeCurrentText();
   }
 
   /**
