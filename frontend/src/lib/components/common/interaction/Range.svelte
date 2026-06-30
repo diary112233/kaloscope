@@ -8,6 +8,8 @@
     min?: number;
     /** The maximum value of the range input. */
     max?: number;
+    /** The step interval of the range input. */
+    step?: number;
     /** The unit to display next to the value. */
     unit?: string;
     /** The class names for the container. */
@@ -27,6 +29,7 @@
     values,
     min = 0,
     max = 100,
+    step: _step,
     unit = '%',
     class: _class,
     textClass,
@@ -39,7 +42,7 @@
     if (values && values.length > 1) {
       return 100 / (values.length - 1);
     }
-    return undefined;
+    return _step;
   });
 
   // the change event handler
