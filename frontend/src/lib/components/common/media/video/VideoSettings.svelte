@@ -1132,9 +1132,8 @@
     transition: all var(--default-transition-duration) var(--default-transition-timing-function);
 
     &:is(:hover, :focus-visible) {
-      background-color: color-mix(in oklab, #fff 12%, transparent);
       color: color-mix(in oklab, #fff 90%, transparent);
-      outline: none;
+      background-color: color-mix(in oklab, #fff 12%, transparent);
     }
   }
 

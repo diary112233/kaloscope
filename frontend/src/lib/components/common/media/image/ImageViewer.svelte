@@ -410,8 +410,8 @@
 <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 <div
   role="application"
-  data-theme="light"
   aria-label="Image viewer"
+  data-theme="dark"
   class="fixed inset-0 flex flex-col bg-black"
   onclick={handleClick}
 >
@@ -685,3 +685,15 @@
     {$_(`media.image.page_direction_options.${direction}`)}
   </label>
 {/snippet}
+
+<style>
+  .btn-ghost {
+    &:not(*:disabled) {
+      color: color-mix(in oklab, #fff 80%, transparent);
+      &:is(:hover, :focus-visible) {
+        color: color-mix(in oklab, #fff 90%, transparent);
+        background-color: color-mix(in oklab, #fff 20%, transparent);
+      }
+    }
+  }
+</style>
