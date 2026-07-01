@@ -1,5 +1,5 @@
 import { icons, iconToSVG } from '$lib/icons';
-import { FULLSCREEN_CHANGE, VIDEO_RESIZE } from 'xgplayer/es/events';
+import { CANPLAY, FULLSCREEN_CHANGE, LOADED_DATA, LOADED_METADATA, VIDEO_RESIZE } from 'xgplayer/es/events';
 import TextTrack from 'xgplayer/es/plugins/track';
 import './index.css';
 
@@ -96,6 +96,7 @@ export default class StyledTextTrack extends TextTrack {
     this.ensureIconText();
     this.bindSubtitleEvents();
     this.on([FULLSCREEN_CHANGE, VIDEO_RESIZE], this.requestSubtitleResize);
+    this.on([LOADED_METADATA, LOADED_DATA, CANPLAY], this.requestForcedSubtitleResize);
     this.requestSubtitleResize();
   }
 
@@ -248,10 +249,14 @@ export default class StyledTextTrack extends TextTrack {
 
     const media = this.player.media as Partial<VideoSize> | null;
     const meta = subtitleRenderer._videoMeta;
-    if (meta && !meta.scale && media?.videoWidth && media.videoHeight) {
-      meta.videoWidth = media.videoWidth;
-      meta.videoHeight = media.videoHeight;
-      meta.scale = Math.floor((media.videoHeight / media.videoWidth) * 100);
+    if (meta && media?.videoWidth && media.videoHeight) {
+      const scale = Math.floor((media.videoHeight / media.videoWidth) * 100);
+      if (meta.scale !== scale || meta.videoWidth !== media.videoWidth || meta.videoHeight !== media.videoHeight) {
+        meta.videoWidth = media.videoWidth;
+        meta.videoHeight = media.videoHeight;
+        meta.scale = scale;
+        force = true;
+      }
     }
     if (!meta?.scale) {
       return;
