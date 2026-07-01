@@ -6,6 +6,8 @@ from pathlib import Path
 from urllib.parse import quote
 
 import aiofiles
+from langcodes import standardize_tag, tag_is_valid
+from langcodes.tag_parser import LanguageTagError
 from pydantic import BaseModel
 from sanic.log import logger
 
@@ -42,7 +44,12 @@ class SubtitleService:
     EXTERNAL_CONVERTERS = {"ass": ass_to_vtt, "ssa": ass_to_vtt, "srt": srt_to_vtt}
     WEBVTT_CONTENT_TYPE = "text/vtt; charset=utf-8"
     PLAYER_SUBTITLE_FORMAT = "vtt"
-    LANGUAGE_ALIASES = {"chs", "cht", "cn", "en", "eng", "ja", "jp", "jpn", "zh"}
+    LEGACY_SUBTITLE_LANGUAGE_ALIASES = {
+        "chs": "zh-Hans",
+        "cht": "zh-Hant",
+        "cn": "zh-CN",
+        "jp": "ja",
+    }
 
     @classmethod
     async def list_tracks(cls, path: str) -> list[Subtitle]:
@@ -224,14 +231,18 @@ class SubtitleService:
         Returns:
             The inferred language marker, or None if it cannot be inferred.
         """
-        normalized = label.strip()
-        if normalized.lower() in cls.LANGUAGE_ALIASES:
-            return normalized
+        normalized = label.strip().replace("_", "-")
+        if not normalized:
+            return None
 
-        parts = normalized.split("-")
-        if len(parts) == 2 and all(len(part) == 2 for part in parts):
-            return normalized
-        return None
+        candidate = cls.LEGACY_SUBTITLE_LANGUAGE_ALIASES.get(
+            normalized.lower(), normalized
+        )
+        try:
+            language = standardize_tag(candidate)
+        except LanguageTagError:
+            return None
+        return language if tag_is_valid(language) else None
 
     @classmethod
     async def discover_embedded_tracks(cls, video_path: Path | str) -> list[Subtitle]:
