@@ -161,7 +161,9 @@
         </div>
       </div>
     {:else if rsrc.category}
-      <Badge class="line-clamp-2 w-18 shrink-0 text-center">{rsrc.category}</Badge>
+      <Badge class="w-18 shrink-0 justify-center px-1!">
+        <span class="line-clamp-2 w-full text-center wrap-break-word">{rsrc.category}</span>
+      </Badge>
     {/if}
     <div class="flex w-full min-w-0 flex-col gap-3">
       <div class={detailsConfig ? 'transition-colors group-hover:text-primary' : ''}>
