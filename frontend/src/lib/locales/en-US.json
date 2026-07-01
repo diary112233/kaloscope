@@ -448,7 +448,7 @@
     "subtitle": {
       "auto_show": "Auto Show",
       "language_preference": "Language Preference",
-      "language_preference_placeholder": "en|eng",
+      "language_preference_placeholder": "eng|en-US",
       "language_preference_tip": "Auto show prefers the first regex match, or the first track if empty.",
       "display_mode": "Display Style",
       "display_mode_options": {
