@@ -516,13 +516,13 @@
 {/snippet}
 
 {#snippet chapterItem(chapter: Chapter)}
-  <li>
+  <li class="mb-0.75">
     <button
-      class={matchChapterId(chapter.id, chapterId) ? 'menu-active' : ''}
+      class="h-auto min-h-0 py-2 whitespace-normal {matchChapterId(chapter.id, chapterId) ? 'menu-active' : ''}"
       title={chapter.title}
       onclick={() => selectChapter(chapter)}
     >
-      {chapter.title}
+      <span class="min-w-0 wrap-break-word text-left">{chapter.title}</span>
     </button>
   </li>
 {/snippet}
