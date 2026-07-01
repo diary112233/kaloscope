@@ -1583,38 +1583,38 @@ files = [
 
 [[package]]
 name = "opencc"
-version = "1.3.1"
+version = "1.3.2"
 description = "Conversion between Traditional and Simplified Chinese"
 optional = false
 python-versions = "*"
 groups = ["main"]
 files = [
-    {file = "opencc-1.3.1-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:e5dd5b504163eebba6aae3a3c39a643b11b7ec2a3447c28d9287793806d2911e"},
-    {file = "opencc-1.3.1-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:5dafcae42a53b731a829afd92a0f87e07947234eab409ec8337caea8d7fbb686"},
-    {file = "opencc-1.3.1-cp310-cp310-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:0239b00a451d5047bee626a5fefecc3b1a58af819244bf6350de74cdd7d2a303"},
-    {file = "opencc-1.3.1-cp310-cp310-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:6cf414badb03e7f8a913d332a2c6884bd87bbbd18482da9820cdbd7dacfc14e1"},
-    {file = "opencc-1.3.1-cp310-cp310-win_amd64.whl", hash = "sha256:268055c0545d419f5ee071c40cef72773fd87fd2db3f3b147112794ed73e5168"},
-    {file = "opencc-1.3.1-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:9380bfb33a2ef17e9e00c08e78e583373636f2bf686dad75d74046a61ccb1700"},
-    {file = "opencc-1.3.1-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:40e06253283b9bebc6c1d33e7a9bb9a648994eb15e7228407b674b29a9fcb737"},
-    {file = "opencc-1.3.1-cp311-cp311-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:93d819c3030611ee34ef864ca1c8cc7a808ec7f5d17fb2180c486a797e913aae"},
-    {file = "opencc-1.3.1-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:81ab666577bf6f0a2b07e2cbdab31d7d3e8d088d27e8395ad1b3e06eca766e55"},
-    {file = "opencc-1.3.1-cp311-cp311-win_amd64.whl", hash = "sha256:71662897f7fb24b73c587e5dad8fbdffa7ac0e5792d7195b3f10eac52a3ae2c8"},
-    {file = "opencc-1.3.1-cp312-cp312-macosx_10_13_x86_64.whl", hash = "sha256:145e699ea379f83e1231d8e55a6be82e58b84c90f52e8b112cd3aadbfd5de771"},
-    {file = "opencc-1.3.1-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:61da7ee02fed5792953d55fd1c003cb9e352027944e01cf0c5ec716fb1da83ca"},
-    {file = "opencc-1.3.1-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:49ffa6d5a0a92ffbd62f86e531d51125649736c131a38b77359ce92f65ec1041"},
-    {file = "opencc-1.3.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:278314fb5283d3ab2bef3c9c055efb864801d1c6f2578db79bd021bebb40f095"},
-    {file = "opencc-1.3.1-cp312-cp312-win_amd64.whl", hash = "sha256:aae898734d6f93b01c5c005ea2d15fac1be2dafd81c7a51fd0afca7eac1824d2"},
-    {file = "opencc-1.3.1-cp313-cp313-macosx_10_13_x86_64.whl", hash = "sha256:2555e509078e15657beeee5ac99b08f519ed5f189cdeafe03cb82ebb4d205e9c"},
-    {file = "opencc-1.3.1-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:70103865e2232d8e20a09ccbe4fcdf3b2d414a274e0ea7628e1bafbc7095e1da"},
-    {file = "opencc-1.3.1-cp313-cp313-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:e1470ad743486ed4b22de7f6d67327828e8251202985f0381d642f5835c5ff1b"},
-    {file = "opencc-1.3.1-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:ba1a3f5780070cbb4350697e289a323366d8b43c4441b741523e67c1759b08ac"},
-    {file = "opencc-1.3.1-cp313-cp313-win_amd64.whl", hash = "sha256:9c7ba9e30b59bc1158caffdb467896ad3311bce18d198faf086993bb2bac6fbf"},
-    {file = "opencc-1.3.1-cp314-cp314-macosx_10_15_x86_64.whl", hash = "sha256:54e896ec35e1af6401bf08a22a8703417a21dcf58decea3091bee0224a03d30f"},
-    {file = "opencc-1.3.1-cp314-cp314-macosx_11_0_arm64.whl", hash = "sha256:33a8cd6c80406cb3cc9d1c75abd22a902b6740131fe3596ad5a8b9e9233a6780"},
-    {file = "opencc-1.3.1-cp314-cp314-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:a80d20bfe04cfbdfa8b51281a4a1158357fd29fb0f33ecb3e600e4fda3093d9a"},
-    {file = "opencc-1.3.1-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:ca227c09f1f785b17bdc7146533d3fe8ade1a6afe9ce3486c7f63197f1bec5dc"},
-    {file = "opencc-1.3.1-cp314-cp314-win_amd64.whl", hash = "sha256:27e55422b46b651701a4d794fb05f3f4e04a4688f11f22117c370911811a204c"},
-    {file = "opencc-1.3.1.tar.gz", hash = "sha256:6892ee3f8fcc5992f0e9f90dbf177c8da566620f83c3f2040257293f16141b33"},
+    {file = "opencc-1.3.2-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:75c68ead542fb5409a07346b04b99a9c79944931891b41018ddbef0e2807ac60"},
+    {file = "opencc-1.3.2-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:da1f90c4af63b7ded502eb98cba65d80cac2d687e1f0cecded6e25b80314926a"},
+    {file = "opencc-1.3.2-cp310-cp310-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:4a443454f2d7ac0587f0dbc2e457e36378b52d2ac270fa9f4246d00fc1227aa6"},
+    {file = "opencc-1.3.2-cp310-cp310-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:8e735f0dfc1347654f82a72e7310201b60b25f50fea3e75d5b3b9b49b6bc9245"},
+    {file = "opencc-1.3.2-cp310-cp310-win_amd64.whl", hash = "sha256:221b576a02388ab1bca0b44f71db7a59871e2af676623a846b26bfb0ddb87c36"},
+    {file = "opencc-1.3.2-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:9c97d76632ae3c1599dcf1c1910a4aae75c8c0f1a50146af5fbb6ef26d8e20b6"},
+    {file = "opencc-1.3.2-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:00a24ac6c0a4a5a94cfba1d708cbbbd769e463601ef96a9b398777f802d776e1"},
+    {file = "opencc-1.3.2-cp311-cp311-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:817c2669f4d5a534f69f390a96cf46d69236f502fff02ffc2e8ff2ed03b12e2a"},
+    {file = "opencc-1.3.2-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:cdf881ebd191320464b07b805f160c76184d410aadf09f64613d90aba13f6d4d"},
+    {file = "opencc-1.3.2-cp311-cp311-win_amd64.whl", hash = "sha256:12234b9b40b065b06f8351765c7afa29c1ed9f234b98001db03986d6b3db0a3f"},
+    {file = "opencc-1.3.2-cp312-cp312-macosx_10_13_x86_64.whl", hash = "sha256:b87457d1189533aa84ebe5c9e19b568795d7b3c25d325ac487960dcf886eba69"},
+    {file = "opencc-1.3.2-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:b454577925dee76eb0e1d9eb3c74403b9158271512e42e73052627405e8c3678"},
+    {file = "opencc-1.3.2-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:0432557734cb8ebfc50a6a36f64cf5a43d2ca698f016af6caf95143d30d2efe2"},
+    {file = "opencc-1.3.2-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:4fd4abe481129f386222215afb26aaf77eb5ffe03bb9906b8a44f11a7457aa7b"},
+    {file = "opencc-1.3.2-cp312-cp312-win_amd64.whl", hash = "sha256:069122e330b84d3b11aa5e35add75f0be0cd5104bad436326f5c84df8a6be959"},
+    {file = "opencc-1.3.2-cp313-cp313-macosx_10_13_x86_64.whl", hash = "sha256:d817b31a55020958c2fd7ad7b9a6eb11d5eb2c57b983b35000254b3e8504432a"},
+    {file = "opencc-1.3.2-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:bcde70b8e0b3968a57c4d21a3787b03eba426301a38ee914b051479224c865cd"},
+    {file = "opencc-1.3.2-cp313-cp313-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:0cf82f1af2fa5e5db96afb523ea016d90bb8edeafa34f2ded32b6d794632ff58"},
+    {file = "opencc-1.3.2-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:0aba96ac0d688672e87fe8896e42b1dc0e7cacf0b84e1b407adab1a7ed74833d"},
+    {file = "opencc-1.3.2-cp313-cp313-win_amd64.whl", hash = "sha256:99258bba81cf2487aa450e6d430fa290501c798558d7389cdb3d2280af387e18"},
+    {file = "opencc-1.3.2-cp314-cp314-macosx_10_15_x86_64.whl", hash = "sha256:3de3af6a47c87f4ddeb8b1b3db1de7a6325406a7b6a13796512bc3e51eccdac7"},
+    {file = "opencc-1.3.2-cp314-cp314-macosx_11_0_arm64.whl", hash = "sha256:61840160635c065fbf9695e57b4dc3245915899f2623214b57649c3947108e27"},
+    {file = "opencc-1.3.2-cp314-cp314-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:9caf449e9881c227b84f8bb67edda428104ce247e8fb2b7bc0f758211cfa980e"},
+    {file = "opencc-1.3.2-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:e9365658b33e939210cff2c6d3d7d46e0730ac84f2beba29cd19c83b00b089aa"},
+    {file = "opencc-1.3.2-cp314-cp314-win_amd64.whl", hash = "sha256:2af35449ccc4658fa2e8b179553aae72108ab86ac5e4d678317adb2524a0128f"},
+    {file = "opencc-1.3.2.tar.gz", hash = "sha256:f6e41dfe1bbe2c3c4c3e42e441ff0b24c774681d375241b996ea62fe8f70038c"},
 ]
 
 [[package]]
@@ -2478,14 +2478,14 @@ files = [
 
 [[package]]
 name = "tzlocal"
-version = "5.4.3"
+version = "5.4.4"
 description = "tzinfo object for the local timezone"
 optional = false
 python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "tzlocal-5.4.3-py3-none-any.whl", hash = "sha256:24ce97bb58e2a973f7640ec2553ab4e6f6d5a0d0d1aa9dc43bca21d89e1feb82"},
-    {file = "tzlocal-5.4.3.tar.gz", hash = "sha256:3a8c9bc18cf47e1dcde252ea0e6a72a6cde320a400b6ac6db1f1f8cccd553c00"},
+    {file = "tzlocal-5.4.4-py3-none-any.whl", hash = "sha256:aae09f0126a8a86fa736be266eb4a471380d26a0de3bc14844e7821fee3e2a15"},
+    {file = "tzlocal-5.4.4.tar.gz", hash = "sha256:8dbb8660838688a7b6ba4fed31d18dedf842afb4d47ca050d6d891c2c15f3be4"},
 ]
 
 [package.dependencies]
@@ -2684,24 +2684,24 @@ python-discovery = ">=1.4.2"
 
 [[package]]
 name = "wasmtime"
-version = "45.0.0"
+version = "46.0.1"
 description = "A WebAssembly runtime powered by Wasmtime"
 optional = false
 python-versions = ">=3.9"
 groups = ["main"]
 files = [
-    {file = "wasmtime-45.0.0-py3-none-android_26_arm64_v8a.whl", hash = "sha256:4e843795b53e66c71313f2254731467372e5e1549227cf14accb9e2d57701c10"},
-    {file = "wasmtime-45.0.0-py3-none-android_26_x86_64.whl", hash = "sha256:35e713f907264e470f3bc9b592b81b8ed0f8f5651725d9f07a5d52beb0642e38"},
-    {file = "wasmtime-45.0.0-py3-none-any.whl", hash = "sha256:6251ee5074a8b8bfaa98e6e99cb5d49d6d0f2320b3265d5aa6c2ee5df5fb4519"},
-    {file = "wasmtime-45.0.0-py3-none-macosx_10_13_x86_64.whl", hash = "sha256:3579b0ec6d001750d66ec7089aaeee2c048f88328c82743e15f099af01b0cf84"},
-    {file = "wasmtime-45.0.0-py3-none-macosx_11_0_arm64.whl", hash = "sha256:31d10f25c330cebcfb364e9a357123deeec96c41725ff2bba91b705587f38a93"},
-    {file = "wasmtime-45.0.0-py3-none-manylinux1_x86_64.whl", hash = "sha256:5d1416ec6da8cd87c29e2e9eb074358c91839c2fff971fe428c8921eaae68e73"},
-    {file = "wasmtime-45.0.0-py3-none-manylinux2014_aarch64.whl", hash = "sha256:a499f6ab0eebb70dca83d6a4904b743cd122f322af3abe86af08ad753533d946"},
-    {file = "wasmtime-45.0.0-py3-none-musllinux_1_2_aarch64.whl", hash = "sha256:bef65282b7de744106a91da43e4d06ba19d2d587bc54abb83b3e757f0c4fc030"},
-    {file = "wasmtime-45.0.0-py3-none-musllinux_1_2_x86_64.whl", hash = "sha256:a0b6ca14b4628a5d1ffa91ccf2c0f2c58fa171f126ec085d564b09d5795395dd"},
-    {file = "wasmtime-45.0.0-py3-none-win_amd64.whl", hash = "sha256:1736a70a48f713aaf1a878514d29cc6f554213b5431e04447813a3b9b4320381"},
-    {file = "wasmtime-45.0.0-py3-none-win_arm64.whl", hash = "sha256:ae9726590e6d90c6305b8b507c93468b145204d4390aa9a2e29e26babcae110e"},
-    {file = "wasmtime-45.0.0.tar.gz", hash = "sha256:2ad4bf7ca286ceea35c1e420d10b368d7f83faf9a5ffde87b4ee334a9b7f55f3"},
+    {file = "wasmtime-46.0.1-py3-none-android_26_arm64_v8a.whl", hash = "sha256:cc8d52f9ad3bedc1e4de5002f7b22d7cac400be046711d177f6ce20a11eacb31"},
+    {file = "wasmtime-46.0.1-py3-none-android_26_x86_64.whl", hash = "sha256:f8e4b0ec402b84b856d3c6c2f96c6e6889c56e685b5cfed0a4040775c751ca38"},
+    {file = "wasmtime-46.0.1-py3-none-any.whl", hash = "sha256:85a092a63c20ccecb965b9aa12a19368d2e06203436d19701068efc390efa678"},
+    {file = "wasmtime-46.0.1-py3-none-macosx_10_13_x86_64.whl", hash = "sha256:9b46c546bf73ece2600403db7dc604c3ef12046ccf2fabe07d7bfaa00453ce8b"},
+    {file = "wasmtime-46.0.1-py3-none-macosx_11_0_arm64.whl", hash = "sha256:de1a69573a173b5171f9413bcf0b88f4fed2721ed02c842fc25de5358730ccdf"},
+    {file = "wasmtime-46.0.1-py3-none-manylinux1_x86_64.whl", hash = "sha256:e53c65abe31aeeb19a3f794b6e53140d401c4c79ad91c89caefdc502ee2b10c1"},
+    {file = "wasmtime-46.0.1-py3-none-manylinux2014_aarch64.whl", hash = "sha256:841b53fc17eedabaa6deb1e062a04a0a8953908d540fadb4149bc55c3f6d3e50"},
+    {file = "wasmtime-46.0.1-py3-none-musllinux_1_2_aarch64.whl", hash = "sha256:f295d10012b6ca6ecffa7757eed70b84ebaa2e33dc39275e7b6bed5eed5130b9"},
+    {file = "wasmtime-46.0.1-py3-none-musllinux_1_2_x86_64.whl", hash = "sha256:05fc65164b4825bf1c3c8f007df070b25accc974cb81d0bfc1c5d76fdf6f70e0"},
+    {file = "wasmtime-46.0.1-py3-none-win_amd64.whl", hash = "sha256:559b0753e3ea311fd16000fe51c08592a625e61ebb8640601ae7173fc516e430"},
+    {file = "wasmtime-46.0.1-py3-none-win_arm64.whl", hash = "sha256:967625406fde8fc3c9d795ffbb7bdde77d0a38de776e8eb7a0416ca6d811a27a"},
+    {file = "wasmtime-46.0.1.tar.gz", hash = "sha256:0da0388c21bc0f0e633c7a30f2b7939a657f5019258c9a3a63fd37298a0dbb8b"},
 ]
 
 [package.extras]
@@ -2752,14 +2752,14 @@ watchmedo = ["PyYAML (>=3.10)"]
 
 [[package]]
 name = "wcwidth"
-version = "0.8.1"
+version = "0.8.2"
 description = "Measures the displayed width of unicode strings in a terminal"
 optional = false
 python-versions = ">=3.8"
 groups = ["dev"]
 files = [
-    {file = "wcwidth-0.8.1-py3-none-any.whl", hash = "sha256:f453740b1e4a4f3291faa37944c555d71056c4da08d59809b307ef4feba695c8"},
-    {file = "wcwidth-0.8.1.tar.gz", hash = "sha256:faf5b4a5366a72dc49cad48cdf21f52bdf63bdda995178e483ba247ff79089b9"},
+    {file = "wcwidth-0.8.2-py3-none-any.whl", hash = "sha256:d63947694a0539a1d51e01eda7caf800c291020e6cdd7e28ad7b14dd33ad4f85"},
+    {file = "wcwidth-0.8.2.tar.gz", hash = "sha256:91fbef97204b96a3d4d421609b80340b760cf33e26da123ff243d76b1fda8dda"},
 ]
 
 [[package]]
@@ -3051,4 +3051,4 @@ cffi = ["cffi (>=1.17,<2.0) ; platform_python_implementation != \"PyPy\" and pyt
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.13,<4.0"
-content-hash = "7d14ead301892996376aeffff5de5e8b7a640f7b4f7872191039bc7d42f9b501"
+content-hash = "d1fa1963a8ebb87aa33b520aa1cffe11e9141d1b8a2884def245b0a18bd2041f"

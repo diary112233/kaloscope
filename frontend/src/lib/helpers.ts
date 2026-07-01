@@ -22,10 +22,7 @@ export type Constraint = Partial<{
  * Type of constraint builders.
  */
 export type ConstraintBuilder =
-  | StringConstraintBuilder
-  | PatternConstraintBuilder
-  | NumberConstraintBuilder
-  | DatetimeConstraintBuilder;
+  StringConstraintBuilder | PatternConstraintBuilder | NumberConstraintBuilder | DatetimeConstraintBuilder;
 
 /**
  * Abstract class for constraint builders.
