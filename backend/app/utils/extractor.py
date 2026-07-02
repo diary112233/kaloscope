@@ -59,6 +59,9 @@ _SEASON_PATTERN = re.compile(
     r"""
     (?:
         [Ss]eason[._\-\s]*(\d{1,3})
+        | (?<![A-Za-z0-9])
+          (first|second|third|fourth|fifth|sixth|seventh|eighth|ninth|tenth)
+          [._\-\s]*[Ss]eason\b
         | (?<![A-Za-z0-9])(\d{1,3})(?:[Ss][Tt]|[Nn][Dd]|[Rr][Dd]|[Tt][Hh])
           [._\-\s]*[Ss]eason\b
         | (?<![A-Za-z0-9])[Ss](\d{1,3})(?:[Ee]\d{1,4}|\b)
@@ -66,7 +69,7 @@ _SEASON_PATTERN = re.compile(
         | 第\s*([零一二三四五六七八九十百千]+)\s*[季期]
     )
     """,
-    re.VERBOSE,
+    re.VERBOSE | re.IGNORECASE,
 )
 
 # episode pattern: E01, ep1, [01], 第1集, 第一话 etc.
@@ -132,7 +135,7 @@ _VIDEO_TAGS_PATTERN = re.compile(
         | DTS(?:-HD|-MA|-X)? | TrueHD | Atmos | DD\+? | AAC | AC3 | FLAC | MP3 | OPUS
         | [257]\.1
         # language/subtitle markers
-        | (?:(?:zh|cn|jp|en|ko|fr|de|es|ru)[-_]?){1,3}(?:sub|dub)?\b
+        | (?:(?:zh|cn|jp|en|fr|es|ru)[-_]?){1,3}(?:sub|dub)?\b
         | (?:CHS|CHT|ENG|JPN|KOR|GB|BIG5)
           (?:[._+](?:CHS|CHT|ENG|JPN|KOR|GB|BIG5))*
         | [简簡繁](?:[简簡繁])?(?:日|中)?(?:[内內][嵌封](?:字幕)?|字幕)
@@ -152,6 +155,20 @@ _VIDEO_TAGS_PATTERN = re.compile(
     """,
     re.VERBOSE | re.IGNORECASE,
 )
+
+# map of English ordinal season words to integers
+_ENGLISH_ORDINAL_NUMBERS = {
+    "first": 1,
+    "second": 2,
+    "third": 3,
+    "fourth": 4,
+    "fifth": 5,
+    "sixth": 6,
+    "seventh": 7,
+    "eighth": 8,
+    "ninth": 9,
+    "tenth": 10,
+}
 
 
 def extract_year(name: str) -> int | None:
@@ -181,7 +198,10 @@ def extract_season(name: str) -> int | None:
     match = _SEASON_PATTERN.search(name)
     if match:
         value = next(g for g in match.groups() if g is not None)
-        return int(value) if value.isdigit() else cn_to_int(value)
+        if value.isdigit():
+            return int(value)
+        english_number = _ENGLISH_ORDINAL_NUMBERS.get(value.lower())
+        return english_number if english_number is not None else cn_to_int(value)
     return None
 
 

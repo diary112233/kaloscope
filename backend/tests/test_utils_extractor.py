@@ -63,6 +63,9 @@ class TestExtractSeason:
     def test_ordinal_season_word(self):
         assert extract_season("Re Zero kara Hajimeru Isekai Seikatsu 4th Season") == 4
 
+    def test_english_season_word(self):
+        assert extract_season("Diamond no Ace: Act II Second Season - 12") == 2
+
     def test_season_one_digit(self):
         assert extract_season("[SubGroup] Naruto S1E01") == 1
 
@@ -436,6 +439,22 @@ class TestExtractTitle:
     def test_keeps_gb_prefix(self):
         result = extract_title("Some.GBStudio.2024.1080p.WEB-DL")
         assert result == "Some GBStudio"
+
+    def test_keeps_ko_word(self):
+        result = extract_title(
+            "[jibaketa合成][代理商粵語]【我推的孩子】第三季 / "
+            "Oshi no Ko 3rd Season - 11 END "
+            "[粵日雙語+內封繁體中文字幕](WEB 1920x1080 AVC AACx2 SRT Ani-One CHT)"
+        )
+        assert result == "【我推的孩子】 / Oshi no Ko"
+
+    def test_keeps_de_word(self):
+        result = extract_title(
+            "[黒ネズミたち] 躲在超市後門抽菸的兩人 / "
+            "Super no Ura de Yani Suu Futari - 12 "
+            "(ABEMA 1920x1080 AVC AAC MKV)"
+        )
+        assert result == "躲在超市後門抽菸的兩人 / Super no Ura de Yani Suu Futari"
 
     def test_chinese_period(self):
         result = extract_title(
