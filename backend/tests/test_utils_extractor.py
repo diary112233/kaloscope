@@ -113,6 +113,9 @@ class TestExtractEpisode:
     def test_no_episode(self):
         assert extract_episode("Inception.2010.1080p") is None
 
+    def test_movie_year_is_not_episode(self):
+        assert extract_episode("Movie.2023") is None
+
 
 class TestExtractTitle:
     # --- Movies ---

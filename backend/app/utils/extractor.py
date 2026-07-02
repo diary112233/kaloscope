@@ -30,7 +30,8 @@ _SEASON_PATTERN = re.compile(
 _EPISODE_PATTERN = re.compile(
     r"""
     (?:
-        [Ee][Pp]?\.?(\d{1,4})
+        [Ss]\d{1,3}[Ee]0*(\d{1,4})
+        | (?<![A-Za-z0-9])[Ee][Pp]?\.?0*(\d{1,4})(?!\d)
         | \s-\s0*(\d{1,4})\s*(?:\[|$)
         | \[0*(\d{1,4})(?:\s*-\s*\d{1,4})?\]
         | 第\s*(\d{1,4})\s*[集话話回]
