@@ -30,6 +30,20 @@ _LEADING_BROADCAST_MARKER_PATTERN = re.compile(r"^[★☆]\s*\d{1,2}\s*月\s*新
 # pattern to merge adjacent bracketed title segments, e.g. [中文][English]
 _BRACKET_BOUNDARY_PATTERN = re.compile(r"[\]\)】]\s*[\[\(【]")
 
+# pattern to strip episode titles after a bracketed episode and before an air date
+_BRACKETED_EPISODE_TITLE_SUFFIX_PATTERN = re.compile(
+    r"""
+    \[
+    (?!0*(?:19|20)\d{2}\])
+    0*\d{1,4}
+    \]
+    [^\[\]]+
+    \[(?:19|20)\d{2}[._-]\d{1,2}[._-]\d{1,2}\]
+    .*$
+    """,
+    re.VERBOSE,
+)
+
 # year pattern: a 4-digit year between 1900 and 2099, excluding dimensions
 _YEAR_PATTERN = re.compile(
     r"(?<![\dxX])[\(\[（]?(?P<year>(?:19|20)\d{2})"
@@ -184,6 +198,7 @@ def extract_title(name: str) -> str:
     title = _PREFIX_PATTERN.sub("", name).strip()
     title = _LEADING_META_PREFIX_PATTERN.sub("", title).strip()
     title = _LEADING_BROADCAST_MARKER_PATTERN.sub("", title).strip()
+    title = _BRACKETED_EPISODE_TITLE_SUFFIX_PATTERN.sub("", title).strip()
 
     # remove standalone year token before video tags
     title = _YEAR_PATTERN.sub(" ", title)

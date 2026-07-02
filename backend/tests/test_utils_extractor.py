@@ -296,6 +296,14 @@ class TestExtractTitle:
         )
         assert result == "淡岛百景 Awajima Hyakkei"
 
+    def test_title_with_bracketed_episode_title_and_date(self):
+        result = extract_title(
+            "[丸子家族][櫻桃小丸子第二期(Chibi Maruko-chan II)][1536]"
+            "小丸子喜歡媽媽的笑容&中野先生是晴天男?"
+            "[2026.06.28][BIG5][1080P][MP4]"
+        )
+        assert result == "櫻桃小丸子 (Chibi Maruko chan II)"
+
     def test_title_with_gb_subtitle_tag(self):
         result = extract_title("[Group][Anime Title][10][GB][1080P][MP4]")
         assert result == "Anime Title"
