@@ -98,6 +98,15 @@ class TestExtractEpisode:
     def test_dash_number_format(self):
         assert extract_episode("[SubGroup] Anime Title - 01 [1080p]") == 1
 
+    def test_dash_number_at_end(self):
+        assert extract_episode("Show - 01") == 1
+
+    def test_dash_number_before_trailing_dash(self):
+        assert extract_episode("Show - 02 - 1080p") == 2
+
+    def test_dash_number_before_parentheses(self):
+        assert extract_episode("Show - 03 (WEB 1080p)") == 3
+
     def test_bracket_format(self):
         assert extract_episode("[SubGroup] Anime S2 [06][1080p].mkv") == 6
 
@@ -215,6 +224,10 @@ class TestExtractTitle:
             result == "关于邻家的天使大人不知不觉把我惯成了废人这件事 / "
             "Otonari no Tenshi sama ni Itsunomanika Dame Ningen ni Sareteita Ken"
         )
+
+    def test_title_with_dash_episode_before_trailing_dash(self):
+        result = extract_title("Show - 02 - 1080p")
+        assert result == "Show"
 
     def test_title_with_resolution_dimensions(self):
         result = extract_title("Reborn.as.a.Cat.1920x1080.HEVC")
