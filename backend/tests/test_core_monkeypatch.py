@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 
 
-def test_main_applies_runtime_monkey_patches():
+def test_main_applies_patches():
     """Test that Sanic startup imports apply backend monkey patches."""
     backend_dir = Path(__file__).resolve().parents[1]
     result = subprocess.run(

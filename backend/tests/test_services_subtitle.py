@@ -37,11 +37,9 @@ class TestSubtitleService:
             ("es-419", "es-419"),
         ],
     )
-    def test_external_track_language_standardizes_language_tags(
-        self, label: str, language: str
-    ):
+    def test_external_track_language_standardizes_tags(self, label: str, language: str):
         assert SubtitleService._external_track_language(label) == language
 
     @pytest.mark.parametrize("label", ["subtitle", "C.UTF-8", "zh-普通话"])
-    def test_external_track_language_ignores_invalid_language_tags(self, label: str):
+    def test_external_track_language_ignores_invalid_tags(self, label: str):
         assert SubtitleService._external_track_language(label) is None
