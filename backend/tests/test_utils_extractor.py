@@ -211,8 +211,24 @@ class TestExtractTitle:
         assert "dune part two" in result.lower()
 
     def test_title_keeps_tag_prefix_words(self):
-        result = extract_title("Some.Webster.BDrive.2024.1080p.WEB-DL")
-        assert result == "Some Webster BDrive"
+        result = extract_title("Some.Webster.Crisis.BDrive.2024.1080p.WEB-DL")
+        assert result == "Some Webster Crisis BDrive"
+
+    def test_title_with_b_global_source(self):
+        result = extract_title(
+            "为喵人生 / Reborn as a Cat - 36 (B-Global Donghua 1920x1080 HEVC AAC MKV)"
+        )
+        assert result == "为喵人生 / Reborn as a Cat"
+
+    def test_title_with_iqiyi_source(self):
+        result = extract_title(
+            "花样少年少女 第二季 - 02 [IQIYI WebRip 2160p NVENC AAC]"
+        )
+        assert result == "花样少年少女"
+
+    def test_title_with_cr_source(self):
+        result = extract_title("LV999的村民 - 02 [CR WebRip AI2160p NVENC AAC]")
+        assert result == "LV999的村民"
 
     def test_title_with_chinese_season_period(self):
         result = extract_title(
