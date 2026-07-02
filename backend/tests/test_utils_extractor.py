@@ -125,6 +125,12 @@ class TestExtractEpisode:
     def test_bracket_total_episode_traditional(self):
         assert extract_episode("[Show][09 - 總第75][WEB-DL]") == 9
 
+    def test_bracket_version(self):
+        assert extract_episode("Show [16v2][WebRip]") == 16
+        assert extract_episode("Show [16v4][WebRip]") == 16
+        assert extract_episode("Show [16v9][WebRip]") == 16
+        assert extract_episode("Show [16v10][WebRip]") is None
+
     def test_chinese_episode_ji(self):
         assert extract_episode("庆余年 第3集") == 3
 
@@ -327,6 +333,17 @@ class TestExtractTitle:
             "[哆啦字幕組][哆啦A夢大山版 Doraemon1979][1263][1080P][HDTV][繁日雙語][MP4]"
         )
         assert result == "哆啦A夢大山版 Doraemon1979"
+
+    def test_versioned_episode(self):
+        result = extract_title(
+            "[绿茶字幕组] 欢迎来到实力至上主义的教室 第四季 / "
+            "Youkoso Jitsuryoku Shijou Shugi no Kyoushitsu e S4 "
+            "[16v2][WebRip][1080p][简日内嵌]"
+        )
+        assert (
+            result == "欢迎来到实力至上主义的教室 / "
+            "Youkoso Jitsuryoku Shijou Shugi no Kyoushitsu e"
+        )
 
     def test_gb_subtitle(self):
         result = extract_title("[Group][Anime Title][10][GB][1080P][MP4]")
