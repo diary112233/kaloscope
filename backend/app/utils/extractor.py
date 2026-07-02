@@ -59,7 +59,7 @@ _VIDEO_TAGS_PATTERN = re.compile(
         | WEB-DL | WEBRip | WEBDL | WEB
         | DVDRip | DVD
         | HD(?:TV|CAM)?
-        | AMZN | NF | DSNP | HMAX | ATVP | iT
+        | AMZN | NF | DSNP | HMAX | ATVP | (?-i:iT)
         # encoding
         | [Hh]\.?26[45] | HEVC | AVC | x26[45] | xvid | divx
         | HDR(?:10(?:\+|Plus)?)?| DV | DoVi | SDR
@@ -75,6 +75,7 @@ _VIDEO_TAGS_PATTERN = re.compile(
         | PROPER | REPACK | REMUX | EXTENDED | THEATRICAL | DIRECTORS\.CUT
         | [Ss]eason\s*\d+
     )
+    (?=[\.\s\]\)\-_]|$)  # tag must be complete, not a word prefix
     [\.\s\]\)\-_]?  # trailing separator
     .*$             # consume the rest
     """,

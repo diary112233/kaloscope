@@ -198,6 +198,10 @@ class TestExtractTitle:
         result = extract_title("Dune.Part.Two.2024.2160p.UHD.BluRay.HDR10.DTS-HD.MA")
         assert "dune part two" in result.lower()
 
+    def test_title_keeps_tag_prefix_words(self):
+        result = extract_title("Some.Webster.BDrive.2024.1080p.WEB-DL")
+        assert result == "Some Webster BDrive"
+
     def test_title_with_resolution_dimensions(self):
         result = extract_title("Reborn.as.a.Cat.1920x1080.HEVC")
         assert result == "Reborn as a Cat"
