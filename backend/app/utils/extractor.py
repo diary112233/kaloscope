@@ -79,7 +79,8 @@ _VIDEO_TAGS_PATTERN = re.compile(
         | [257]\.1
         # language/subtitle markers
         | (?:(?:zh|cn|jp|en|ko|fr|de|es|ru)[-_]?){1,3}(?:sub|dub)?\b
-        | (?:CHS|CHT|ENG|JPN|KOR)(?:[._+](?:CHS|CHT|ENG|JPN|KOR))*
+        | (?:CHS|CHT|ENG|JPN|KOR|GB|BIG5)
+          (?:[._+](?:CHS|CHT|ENG|JPN|KOR|GB|BIG5))*
         | [简簡繁](?:[简簡繁])?(?:日|中)?(?:[内內][嵌封](?:字幕)?|字幕)
         | [Ss]ub(?:bed)?
         # misc
