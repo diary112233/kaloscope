@@ -257,12 +257,6 @@ class TestExtractTitle:
         result = extract_title("Some.Webster.Crisis.BDrive.2024.1080p.WEB-DL")
         assert result == "Some Webster Crisis BDrive"
 
-    def test_b_global_source(self):
-        result = extract_title(
-            "为喵人生 / Reborn as a Cat - 36 (B-Global Donghua 1920x1080 HEVC AAC MKV)"
-        )
-        assert result == "为喵人生 / Reborn as a Cat"
-
     def test_iqiyi_source(self):
         result = extract_title(
             "花样少年少女 第二季 - 02 [IQIYI WebRip 2160p NVENC AAC]"
@@ -283,6 +277,32 @@ class TestExtractTitle:
     def test_cr_source(self):
         result = extract_title("LV999的村民 - 02 [CR WebRip AI2160p NVENC AAC]")
         assert result == "LV999的村民"
+
+    def test_abema_source(self):
+        result = extract_title(
+            "[黒ネズミたち] 左撇子艾倫 / Hidarikiki no Eren - 12 "
+            "(ABEMA 1920x1080 AVC AAC MKV)"
+        )
+        assert result == "左撇子艾倫 / Hidarikiki no Eren"
+
+    def test_baha_source(self):
+        result = extract_title(
+            "[黒ネズミたち] 黑貓與魔女的教室 / Kuroneko to Majo no Kyoushitsu "
+            "- 12 (Baha 1920x1080 AVC AAC MP4)"
+        )
+        assert result == "黑貓與魔女的教室 / Kuroneko to Majo no Kyoushitsu"
+
+    def test_b_global_source(self):
+        result = extract_title(
+            "[黒ネズミたち] 海贼王 / One Piece - 1168 (B-Global 3840x2160 HEVC AAC MKV)"
+        )
+        assert result == "海贼王 / One Piece"
+
+    def test_b_global_donghua_source(self):
+        result = extract_title(
+            "为喵人生 / Reborn as a Cat - 36 (B-Global Donghua 1920x1080 HEVC AAC MKV)"
+        )
+        assert result == "为喵人生 / Reborn as a Cat"
 
     def test_chinese_subtitle(self):
         result = extract_title(
