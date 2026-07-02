@@ -363,11 +363,12 @@ async def transfer_files(task: DownloadTask, files: list[str] | None):
         for file in files:
             # render the template with the extracted metadata
             if is_template(repl):
+                stem = Path(file).stem
                 context = {
-                    "title": extract_title(file, True),
-                    "year": extract_year(file),
-                    "season": extract_season(file),
-                    "episode": extract_episode(file),
+                    "title": extract_title(stem),
+                    "year": extract_year(stem),
+                    "season": extract_season(stem),
+                    "episode": extract_episode(stem),
                 }
                 repl = render(repl, context=context)
             # apply the replacement pattern

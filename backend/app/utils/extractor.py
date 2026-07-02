@@ -125,25 +125,21 @@ def extract_episode(name: str) -> int | None:
     return None
 
 
-def extract_title(name: str, ext: bool = False) -> str:
+def extract_title(name: str) -> str:
     """Extract a clean title string from a media file name.
 
     Strips common prefix noise (sub-group tags, download-site labels) and
     suffix noise (year, season/episode markers, video quality/codec tags,
-    file extension) from the input string.
+    etc.) from the input string.
 
     Args:
         name: The raw file name or path stem string.
-        ext: Whether to remove the file extension before extraction.
 
     Returns:
         A cleaned title string suitable for media scraping.
     """
-    # remove file extension if present
-    stem = re.sub(r"\.[a-zA-Z0-9]{2,4}$", "", name) if ext else name
-
     # strip the leading bracketed prefix (sub-group / site label)
-    title = _PREFIX_PATTERN.sub("", stem).strip()
+    title = _PREFIX_PATTERN.sub("", name).strip()
 
     # remove standalone year token before video tags
     title = re.sub(r"(?<!\d)[\(\[（]?(19|20)\d{2}[\)\]）]?(?!\d)", " ", title)
@@ -163,6 +159,6 @@ def extract_title(name: str, ext: bool = False) -> str:
 
     # fallback to original name if nothing survives
     if not title:
-        title = _SEPARATOR_PATTERN.sub(" ", stem).strip()
+        title = _SEPARATOR_PATTERN.sub(" ", name).strip()
 
     return title
