@@ -373,6 +373,13 @@ class TestExtractTitle:
         )
         assert result == "一疊間漫畫咖啡廳日常 一畳間まんきつ暮らし！"
 
+    def test_bracketed_chinese_range(self):
+        result = extract_title(
+            "[LoliHouse] 主播女孩重度依赖 / NEEDY GIRL OVERDOSE "
+            "[01-13话][WebRip 1080p HEVC-10bit AAC][简繁内封字幕][Fin]"
+        )
+        assert result == "主播女孩重度依赖 / NEEDY GIRL OVERDOSE"
+
     def test_bracketed_range(self):
         result = extract_title(
             "[LoliHouse] 最强的职业不是勇者也不是贤者好像是鉴定士(暂定)的样子？ / "
