@@ -140,6 +140,14 @@ class TestExtractEpisode:
     def test_chinese_episode_number_321(self):
         assert extract_episode("【某某动漫】【第三季】【第三百二十一回】") == 321
 
+    def test_chinese_marker_boundary(self):
+        assert (
+            extract_episode(
+                "落第贤者的学院无双～第二回转生，S等级作弊魔术师冒险记～ - 01"
+            )
+            == 1
+        )
+
     def test_episode_zero(self):
         assert extract_episode("Show.S01E00.Special") == 0
 
@@ -394,6 +402,17 @@ class TestExtractTitle:
         assert (
             result == "关于邻家的天使大人不知不觉把我惯成了废人这件事 / "
             "Otonari no Tenshi sama ni Itsunomanika Dame Ningen ni Sareteita Ken"
+        )
+
+    def test_keeps_chinese_marker(self):
+        result = extract_title(
+            "[三明治摆烂组&LoliHouse] 落第贤者的学院无双～第二回转生，"
+            "S等级作弊魔术师冒险记～ / Rakudai Kenja no Gakuin Musou - 01 "
+            "[WebRip 1080p HEVC-10bit AAC][简繁日内封字幕]"
+        )
+        assert (
+            result == "落第贤者的学院无双～第二回转生，S等级作弊魔术师冒险记～ / "
+            "Rakudai Kenja no Gakuin Musou"
         )
 
     def test_dash_episode(self):
