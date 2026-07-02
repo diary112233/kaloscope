@@ -110,6 +110,9 @@ class TestExtractEpisode:
     def test_dash_number_before_parentheses(self):
         assert extract_episode("Show - 03 (WEB 1080p)") == 3
 
+    def test_dash_number_before_end_marker(self):
+        assert extract_episode("Jujutsu Kaisen S3 - 12 END [WEB]") == 12
+
     def test_bracket_format(self):
         assert extract_episode("[SubGroup] Anime S2 [06][1080p].mkv") == 6
 
@@ -269,6 +272,14 @@ class TestExtractTitle:
             "LV999的村民 / Lv999 no Murabito - 01 - [繁日内嵌][AVC 8bit 1080P]"
         )
         assert result == "LV999的村民 / Lv999 no Murabito"
+
+    def test_title_with_leading_language_prefix(self):
+        result = extract_title(
+            "[jibaketa合成&音頻壓制][代理商粵語]咒術迴戰 第三季 / "
+            "Jujutsu Kaisen S3 - 12 END [粵日雙語+內封繁體中文字幕]"
+            "(WEB 1920x1080 AVC AACx2 SRT Ani-One CHT)"
+        )
+        assert result == "咒術迴戰 / Jujutsu Kaisen"
 
     def test_title_with_gb_subtitle_tag(self):
         result = extract_title("[Group][Anime Title][10][GB][1080P][MP4]")

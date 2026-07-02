@@ -10,6 +10,20 @@ _SEPARATOR_PATTERN = re.compile(r"[._\-\s]+")
 # pattern to match the leading noise prefix like [SubGroup], (SiteName), 【字幕组】 etc.
 _PREFIX_PATTERN = re.compile(r"^[\[\(【][^\]\)】]*[\]\)】]\s*")
 
+# pattern to match a leading metadata prefix after the release group
+_LEADING_META_PREFIX_PATTERN = re.compile(
+    r"""
+    ^(?:
+        [\[\(【]
+        [^\]\)】]*
+        (?:粵語|粤语|國語|国语|日語|日语|英語|英语|雙語|双语|無字幕|无字幕|字幕)
+        [^\]\)】]*
+        [\]\)】]\s*
+    )+
+    """,
+    re.VERBOSE,
+)
+
 # year pattern: a 4-digit year between 1900 and 2099, excluding dimensions
 _YEAR_PATTERN = re.compile(
     r"(?<![\dxX])[\(\[（]?(?P<year>(?:19|20)\d{2})"
@@ -37,7 +51,8 @@ _EPISODE_PATTERN = re.compile(
     (?:
         [Ss]\d{1,3}[Ee]0*(\d{1,4})
         | (?<![A-Za-z0-9])[Ee][Pp]?\.?0*(\d{1,4})(?!\d)
-        | \s-\s(?!0*(?:19|20)\d{2}\b)0*(\d{1,4})\s*(?:-|[\[\(]|$)
+        | \s-\s(?!0*(?:19|20)\d{2}\b)0*(\d{1,4})\s*
+          (?:[Ee][Nn][Dd]\b\s*)?(?:-|[\[\(]|$)
         | \[(?!(?:19|20)\d{2}\])0*(\d{1,4})
           (?:\s*-\s*(?:\d{1,4}|[总總]第\s*(?:\d{1,4}|[零一二三四五六七八九十百千]+)))?\]
         | 第\s*(\d{1,4})\s*[集话話回]
@@ -82,6 +97,10 @@ _VIDEO_TAGS_PATTERN = re.compile(
         | (?:CHS|CHT|ENG|JPN|KOR|GB|BIG5)
           (?:[._+](?:CHS|CHT|ENG|JPN|KOR|GB|BIG5))*
         | [简簡繁](?:[简簡繁])?(?:日|中)?(?:[内內][嵌封](?:字幕)?|字幕)
+        | (?:[简簡繁粵粤國国日英中]+(?:語|语)|[简簡繁粵粤國国日英中]+[雙双]語)
+          (?:\+(?:[无無]字幕|[内內][嵌封](?:[简簡繁](?:体|體)?(?:中|日)?文?)?字幕))*
+        | [内內][嵌封](?:[简簡繁](?:体|體)?(?:中|日)?文?)?字幕
+        | [无無]字幕
         | [Ss]ub(?:bed)?
         # misc
         | PROPER | REPACK | REMUX | EXTENDED | THEATRICAL | DIRECTORS\.CUT
@@ -157,6 +176,7 @@ def extract_title(name: str) -> str:
     """
     # strip the leading bracketed prefix (sub-group / site label)
     title = _PREFIX_PATTERN.sub("", name).strip()
+    title = _LEADING_META_PREFIX_PATTERN.sub("", title).strip()
 
     # remove standalone year token before video tags
     title = _YEAR_PATTERN.sub(" ", title)
