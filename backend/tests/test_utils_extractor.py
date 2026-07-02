@@ -110,6 +110,12 @@ class TestExtractEpisode:
     def test_bracket_format(self):
         assert extract_episode("[SubGroup] Anime S2 [06][1080p].mkv") == 6
 
+    def test_bracket_total_episode_format(self):
+        assert extract_episode("[Show][10 - 总第76][WEB-DL]") == 10
+
+    def test_bracket_total_episode_traditional_format(self):
+        assert extract_episode("[Show][09 - 總第75][WEB-DL]") == 9
+
     def test_chinese_episode_marker_ji(self):
         assert extract_episode("庆余年 第3集") == 3
 
@@ -195,6 +201,17 @@ class TestExtractTitle:
             "[DMG&SumiSora][Tongari_Boushi_no_Atelier][12-13][1080P][GB][MP4]"
         )
         assert result == "Tongari Boushi no Atelier"
+
+    def test_tv_show_bracket_total_episode(self):
+        result = extract_title(
+            "[晚街与灯][Re：从零开始的异世界生活 第四季 / "
+            "Re:Zero kara Hajimeru Isekai Seikatsu 4th Season]"
+            "[10 - 总第76][WEB-DL Remux][1080P_AVC_AAC][简繁日内封PGS]"
+        )
+        assert (
+            result == "Re：从零开始的异世界生活 / "
+            "Re:Zero kara Hajimeru Isekai Seikatsu 4th Season"
+        )
 
     # --- Edge cases ---
 
