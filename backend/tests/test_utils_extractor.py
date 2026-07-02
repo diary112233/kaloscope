@@ -30,6 +30,9 @@ class TestExtractYear:
     def test_year_in_chinese_filename(self):
         assert extract_year("流浪地球2.2023.2160p.WEB-DL") == 2023
 
+    def test_year_attached_to_word_is_not_year(self):
+        assert extract_year("Doraemon1979") is None
+
     def test_tv_show_no_year(self):
         assert extract_year("[SubGroup] Attack on Titan S04E01 1080p") is None
 
@@ -303,6 +306,12 @@ class TestExtractTitle:
             "[2026.06.28][BIG5][1080P][MP4]"
         )
         assert result == "櫻桃小丸子 (Chibi Maruko chan II)"
+
+    def test_title_keeps_attached_year_in_title(self):
+        result = extract_title(
+            "[哆啦字幕組][哆啦A夢大山版 Doraemon1979][1263][1080P][HDTV][繁日雙語][MP4]"
+        )
+        assert result == "哆啦A夢大山版 Doraemon1979"
 
     def test_title_with_gb_subtitle_tag(self):
         result = extract_title("[Group][Anime Title][10][GB][1080P][MP4]")

@@ -15,9 +15,13 @@ _LEADING_META_PREFIX_PATTERN = re.compile(
     r"""
     ^(?:
         [\[\(【]
-        [^\]\)】]*
-        (?:粵語|粤语|國語|国语|日語|日语|英語|英语|雙語|双语|無字幕|无字幕|字幕)
-        [^\]\)】]*
+        (?:
+            [^\]\)】]*
+            (?:粵語|粤语|國語|国语|日語|日语|英語|英语|雙語|双语|無字幕|无字幕|字幕)
+            [^\]\)】]*
+            | ANi
+            | アニメ
+        )
         [\]\)】]\s*
     )+
     """,
@@ -46,8 +50,8 @@ _BRACKETED_EPISODE_TITLE_SUFFIX_PATTERN = re.compile(
 
 # year pattern: a 4-digit year between 1900 and 2099, excluding dimensions
 _YEAR_PATTERN = re.compile(
-    r"(?<![\dxX])[\(\[（]?(?P<year>(?:19|20)\d{2})"
-    r"(?!\d|[xX]\d{3,4})[\)\]）]?"
+    r"(?:^|(?<=[._\-\s]))[\(\[（]?(?P<year>(?:19|20)\d{2})"
+    r"(?!\d|[xX]\d{3,4}|[A-Za-z])[\)\]）]?"
 )
 
 # season pattern: S01, S01E01, s1, Season 1, 第1季, 第二季, 第二期 etc.
