@@ -230,6 +230,22 @@ class TestExtractTitle:
         result = extract_title("LV999的村民 - 02 [CR WebRip AI2160p NVENC AAC]")
         assert result == "LV999的村民"
 
+    def test_title_with_chinese_subtitle_tag(self):
+        result = extract_title(
+            "LV999的村民 / Lv999 no Murabito - 01 - [繁日内嵌][AVC 8bit 1080P]"
+        )
+        assert result == "LV999的村民 / Lv999 no Murabito"
+
+    def test_title_with_chinese_subtitle_text_tag(self):
+        result = extract_title(
+            "Raise wa Tanin ga Ii S01 | 01-12 [简繁字幕] BDrip 1080p"
+        )
+        assert result == "Raise wa Tanin ga Ii | 01 12"
+
+    def test_title_keeps_subtitle_tag_prefix_words(self):
+        result = extract_title("Some.简繁字幕组.2024.1080p.WEB-DL")
+        assert result == "Some 简繁字幕组"
+
     def test_title_with_chinese_season_period(self):
         result = extract_title(
             "[绿茶字幕组] 关于邻家的天使大人不知不觉把我惯成了废人这件事 "

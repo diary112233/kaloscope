@@ -71,6 +71,7 @@ _VIDEO_TAGS_PATTERN = re.compile(
         # language/subtitle markers
         | (?:(?:zh|cn|jp|en|ko|fr|de|es|ru)[-_]?){1,3}(?:sub|dub)?\b
         | (?:CHS|CHT|ENG|JPN|KOR)(?:[._+](?:CHS|CHT|ENG|JPN|KOR))*
+        | [简簡繁](?:[简簡繁])?(?:日|中)?(?:[内內][嵌封](?:字幕)?|字幕)
         | [Ss]ub(?:bed)?
         # misc
         | PROPER | REPACK | REMUX | EXTENDED | THEATRICAL | DIRECTORS\.CUT
