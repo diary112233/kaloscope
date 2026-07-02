@@ -44,6 +44,12 @@ _EPISODE_PATTERN = re.compile(
     re.VERBOSE,
 )
 
+# trailing collection range pattern, e.g. "| 01-12"
+_COLLECTION_RANGE_PATTERN = re.compile(
+    r"\s*\|\s*(?!0*(?:19|20)\d{2}\b)0*\d{1,4}\s*-\s*"
+    r"(?!0*(?:19|20)\d{2}\b)0*\d{1,4}\s*$"
+)
+
 # pattern to match common video tags and everything after them
 _VIDEO_TAGS_PATTERN = re.compile(
     r"""
@@ -153,6 +159,9 @@ def extract_title(name: str) -> str:
 
     # remove trailing technical tags and everything after them
     title = _VIDEO_TAGS_PATTERN.sub("", title)
+
+    # remove trailing collection episode ranges
+    title = _COLLECTION_RANGE_PATTERN.sub(" ", title)
 
     # remove season and episode markers
     title = _SEASON_PATTERN.sub(" ", title)
