@@ -21,9 +21,12 @@ from app.core.exceptions import error_handler
 from app.core.flow.engine import FlowEngine
 from app.core.media.watcher import LibWatcher
 from app.core.middleware import SessionHolder, on_request, on_response
+from app.core.monkeypatch import apply_monkey_patches
 from app.core.network import NetworkTransport
 from app.utils.importer import register_blueprints
 from app.utils.json import dumps, loads
+
+apply_monkey_patches()
 
 # get the root path of the project
 APP_PATH = Path(__file__).resolve().parent
