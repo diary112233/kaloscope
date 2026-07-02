@@ -10,8 +10,11 @@ _SEPARATOR_PATTERN = re.compile(r"[._\-\s]+")
 # pattern to match the leading noise prefix like [SubGroup], (SiteName), 【字幕组】 etc.
 _PREFIX_PATTERN = re.compile(r"^[\[\(【][^\]\)】]*[\]\)】]\s*")
 
-# year pattern: a 4-digit year between 1900 and 2099
-_YEAR_PATTERN = re.compile(r"(?<!\d)(19|20)\d{2}(?!\d)")
+# year pattern: a 4-digit year between 1900 and 2099, excluding dimensions
+_YEAR_PATTERN = re.compile(
+    r"(?<![\dxX])[\(\[（]?(?P<year>(?:19|20)\d{2})"
+    r"(?!\d|[xX]\d{3,4})[\)\]）]?"
+)
 
 # season pattern: S01, S01E01, s1, Season 1, 第1季, 第二季 etc.
 _SEASON_PATTERN = re.compile(
@@ -90,7 +93,7 @@ def extract_year(name: str) -> int | None:
     """
     match = _YEAR_PATTERN.search(name)
     if match:
-        return int(match.group())
+        return int(match.group("year"))
     return None
 
 
@@ -143,7 +146,7 @@ def extract_title(name: str) -> str:
     title = _PREFIX_PATTERN.sub("", name).strip()
 
     # remove standalone year token before video tags
-    title = re.sub(r"(?<!\d)[\(\[（]?(19|20)\d{2}[\)\]）]?(?!\d)", " ", title)
+    title = _YEAR_PATTERN.sub(" ", title)
 
     # remove trailing technical tags and everything after them
     title = _VIDEO_TAGS_PATTERN.sub("", title)

@@ -40,6 +40,9 @@ class TestExtractYear:
         # 1080 should not be treated as a year
         assert extract_year("Movie.1080p") is None
 
+    def test_year_not_confused_by_resolution_dimensions(self):
+        assert extract_year("Movie.1920x1080.HEVC") is None
+
 
 class TestExtractSeason:
     def test_uppercase_s_format(self):
@@ -194,6 +197,10 @@ class TestExtractTitle:
     def test_title_with_hdr_tags(self):
         result = extract_title("Dune.Part.Two.2024.2160p.UHD.BluRay.HDR10.DTS-HD.MA")
         assert "dune part two" in result.lower()
+
+    def test_title_with_resolution_dimensions(self):
+        result = extract_title("Reborn.as.a.Cat.1920x1080.HEVC")
+        assert result == "Reborn as a Cat"
 
     def test_title_with_parenthesized_dlrip_tags(self):
         result = extract_title("[milky] 真・燐月 (DLrip 1280x720 x264 AAC)")
