@@ -4,8 +4,8 @@ import re
 
 from app.utils.numeral import cn_to_int
 
-# pattern to match common separators: dot, underscore, hyphen, space
-_SEPARATOR_PATTERN = re.compile(r"[._\-\s]+")
+# pattern to match common separators: dot, underscore, hyphen, space, star
+_SEPARATOR_PATTERN = re.compile(r"[._\-\s★☆]+")
 
 # pattern to match the leading noise prefix like [SubGroup], (SiteName), 【字幕组】 etc.
 _PREFIX_PATTERN = re.compile(r"^[\[\(【][^\]\)】]*[\]\)】]\s*")
@@ -21,12 +21,16 @@ _LEADING_META_PREFIX_PATTERN = re.compile(
             [^\]\)】]*
             | ANi
             | アニメ
+            | 国漫
         )
         [\]\)】]\s*
     )+
     """,
     re.VERBOSE,
 )
+
+# pattern to strip unbracketed subtitle group prefixes like 字幕組★Title
+_LEADING_STAR_PREFIX_PATTERN = re.compile(r"^[^★☆]{1,40}(?:字幕组|字幕組)[^★☆]*[★☆]\s*")
 
 # pattern to match leading seasonal broadcast markers like ★04月新番★
 _LEADING_BROADCAST_MARKER_PATTERN = re.compile(r"^[★☆]\s*\d{1,2}\s*月\s*新番\s*[★☆]\s*")
@@ -50,7 +54,7 @@ _BRACKETED_EPISODE_TITLE_SUFFIX_PATTERN = re.compile(
 
 # year pattern: a 4-digit year between 1900 and 2099, excluding dimensions
 _YEAR_PATTERN = re.compile(
-    r"(?:^|(?<=[._\-\s]))[\(\[（]?(?P<year>(?:19|20)\d{2})"
+    r"(?:^|(?<=[._\-\s\]\)】]))[\(\[（]?(?P<year>(?:19|20)\d{2})"
     r"(?!\d|[xX]\d{3,4}|[A-Za-z])[\)\]）]?"
 )
 
@@ -95,6 +99,9 @@ _COLLECTION_RANGE_PATTERN = re.compile(
     (?:
         \s*\|\s*(?!0*(?:19|20)\d{2}\b)0*\d{1,4}\s*[-~～]\s*
         (?!0*(?:19|20)\d{2}\b)0*\d{1,4}(?:\+[Ss][Pp]x\d+)?(?=\s*(?:[\[\(]|$))
+        | \s*[★☆]\s*(?!0*(?:19|20)\d{2}\b)0*\d{1,4}\s*[-~～]\s*
+          (?!0*(?:19|20)\d{2}\b)0*\d{1,4}
+          (?:[\(（]\s*(?:完|[Ee][Nn][Dd]|[Ff]in)\s*[\)）])?(?=\s*[★☆])
         | \s*第\s*0*\d{1,4}\s*[-~～]\s*0*\d{1,4}\s*[集话話回](?=\s*(?:[\[\(]|$))
         | \s*[\[\(【]\s*合集\s*[\]\)】]\s*[\[\(【]\s*
           0*\d{1,4}\s*[~～]\s*0*\d{1,4}\s*[\]\)】]
@@ -112,7 +119,7 @@ _COLLECTION_RANGE_PATTERN = re.compile(
 # pattern to match common video tags and everything after them
 _VIDEO_TAGS_PATTERN = re.compile(
     r"""
-    [\.\s\[\(\-_]   # leading separator
+    [\.\s\[\(\-_★☆]   # leading separator
     (?:
         # resolution
         \d{3,4}[pPiI]
@@ -149,8 +156,8 @@ _VIDEO_TAGS_PATTERN = re.compile(
         | Pre-Air
         | [Ss]eason\s*\d+
     )
-    (?=[\.\s\]\)\-_]|$)  # tag must be complete, not a word prefix
-    [\.\s\]\)\-_]?  # trailing separator
+    (?=[\.\s\]\)\-_★☆]|$)  # tag must be complete, not a word prefix
+    [\.\s\]\)\-_★☆]?  # trailing separator
     .*$             # consume the rest
     """,
     re.VERBOSE | re.IGNORECASE,
@@ -237,6 +244,7 @@ def extract_title(name: str) -> str:
     # strip the leading bracketed prefix (sub-group / site label)
     title = _PREFIX_PATTERN.sub("", name).strip()
     title = _LEADING_META_PREFIX_PATTERN.sub("", title).strip()
+    title = _LEADING_STAR_PREFIX_PATTERN.sub("", title).strip()
     title = _LEADING_BROADCAST_MARKER_PATTERN.sub("", title).strip()
     title = _BRACKETED_EPISODE_TITLE_SUFFIX_PATTERN.sub("", title).strip()
 

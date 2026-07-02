@@ -21,6 +21,11 @@ class TestExtractYear:
     def test_year_in_brackets(self):
         assert extract_year("Parasite [2019] BluRay") == 2019
 
+    def test_adjacent_bracket_year(self):
+        assert (
+            extract_year("[GM-Team][国漫][仙逆][Renegade Immortal][2023][146]") == 2023
+        )
+
     def test_year_at_end(self):
         assert extract_year("Avengers.Endgame.2019") == 2019
 
@@ -431,6 +436,20 @@ class TestExtractTitle:
             result == "Re：从零开始的异世界生活 丧失篇合集 / "
             "Re:Zero kara Hajimeru Isekai Seikatsu"
         )
+
+    def test_star_range(self):
+        result = extract_title(
+            "六四位元字幕組★哪裡有溫柔對待阿宅的辣妹！？ "
+            "Otaku ni Yasashii Gal wa Inai★01~12(完)★1920x1080"
+            "★AVC AAC MP4★繁體中文(全修正合集+ass字幕)"
+        )
+        assert result == "哪裡有溫柔對待阿宅的辣妹！？ Otaku ni Yasashii Gal wa Inai"
+
+    def test_guoman_prefix(self):
+        result = extract_title(
+            "[GM-Team][国漫][仙逆][Renegade Immortal][2023][146][AVC][GB][1080P]"
+        )
+        assert result == "仙逆 Renegade Immortal"
 
     def test_keeps_subtitle_prefix(self):
         result = extract_title("Some.简繁字幕组.2024.1080p.WEB-DL")
