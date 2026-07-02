@@ -72,6 +72,9 @@ class TestExtractSeason:
     def test_movie_with_year_no_season(self):
         assert extract_season("The.Godfather.1972.BluRay") is None
 
+    def test_embedded_s_number_is_not_season(self):
+        assert extract_season("MARS01") is None
+
 
 class TestExtractEpisode:
     def test_uppercase_e_format(self):
@@ -193,6 +196,10 @@ class TestExtractTitle:
     def test_plain_movie_name(self):
         result = extract_title("Dune")
         assert result.lower() == "dune"
+
+    def test_embedded_s_number_is_preserved(self):
+        result = extract_title("MARS01")
+        assert result == "MARS01"
 
     def test_title_always_returns_string(self):
         assert extract_title("[Group] 2023 1080p S01E01")
