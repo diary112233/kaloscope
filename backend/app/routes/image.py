@@ -1,29 +1,19 @@
 import mimetypes
 from pathlib import Path
-from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 
 import aiofiles
 import httpx
-from pydantic import BaseModel, Field
 from sanic import Blueprint, HTTPResponse, Request, empty, raw
+from sanic.log import logger
 from sanic.response import ResponseStream
 from sanic_ext import validate
 
 from app.core.config import KaloscopeConfig
+from app.core.exceptions import ErrorCode, KaloscopeException
+from app.utils.proxy import PROXY_RESPONSE_HEADERS, RemoteProxy, remote_proxy_request
 
 # subroutes for all image related operations
 image = Blueprint("image")
-
-# define the response headers that we want to copy from the proxied request
-RESPONSE_HEADERS = [
-    "content-type",
-    "content-length",
-    "content-encoding",
-    "last-modified",
-    "cache-control",
-    "expires",
-    "etag",
-]
 
 
 @image.get("/<dir>/<filename:ext=jpg|jpeg|png|gif|webp>")
@@ -45,19 +35,12 @@ async def get_image(_, dir: str, filename: str, ext: str) -> HTTPResponse:
         )
 
 
-class ImageProxy(BaseModel):
-    """Request model for proxying an image."""
-
-    url: str = Field(min_length=1)
-    store: bool = False
-
-
 @image.get("/image/proxy")
-@validate(query=ImageProxy)
-async def proxy_image(
-    request: Request, query: ImageProxy
+@validate(query=RemoteProxy)
+async def proxy_remote_image(
+    request: Request, query: RemoteProxy
 ) -> HTTPResponse | ResponseStream:
-    """Proxy an image from the given URL."""
+    """Proxy a remote image from the given URL."""
     url = query.url
     store = query.store
 
@@ -83,46 +66,35 @@ async def proxy_image(
     if not (http or https):
         return empty(status=404)
 
-    # prepare the proxy request URL
-    parsed = urlparse(url)
-    referer: str | None = None
-    query_params: list[tuple[str, str]] = []
-    for key, value in parse_qsl(parsed.query, keep_blank_values=True):
-        if key == "proxy":
-            continue
-        if key == "referer":
-            if value:
-                referer = value
-            continue
-        query_params.append((key, value))
-    url = urlunparse(parsed._replace(query=urlencode(query_params)))
-
-    # adjust the request headers
-    headers = dict(request.headers)
-    headers["host"] = urlparse(url).netloc
-    headers["referer"] = referer or url
-    headers.pop("cookie", None)
-    headers.pop("authorization", None)
+    url, headers = remote_proxy_request(url, query.referer, request.headers)
     client: httpx.AsyncClient = request.app.ctx.httpx
 
     async def _stream(stream):
-        async with client.stream("GET", url, headers=headers) as r:
-            stream.response.status = r.status_code
-            # copy the response headers to the stream response
-            for header in RESPONSE_HEADERS:
-                if store and header == "content-encoding":
-                    continue
-                if value := r.headers.get(header):
-                    stream.response.headers[header.title()] = value
-            # iterate over the response content and write it to the stream
-            if store:
-                local_path.parent.mkdir(parents=True, exist_ok=True)
-                async with aiofiles.open(local_path, "wb") as f:
-                    async for chunk in r.aiter_bytes():
+        try:
+            async with client.stream("GET", url, headers=headers) as r:
+                stream.response.status = r.status_code
+                # copy the response headers to the stream response
+                for header in PROXY_RESPONSE_HEADERS:
+                    if store and header == "content-encoding":
+                        continue
+                    if value := r.headers.get(header):
+                        stream.response.headers[header.title()] = value
+                # iterate over the response content and write it to the stream
+                if store:
+                    local_path.parent.mkdir(parents=True, exist_ok=True)
+                    async with aiofiles.open(local_path, "wb") as f:
+                        async for chunk in r.aiter_bytes():
+                            await stream.write(chunk)
+                            await f.write(chunk)
+                else:
+                    async for chunk in r.aiter_raw():
                         await stream.write(chunk)
-                        await f.write(chunk)
-            else:
-                async for chunk in r.aiter_raw():
-                    await stream.write(chunk)
+        except httpx.RequestError as e:
+            logger.error(
+                "An error occurred while proxying remote image %s.",
+                url,
+                exc_info=True,
+            )
+            raise KaloscopeException(ErrorCode.HTTP_REQUEST_FAILED) from e
 
     return ResponseStream(_stream)
