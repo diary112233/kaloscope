@@ -4,6 +4,7 @@
   import { ImageViewer, Overlay, TextViewer, VideoPlayer } from '$lib/components';
   import { createLoading } from '$lib/helpers';
   import type { Chapter, Resource, Resp } from '$lib/types';
+  import { isDashSupported } from '$lib/utils';
   import { onMount, tick } from 'svelte';
   import { queryParameters, ssp } from 'sveltekit-search-params';
   import { UAParser } from 'ua-parser-js';
@@ -61,6 +62,7 @@
           $start: 'details_start',
           id: page.params.rsrc_id,
           chapter_id: activeChapterId,
+          dash_supported: isDashSupported(),
           ua: {
             ...userAgent,
             navigator: {

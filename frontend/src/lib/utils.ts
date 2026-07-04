@@ -1,6 +1,7 @@
 import { MEDIA_STREAM_PREFIX } from '$lib/constants';
 import type { TranscodeOptions } from '$lib/types';
 import { UAParser } from 'ua-parser-js';
+import Shaka from 'xgplayer-shaka';
 import type { IUrl } from 'xgplayer/es/defaultConfig';
 
 /**
@@ -402,4 +403,18 @@ export function buildStreamUrl(path: string, transcode: TranscodeOptions | null 
  */
 export function isTranscodedStream(url: IUrl | null | undefined): boolean {
   return typeof url === 'string' && url.startsWith(MEDIA_STREAM_PREFIX) && url.includes('transcode=true');
+}
+
+/**
+ * Check whether the current browser can play the DASH streams.
+ *
+ * @returns Whether Shaka and the required MediaSource codecs are supported.
+ */
+export function isDashSupported(): boolean {
+  const mediaSource = globalThis.MediaSource;
+  if (!Shaka.isSupported() || !mediaSource?.isTypeSupported) {
+    return false;
+  }
+  const dashMediaTypes = ['video/mp4; codecs="avc1.640028"', 'audio/mp4; codecs="mp4a.40.2"'];
+  return dashMediaTypes.every((type) => mediaSource.isTypeSupported(type));
 }
