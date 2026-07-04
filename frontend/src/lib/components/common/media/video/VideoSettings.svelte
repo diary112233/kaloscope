@@ -392,7 +392,18 @@
     if (!player) {
       return;
     }
-    player.setConfig({ url: url, customDuration: await probeDuration(url) });
+    const duration = await probeDuration(url);
+
+    // handle DASH streams
+    if (player.config.videoType === 'dash' && typeof url === 'string') {
+      // use playNext because switchURL can leave the Shaka pipeline stuck after manifest changes
+      player.playNext({ url, customDuration: duration });
+      definition = url;
+      return;
+    }
+
+    // handle other streams
+    player.setConfig({ url, customDuration: duration });
     const seamless = typeof MediaSource !== 'undefined' && typeof MediaSource.isTypeSupported === 'function';
     if (seamless) {
       // use seamless switching if supported
