@@ -449,7 +449,7 @@
                 loading={board.loading}
                 class="px-0!"
                 tableClass="[&_thead_tr]:border-0"
-                gridClass="grid-cols-2 {aspectRatio(board.coverRatio) > 1 ? 'grid-cols-sparse' : 'grid-cols-compact'}"
+                gridClass="grid-cols-2 {aspectRatio(board.coverRatio) > 1 ? 'grid-cols-sparse' : 'grid-cols-medium'}"
                 itemClass="rounded-sm bg-base-100 shadow-sm lg:hover:shadow-lg lg:mb-4"
               >
                 <!-- table view -->

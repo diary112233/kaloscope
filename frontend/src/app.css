@@ -61,9 +61,13 @@
 
   /* custom breakpoints */
   --breakpoint-w60: 60rem;
+  --breakpoint-w66: 66rem;
   --breakpoint-w72: 72rem;
+  --breakpoint-w78: 78rem;
   --breakpoint-w84: 84rem;
+  --breakpoint-w90: 90rem;
   --breakpoint-w96: 96rem;
+  --breakpoint-w102: 102rem;
   --breakpoint-w108: 108rem;
   --breakpoint-w120: 120rem;
 
@@ -277,6 +281,9 @@
 /* grid columns with different widths */
 @utility grid-cols-sparse {
   @apply md:grid-cols-2! lg:grid-cols-3! xl:grid-cols-4! 2xl:grid-cols-5!;
+}
+@utility grid-cols-medium {
+  @apply md:grid-cols-3! w66:grid-cols-4! w78:grid-cols-5! w90:grid-cols-6! w102:grid-cols-7!;
 }
 @utility grid-cols-compact {
   @apply md:grid-cols-3! w60:grid-cols-4! w72:grid-cols-5! w84:grid-cols-6! w96:grid-cols-7! w108:grid-cols-8!;
