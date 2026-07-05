@@ -164,6 +164,8 @@
 
   // the theme color before entering fullscreen mode
   let themeColor: string | null = null;
+  // whether the player is in fullscreen mode
+  let fullscreen: boolean = $state(false);
   // whether the screen orientation is locked in fullscreen mode
   let screenLocked: boolean = $state(false);
   // whether the player is in rotate fullscreen mode
@@ -180,6 +182,7 @@
     if (!player || !fullscreenPlugin) {
       return;
     }
+
     if (player.isRotateFullscreen) {
       // exit rotate fullscreen mode
       player.exitRotateFullscreen();
@@ -223,6 +226,9 @@
         player.getFullscreen(container).catch(() => {});
       }
     }
+
+    // update the fullscreen state
+    fullscreen = player.isRotateFullscreen || player.cssfullscreen || player.fullscreen;
   };
 
   /**
@@ -581,7 +587,7 @@
     class="pointer-events-none absolute inset-0 layer-0 overflow-visible! text-stroke"
     class:h-dvh={rotateFullscreen}
     class:right-8={rotateFullscreen}
-    class:top-10={!rotateFullscreen && !screenLocked}
+    class:top-10={!fullscreen}
   ></div>
 </div>
 
