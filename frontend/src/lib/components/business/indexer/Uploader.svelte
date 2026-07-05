@@ -11,12 +11,14 @@
   let { up, at, extra, class: _class }: UploaderProps = $props();
 </script>
 
-<div class="flex items-center justify-between gap-4 pr-1 text-xs opacity-50 {_class}">
+<div class="flex items-center justify-between gap-2 pr-1 text-xs {_class}">
   {#if up || at}
     {@const info = [up && `UP: ${up}`, at].filter(Boolean).join(' ・ ')}
-    <span class="line-clamp-2" title={info}>{info}</span>
+    <span class="line-clamp-2 opacity-50" title={info}>{info}</span>
   {/if}
   {#if extra}
-    <span class="italic shrink-0 truncate pr-0.5 {up || at ? 'max-w-1/2' : 'max-w-full'}" title={extra}>{extra}</span>
+    <span class="opacity-40 italic shrink-0 truncate pr-0.5 {up || at ? 'max-w-1/2' : 'max-w-full'}" title={extra}>
+      {extra}
+    </span>
   {/if}
 </div>
