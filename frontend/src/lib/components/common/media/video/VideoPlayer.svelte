@@ -183,6 +183,9 @@
       return;
     }
 
+    // update the fullscreen state
+    fullscreen = !(player.isRotateFullscreen || player.cssfullscreen || player.fullscreen);
+
     if (player.isRotateFullscreen) {
       // exit rotate fullscreen mode
       player.exitRotateFullscreen();
@@ -226,9 +229,6 @@
         player.getFullscreen(container).catch(() => {});
       }
     }
-
-    // update the fullscreen state
-    fullscreen = player.isRotateFullscreen || player.cssfullscreen || player.fullscreen;
   };
 
   /**
