@@ -16,6 +16,9 @@ from app.core.config import KaloscopeConfig
 from app.core.constants import ENCODING
 from app.models.general import GlobalConfig
 
+_SEGMENT_WAIT_TIMEOUT = 30.0
+_SEGMENT_WAIT_INTERVAL = 0.25
+
 
 @dataclass
 class EncoderConfig:
@@ -272,7 +275,8 @@ async def ensure_transcode(
     lock = _acquire_lock(out_dir)
     if lock is None:
         logger.debug("HLS transcode already in progress: %s", out_dir)
-        await _wait_segment(m3u8_path)
+        if not await _wait_segment(m3u8_path):
+            raise RuntimeError("HLS first segment was not ready in time")
         return media_hash, profile
 
     # start the ffmpeg process if we acquired the lock
@@ -298,7 +302,12 @@ async def ensure_transcode(
         asyncio.ensure_future(_monitor_ffmpeg(proc, lock))
 
         # wait for at least one segment so the player can start immediately
-        await _wait_segment(m3u8_path)
+        if not await _wait_segment(m3u8_path, proc=proc):
+            if proc.returncode is not None:
+                raise RuntimeError(
+                    "ffmpeg exited before generating the first HLS segment"
+                )
+            raise RuntimeError("HLS first segment was not ready in time")
 
     except Exception:
         _release_lock(lock)
@@ -449,11 +458,11 @@ async def _build_hls_cmd(
     # video filter chain
     vf_parts: list[str] = []
     if needs_scale:
+        target_height = f"trunc(min({options.max_height},ih)/2)*2"
         # scale filter to limit the output height while preserving aspect ratio,
-        # and ensure the dimensions are divisible by 16 for better encoder compatibility
+        # and ensure the dimensions are compatible with H.264 encoders
         vf_parts.append(
-            f"scale='max(trunc(iw*min({options.max_height},ih)/ih/16)*16,16)'"
-            f":'min({options.max_height},ih)'"
+            f"scale='max(trunc(iw*{target_height}/ih/16)*16,16)':'{target_height}'"
         )
 
     # QSV: when frames stay on the GPU, use QSV VPP to normalize them to NV12.
@@ -738,12 +747,16 @@ _SEGMENT_LINE_RE = re.compile(r"^(?!\s*#)(.+\.ts)\s*$", re.MULTILINE)
 
 
 async def _wait_segment(
-    m3u8_path: Path, timeout: float = 10.0, interval: float = 0.25
+    m3u8_path: Path,
+    proc: asyncio.subprocess.Process | None = None,
+    timeout: float = _SEGMENT_WAIT_TIMEOUT,
+    interval: float = _SEGMENT_WAIT_INTERVAL,
 ) -> bool:
     """Block until `m3u8_path` exists and contains at least one segment.
 
     Args:
         m3u8_path: The M3U8 file path.
+        proc: The ffmpeg subprocess to watch.
         timeout: The max seconds to wait.
         interval: The polling interval in seconds.
 
@@ -762,6 +775,11 @@ async def _wait_segment(
                 continue
             if _SEGMENT_LINE_RE.search(content.strip()):
                 return True
+
+        # no more segments can be produced after ffmpeg exits
+        if proc is not None and proc.returncode is not None:
+            return False
+
         await asyncio.sleep(interval)
         elapsed += interval
     return False
