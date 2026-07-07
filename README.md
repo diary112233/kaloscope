@@ -140,7 +140,7 @@ docker run -d \
 
 ## 星标历史
 
-[![Star History Chart](https://api.star-history.com/chart?repos=kaloscope/kaloscope&type=date&legend=top-left)](https://www.star-history.com/?repos=kaloscope%2Fkaloscope&type=date&legend=top-left)
+[![Star History Chart](https://api.star-history.com/chart?repos=kaloscope/kaloscope&type=date&legend=top-left&sealed_token=S9lenHp-t0Ymo6Ru7vlSuTHg1Ls1ivKCM3gbor1JO0qZvB34kL8KN5DTFBNiBhUTGkekeFHPfsylXwV-YqqbIfbYS0t2GaqwzwcUor3LDrOBEklY_ckecMR-GKAAn59cDJLGASEIULqTOLvMcxO79ZMJOD4qHLGaOk3o5SWVWTsQ8C6QfnZSBbpsHKKq)](https://www.star-history.com/?repos=kaloscope%2Fkaloscope&type=date&legend=top-left)
 
 ## 贡献者
 
