@@ -277,6 +277,8 @@ async def ensure_transcode(
 
     # start the ffmpeg process if we acquired the lock
     try:
+        _cleanup_stale_hls(out_dir)
+
         # probe the real source framerate so GOP-based keyframe placement
         # (used by hardware encoders) aligns with the HLS segment boundaries
         fps = await probe_framerate(media_path)
@@ -349,6 +351,23 @@ def _release_lock(lock: FileLock):
         lock.release()
 
 
+def _cleanup_stale_hls(out_dir: Path):
+    """Remove stale HLS files before rebuilding an incomplete transcode.
+
+    Args:
+        out_dir: The output directory to clean.
+    """
+    targets = [
+        out_dir / "index.m3u8",
+        out_dir / "index.m3u8.tmp",
+        *out_dir.glob("segment_*.ts"),
+        *out_dir.glob("segment_*.ts.tmp"),
+    ]
+    for path in targets:
+        if path.is_file():
+            path.unlink()
+
+
 async def _build_hls_cmd(
     input_path: str, out_dir: Path, options: TranscodeOptions
 ) -> list[str]:
@@ -383,7 +402,34 @@ async def _build_hls_cmd(
 
     # hardware acceleration
     hw = options.encoder_config
-    if hw.hwaccel:
+    if hw.hwaccel == "qsv":
+        qsv_dev = await _vaapi_device()
+        if not qsv_dev:
+            raise RuntimeError(
+                "QSV requires a DRM render device, e.g. /dev/dri/renderD128"
+            )
+        cmd.extend(
+            [
+                "-init_hw_device",
+                f"vaapi=va:{qsv_dev}",
+                "-init_hw_device",
+                "qsv=qs@va",
+                "-filter_hw_device",
+                "qs",
+            ]
+        )
+        if not needs_scale:
+            cmd.extend(
+                [
+                    "-hwaccel",
+                    "qsv",
+                    "-hwaccel_device",
+                    "qs",
+                    "-hwaccel_output_format",
+                    "qsv",
+                ]
+            )
+    elif hw.hwaccel:
         vaapi_dev = hw.hwaccel == "vaapi" and await _vaapi_device()
         if vaapi_dev:
             cmd.extend(["-vaapi_device", vaapi_dev])
@@ -410,11 +456,17 @@ async def _build_hls_cmd(
             f":'min({options.max_height},ih)'"
         )
 
+    # QSV: when frames stay on the GPU, use QSV VPP to normalize them to NV12.
+    # When CPU scaling is requested, keep frames in system memory and let the
+    # QSV encoder upload them after the software scale/format conversion.
+    if hw.hwaccel == "qsv":
+        vf_parts.append("format=nv12" if needs_scale else "vpp_qsv=format=nv12")
+
     # VAAPI: ensure NV12 8-bit format and re-upload to GPU for the encoder.
     # HEVC 10-bit decode produces P010 surfaces — format=nv12 converts in
     # software, then hwupload uploads to the device created by -vaapi_device
     # (or the implicit device from -hwaccel vaapi as fallback).
-    if hw.hwaccel == "vaapi":
+    elif hw.hwaccel == "vaapi":
         vf_parts.append("format=nv12")
         vf_parts.append("hwupload")
 
