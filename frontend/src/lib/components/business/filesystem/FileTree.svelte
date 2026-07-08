@@ -11,12 +11,13 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
   import { api } from '$lib/api';
-  import { Modal, alert } from '$lib/components';
+  import { Modal, alert, confirm as confirmDialog, prompt as promptDialog } from '$lib/components';
   import { createLoading } from '$lib/helpers';
   import { _ } from '$lib/i18n';
   import { icons } from '$lib/icons';
   import { token } from '$lib/stores';
   import { onMount } from 'svelte';
+  import { SvelteMap } from 'svelte/reactivity';
 
   let { rootPath = '', onlyDirs = false, onconfirm }: FileTreeProps = $props();
   let paths: Path[] = $state([]);
@@ -41,6 +42,91 @@
 
   // the loading state
   const loading = createLoading();
+
+  // index loaded tree nodes by path for selected-node checks
+  const pathMap = $derived.by(() => {
+    const index = new SvelteMap<string, Path>();
+    const pending = [...paths];
+    for (let i = 0; i < pending.length; i += 1) {
+      const path = pending[i];
+      index.set(path.path, path);
+      pending.push(...(path.children ?? []));
+    }
+    return index;
+  });
+
+  /**
+   * Check if the selected path is deletable (empty directory).
+   */
+  function deletable(): boolean {
+    if (!current) {
+      return false;
+    }
+    const path = pathMap.get(current);
+    return path?.is_dir === true && path.is_empty === true;
+  }
+
+  /**
+   * Confirm before deleting the selected empty directory.
+   */
+  function deleteDir() {
+    const path = current;
+    if (!path || !deletable()) {
+      alert({ level: 'error', message: 'bad_request' });
+      return;
+    }
+    confirmDialog({
+      icon: icons.subtractCircle,
+      title: $_('filesystem.delete_folder'),
+      message: $_('filesystem.delete_folder_message'),
+      onconfirm: async () => {
+        loading.start();
+        try {
+          const resp = await api.post('filesystem/rmdir', { json: { path } }).json<Resp<string>>();
+          current = resp.data;
+          paths = await list(rootPath, current);
+        } catch (error) {
+          console.error(error);
+        } finally {
+          loading.end();
+        }
+      }
+    });
+  }
+
+  /**
+   * Prompt for a directory name and create it under the selected directory.
+   */
+  function createDir() {
+    const parent = current || rootPath;
+    if (!parent) {
+      alert({ level: 'error', message: 'bad_request' });
+      return;
+    }
+    promptDialog({
+      icon: icons.addCircle,
+      title: $_('filesystem.new_folder'),
+      message: $_('filesystem.new_folder_message'),
+      placeholder: $_('filesystem.new_folder_placeholder'),
+      onconfirm: async (name) => {
+        const folderName = name?.trim();
+        if (!folderName) {
+          alert({ level: 'error', message: 'bad_request' });
+          return;
+        }
+        loading.start();
+        try {
+          const resp = await api.post('filesystem/mkdir', { json: { parent, name: folderName } }).json<Resp<string>>();
+          current = resp.data;
+          paths = await list(rootPath, current);
+        } catch (error) {
+          console.error(error);
+        } finally {
+          loading.end();
+        }
+      }
+    });
+  }
 
   /**
    * List the files and directories in the given path.
@@ -137,6 +223,27 @@
       </label>
     </fieldset>
     <div class="modal-action">
+      {#if onlyDirs}
+        <div class="mr-auto flex gap-2">
+          <button
+            type="button"
+            class="btn btn-square {$loading !== null || !deletable() ? 'btn-disabled' : 'text-red-900'}"
+            onclick={deleteDir}
+            title={$_('filesystem.delete_folder')}
+          >
+            <iconify-icon icon={icons.subtractCircle} width="1.25rem" class="size-5"></iconify-icon>
+          </button>
+          <button
+            type="button"
+            class="btn max-sm:btn-square {$loading !== null || !current ? 'btn-disabled' : 'text-surface'}"
+            onclick={createDir}
+            title={$_('filesystem.new_folder')}
+          >
+            <iconify-icon icon={icons.addCircle} width="1.25rem" class="size-5"></iconify-icon>
+            <span class="max-sm:hidden">{$_('filesystem.new_folder')}</span>
+          </button>
+        </div>
+      {/if}
       <button type="button" class="btn" onclick={() => modal.close()}>
         {$_('message.cancel')}
       </button>
@@ -155,7 +262,7 @@
     {#each paths.filter((p) => showHidden || !p.is_hidden) as path (path.path)}
       {@const activeClass = current === path.path ? 'item-emphasis' : ''}
       <li>
-        {#if path.is_dir && !path.is_empty}
+        {#if path.is_dir && path.expandable}
           <details bind:open={path.open}>
             <summary class={activeClass} onclick={() => unfold(path)}>
               {@render item(path)}
