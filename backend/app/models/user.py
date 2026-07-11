@@ -39,12 +39,6 @@ class MediaProgressStatus(StrEnum):
     WATCHED = auto()
 
 
-class MediaProgressAction(StrEnum):
-    WATCHING = auto()
-    WATCHED = auto()
-    UNWATCHED = auto()
-
-
 class PermType(StrEnum):
     INDEXER = auto()
     MEDIA_LIB = auto()
@@ -248,4 +242,4 @@ class MediaProgressMark(BaseModel):
 
 class MediaProgressSet(BaseModel):
     media_id: PositiveInt
-    status: MediaProgressAction
+    status: MediaProgressStatus

@@ -114,20 +114,7 @@
   }
 
   function applyProgressStatus(mediaId: number, result: MediaProgressStatusResult) {
-    if (result.progress) {
-      applyProgress(result.progress);
-    } else {
-      if (media?.id === mediaId) {
-        media.progress = null;
-      }
-      const part = media?.children?.find((item) => item.id === mediaId);
-      if (part) {
-        part.progress = null;
-      }
-      if (_media?.id === mediaId) {
-        _media.progress = null;
-      }
-    }
+    applyProgress(result.progress);
 
     const isChild = media?.children?.some((item) => item.id === mediaId) ?? false;
     if (result.parent_progress) {

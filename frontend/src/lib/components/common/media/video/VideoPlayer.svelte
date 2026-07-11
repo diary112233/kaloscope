@@ -174,9 +174,11 @@
   let transcodeRetriedUrl: string | null = null;
   let activeMediaId: number | null = null;
   let lastRecordAt = 0;
-  let resumePercentage: number | null = $state(null);
-  let resumeMode: 'automatic' | 'watched_prompt' | null = $state(null);
-  let resumePosition: number | null = null;
+  let resumeNotice: {
+    percentage: number;
+    mode: 'automatic' | 'watched_prompt';
+    position: number;
+  } | null = $state(null);
   let resumeTimer: number | null = null;
   let progressWrite: Promise<unknown> = Promise.resolve();
   let activeProgress: MediaProgress | null = null;
@@ -593,7 +595,7 @@
   }
 
   function recordActiveHistory(force: boolean = false) {
-    if (!force && resumeMode === 'watched_prompt') {
+    if (!force && resumeNotice?.mode === 'watched_prompt') {
       return;
     }
     const json = recordHistory(player, activeMediaId);
@@ -641,24 +643,18 @@
   }
 
   function showResumeNotice(percentage: number, mode: 'automatic' | 'watched_prompt', position: number) {
-    resumePercentage = percentage;
-    resumeMode = mode;
-    resumePosition = position;
+    resumeNotice = { percentage, mode, position };
     if (resumeTimer !== null) {
       clearTimeout(resumeTimer);
     }
     resumeTimer = window.setTimeout(() => {
-      resumePercentage = null;
-      resumeMode = null;
-      resumePosition = null;
+      resumeNotice = null;
       resumeTimer = null;
     }, 6000);
   }
 
   function hideResumeNotice() {
-    resumePercentage = null;
-    resumeMode = null;
-    resumePosition = null;
+    resumeNotice = null;
     if (resumeTimer !== null) {
       clearTimeout(resumeTimer);
       resumeTimer = null;
@@ -674,8 +670,8 @@
   }
 
   function jumpToSavedPosition() {
-    if (player && resumePosition !== null) {
-      player.currentTime = resumePosition;
+    if (player && resumeNotice) {
+      player.currentTime = resumeNotice.position;
       player.play();
     }
     hideResumeNotice();
@@ -725,17 +721,17 @@
 <div bind:this={container} class="relative" style:width style:height>
   <div {id}></div>
 
-  {#if resumePercentage !== null}
+  {#if resumeNotice}
     <div
       class="absolute top-14 left-1/2 z-10 flex -translate-x-1/2 items-center gap-2 rounded-field bg-black/55 px-3 py-2 text-sm text-white shadow-lg backdrop-blur-sm"
     >
-      {#if resumeMode === 'watched_prompt'}
-        <span>{$_('media.progress.watched_resume_prompt', [resumePercentage])}</span>
+      {#if resumeNotice.mode === 'watched_prompt'}
+        <span>{$_('media.progress.watched_resume_prompt', [resumeNotice.percentage])}</span>
         <button class="btn btn-xs border-0 bg-white/15 text-white hover:bg-white/25" onclick={jumpToSavedPosition}>
           {$_('media.progress.jump_to_position')}
         </button>
       {:else}
-        <span>{$_('media.progress.resume', [resumePercentage])}</span>
+        <span>{$_('media.progress.resume', [resumeNotice.percentage])}</span>
         <button class="btn btn-xs border-0 bg-white/15 text-white hover:bg-white/25" onclick={restartPlayback}>
           {$_('media.progress.restart')}
         </button>

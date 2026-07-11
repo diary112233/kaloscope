@@ -1,5 +1,5 @@
 import { api } from '$lib/api';
-import type { MediaItem, MediaProgress, MediaProgressAction, MediaProgressStatusResult, Resp } from '$lib/types';
+import type { MediaItem, MediaProgress, MediaProgressStatus, MediaProgressStatusResult, Resp } from '$lib/types';
 
 export async function loadMediaProgress(ids: number[]): Promise<Map<number, MediaProgress>> {
   const uniqueIds = [...new Set(ids.filter((id) => Number.isFinite(id)))];
@@ -22,7 +22,7 @@ export async function loadMediaProgress(ids: number[]): Promise<Map<number, Medi
 
 export async function setMediaProgressStatus(
   mediaId: number,
-  status: MediaProgressAction
+  status: MediaProgressStatus
 ): Promise<MediaProgressStatusResult> {
   const resp = await api
     .post('media/progress/status', {
@@ -42,7 +42,7 @@ export function isWatched(progress: MediaProgress | null | undefined): boolean {
   return progress?.status === 'watched';
 }
 
-export function mediaProgressAction(progress: MediaProgress | null | undefined): MediaProgressAction {
+export function mediaProgressStatus(progress: MediaProgress | null | undefined): MediaProgressStatus {
   return progress?.status ?? 'unwatched';
 }
 

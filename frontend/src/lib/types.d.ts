@@ -255,6 +255,8 @@ export type MediaLib = {
 /**
  * The type of the media watch progress.
  */
+export type MediaProgressStatus = 'unwatched' | 'watching' | 'watched';
+
 export type MediaProgress = {
   id: number;
   created_at: string;
@@ -263,11 +265,9 @@ export type MediaProgress = {
   media_id: number;
   position: number;
   percentage: number;
-  status: 'unwatched' | 'watching' | 'watched';
+  status: MediaProgressStatus;
   manual: boolean;
 };
-
-export type MediaProgressAction = 'watching' | 'watched' | 'unwatched';
 
 export type MediaProgressResult = {
   progress: MediaProgress;
@@ -275,7 +275,7 @@ export type MediaProgressResult = {
 };
 
 export type MediaProgressStatusResult = {
-  progress: MediaProgress | null;
+  progress: MediaProgress;
   parent_progress: MediaProgress | null;
 };
 

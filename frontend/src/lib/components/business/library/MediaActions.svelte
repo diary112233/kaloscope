@@ -1,5 +1,5 @@
 <script lang="ts" module>
-  import type { MediaItem, MediaProgressAction, MediaProgressStatusResult } from '$lib/types';
+  import type { MediaItem, MediaProgressStatus, MediaProgressStatusResult } from '$lib/types';
   import type { IconifyIcon } from 'iconify-icon';
   import type { MouseEventHandler } from 'svelte/elements';
 
@@ -8,7 +8,7 @@
     class?: string;
     triggerClass?: string;
     onclick?: () => void;
-    progressStatuses?: MediaProgressAction[];
+    progressStatuses?: MediaProgressStatus[];
     onprogress?: (result: MediaProgressStatusResult) => void;
     onscrape?: () => void;
     ondelete?: () => void;
@@ -20,7 +20,7 @@
   import { closeDropdowns } from '$lib/components/common/interaction/Dropdown.svelte';
   import { _ } from '$lib/i18n';
   import { icons } from '$lib/icons';
-  import { mediaProgressAction, setMediaProgressStatus } from '$lib/progress';
+  import { mediaProgressStatus, setMediaProgressStatus } from '$lib/progress';
   import { user } from '$lib/stores';
 
   let {
@@ -43,8 +43,8 @@
     unwatched: icons.subtractCircle
   };
 
-  async function changeProgress(status: MediaProgressAction) {
-    if (changingProgress || mediaProgressAction(item.progress) === status) {
+  async function changeProgress(status: MediaProgressStatus) {
+    if (changingProgress || mediaProgressStatus(item.progress) === status) {
       return;
     }
     changingProgress = true;
@@ -96,7 +96,7 @@
         progressIcons[status],
         $_(`media.progress.${status}`),
         () => changeProgress(status),
-        changingProgress || mediaProgressAction(item.progress) === status
+        changingProgress || mediaProgressStatus(item.progress) === status
       )}
     {/each}
     {#if progressStatuses.length && $user?.role === 'admin' && (onscrape || ondelete)}

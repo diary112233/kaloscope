@@ -17,7 +17,6 @@ from app.models.flow import IndexerResource
 from app.models.user import (
     HistoryEntry,
     HistoryType,
-    MediaProgressAction,
     MediaProgressMark,
     MediaProgressQuery,
     MediaProgressRecord,
@@ -368,12 +367,12 @@ class UserMediaProgressService(
     @classmethod
     async def dump_result(
         cls,
-        progress: UserMediaProgress | None,
+        progress: UserMediaProgress,
         parent_progress: UserMediaProgress | None,
     ) -> dict[str, dict | None]:
         """Dump a media progress together with its parent aggregate progress."""
         return {
-            "progress": await cls.dump(progress) if progress else None,
+            "progress": await cls.dump(progress),
             "parent_progress": (
                 await cls.dump(parent_progress) if parent_progress else None
             ),
@@ -446,36 +445,40 @@ class UserMediaProgressService(
         progress, parent_progress = await cls.set_status(
             user,
             MediaProgressSet(
-                media_id=obj.media_id, status=MediaProgressAction.WATCHED
+                media_id=obj.media_id, status=MediaProgressStatus.WATCHED
             ),
         )
-        if progress is None:
-            raise KaloscopeException(ErrorCode.INTERNAL_SERVER_ERROR)
         return progress, parent_progress
 
     @classmethod
     @atomic()
     async def set_status(
         cls, user: UserInfo, obj: MediaProgressSet
-    ) -> tuple[UserMediaProgress | None, UserMediaProgress | None]:
+    ) -> tuple[UserMediaProgress, UserMediaProgress | None]:
+        """Set an explicit watch status within a transaction."""
+        return await cls._set_status(user, obj)
+
+    @classmethod
+    async def _set_status(
+        cls, user: UserInfo, obj: MediaProgressSet
+    ) -> tuple[UserMediaProgress, UserMediaProgress | None]:
         """Set or clear an explicit watch status for the current user."""
         media = await cls._get_accessible_media(user, obj.media_id)
 
         progress = await UserMediaProgress.get_or_none(
             user_id=user.id, media_id=media.id
         )
-        status = MediaProgressStatus(obj.status.value)
         if progress is None:
             progress = await UserMediaProgress.create(
                 user_id=user.id,
                 media_id=media.id,
                 position=0,
                 percentage=0,
-                status=status,
+                status=obj.status,
                 manual=True,
             )
         else:
-            progress.status = status
+            progress.status = obj.status
             progress.manual = True
             await progress.save(update_fields=["status", "manual", "updated_at"])
 

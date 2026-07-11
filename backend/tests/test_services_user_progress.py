@@ -8,7 +8,6 @@ from app.models.media import MediaItem
 from app.models.user import (
     HistoryEntry,
     HistoryType,
-    MediaProgressAction,
     MediaProgressQuery,
     MediaProgressSet,
     MediaProgressStatus,
@@ -19,8 +18,7 @@ from app.services.user import UserHistoryService, UserMediaProgressService
 
 
 def set_status(user, obj):
-    method = UserMediaProgressService.set_status.__wrapped__
-    return asyncio.run(method(UserMediaProgressService, user, obj))
+    return asyncio.run(UserMediaProgressService._set_status(user, obj))
 
 
 @pytest.mark.parametrize(
@@ -112,7 +110,7 @@ def test_set_watching_creates_zero_progress(monkeypatch):
 
     result, parent = set_status(
         user,
-        MediaProgressSet(media_id=11, status=MediaProgressAction.WATCHING),
+        MediaProgressSet(media_id=11, status=MediaProgressStatus.WATCHING),
     )
 
     assert result is progress
@@ -147,7 +145,7 @@ def test_set_watched_preserves_position(monkeypatch):
 
     result, _ = set_status(
         user,
-        MediaProgressSet(media_id=11, status=MediaProgressAction.WATCHED),
+        MediaProgressSet(media_id=11, status=MediaProgressStatus.WATCHED),
     )
 
     assert result.position == 321
@@ -178,7 +176,7 @@ def test_set_watching_preserves_existing_position_and_percentage(monkeypatch):
 
     result, _ = set_status(
         user,
-        MediaProgressSet(media_id=11, status=MediaProgressAction.WATCHING),
+        MediaProgressSet(media_id=11, status=MediaProgressStatus.WATCHING),
     )
 
     assert result is progress
@@ -210,7 +208,7 @@ def test_set_unwatched_preserves_progress(monkeypatch):
 
     result, parent = set_status(
         user,
-        MediaProgressSet(media_id=11, status=MediaProgressAction.UNWATCHED),
+        MediaProgressSet(media_id=11, status=MediaProgressStatus.UNWATCHED),
     )
 
     assert result is progress
@@ -239,7 +237,7 @@ def test_child_status_change_syncs_parent(monkeypatch):
 
     result, parent = set_status(
         user,
-        MediaProgressSet(media_id=11, status=MediaProgressAction.WATCHING),
+        MediaProgressSet(media_id=11, status=MediaProgressStatus.WATCHING),
     )
 
     assert result is progress
@@ -294,4 +292,4 @@ def test_mark_watched_delegates_to_status_service(monkeypatch):
     assert result == (progress, parent)
     status = set_mock.await_args.args[1]
     assert status.media_id == 11
-    assert status.status == MediaProgressAction.WATCHED
+    assert status.status == MediaProgressStatus.WATCHED
