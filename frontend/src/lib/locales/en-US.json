@@ -391,6 +391,8 @@
       "unwatched": "Unwatched",
       "percentage": "Watched {0}%",
       "resume": "Last watched {0}%",
+      "watched_resume_prompt": "Watched. Jump to the last position ({0}%)?",
+      "jump_to_position": "Jump to Position",
       "restart": "Start Over",
       "mark_watched": "Mark Watched"
     },

@@ -175,6 +175,8 @@
   let activeMediaId: number | null = null;
   let lastRecordAt = 0;
   let resumePercentage: number | null = $state(null);
+  let resumeMode: 'automatic' | 'watched_prompt' | null = $state(null);
+  let resumePosition: number | null = null;
   let resumeTimer: number | null = null;
   let progressWrite: Promise<unknown> = Promise.resolve();
   let activeProgress: MediaProgress | null = null;
@@ -307,12 +309,15 @@
       recordActiveHistory(true);
     }
     const progress = options.progress;
+    const resumableStatus = progress?.status === 'watching' || progress?.status === 'unwatched';
     const resumeTime =
       options.startTime ??
-      (autoResumeEnabled() && progress?.status === 'watching' && progress.position > 0 ? progress.position : undefined);
+      (autoResumeEnabled() && resumableStatus && progress.position > 0 ? progress.position : undefined);
 
-    if (autoResumeEnabled() && progress?.status === 'watching' && progress.percentage > 0) {
-      showResumeNotice(progress.percentage);
+    if (autoResumeEnabled() && resumableStatus && progress.position > 0) {
+      showResumeNotice(progress.percentage, 'automatic', progress.position);
+    } else if (progress?.status === 'watched' && progress.position > 0) {
+      showResumeNotice(progress.percentage, 'watched_prompt', progress.position);
     } else {
       hideResumeNotice();
     }
@@ -588,6 +593,9 @@
   }
 
   function recordActiveHistory(force: boolean = false) {
+    if (!force && resumeMode === 'watched_prompt') {
+      return;
+    }
     const json = recordHistory(player, activeMediaId);
     if (!json) {
       return;
@@ -601,7 +609,7 @@
       media_id: json.media_id,
       position: json.position,
       percentage: json.percentage,
-      status: json.percentage >= 80 ? 'watched' : 'watching',
+      status: activeProgress?.status === 'watched' || json.percentage >= 80 ? 'watched' : 'watching',
       manual: false
     };
     activeProgress = progress;
@@ -632,19 +640,25 @@
       .catch((error) => console.error(error));
   }
 
-  function showResumeNotice(percentage: number) {
+  function showResumeNotice(percentage: number, mode: 'automatic' | 'watched_prompt', position: number) {
     resumePercentage = percentage;
+    resumeMode = mode;
+    resumePosition = position;
     if (resumeTimer !== null) {
       clearTimeout(resumeTimer);
     }
     resumeTimer = window.setTimeout(() => {
       resumePercentage = null;
+      resumeMode = null;
+      resumePosition = null;
       resumeTimer = null;
     }, 6000);
   }
 
   function hideResumeNotice() {
     resumePercentage = null;
+    resumeMode = null;
+    resumePosition = null;
     if (resumeTimer !== null) {
       clearTimeout(resumeTimer);
       resumeTimer = null;
@@ -654,6 +668,14 @@
   function restartPlayback() {
     if (player) {
       player.currentTime = 0;
+      player.play();
+    }
+    hideResumeNotice();
+  }
+
+  function jumpToSavedPosition() {
+    if (player && resumePosition !== null) {
+      player.currentTime = resumePosition;
       player.play();
     }
     hideResumeNotice();
@@ -707,10 +729,17 @@
     <div
       class="absolute top-14 left-1/2 z-10 flex -translate-x-1/2 items-center gap-2 rounded-field bg-black/55 px-3 py-2 text-sm text-white shadow-lg backdrop-blur-sm"
     >
-      <span>{$_('media.progress.resume', [resumePercentage])}</span>
-      <button class="btn btn-xs border-0 bg-white/15 text-white hover:bg-white/25" onclick={restartPlayback}>
-        {$_('media.progress.restart')}
-      </button>
+      {#if resumeMode === 'watched_prompt'}
+        <span>{$_('media.progress.watched_resume_prompt', [resumePercentage])}</span>
+        <button class="btn btn-xs border-0 bg-white/15 text-white hover:bg-white/25" onclick={jumpToSavedPosition}>
+          {$_('media.progress.jump_to_position')}
+        </button>
+      {:else}
+        <span>{$_('media.progress.resume', [resumePercentage])}</span>
+        <button class="btn btn-xs border-0 bg-white/15 text-white hover:bg-white/25" onclick={restartPlayback}>
+          {$_('media.progress.restart')}
+        </button>
+      {/if}
     </div>
   {/if}
 

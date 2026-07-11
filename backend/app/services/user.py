@@ -17,9 +17,11 @@ from app.models.flow import IndexerResource
 from app.models.user import (
     HistoryEntry,
     HistoryType,
+    MediaProgressAction,
     MediaProgressMark,
     MediaProgressQuery,
     MediaProgressRecord,
+    MediaProgressSet,
     MediaProgressStatus,
     Permissions,
     PermType,
@@ -350,21 +352,28 @@ class UserMediaProgressService(
     WATCHED_THRESHOLD = 80
 
     @classmethod
-    def status_from_percentage(cls, percentage: int) -> MediaProgressStatus:
-        """Convert a playback percentage into a watch status."""
-        if percentage >= cls.WATCHED_THRESHOLD:
+    def status_from_percentage(
+        cls,
+        percentage: int,
+        current_status: MediaProgressStatus | None = None,
+    ) -> MediaProgressStatus:
+        """Convert a percentage into a sticky automatic watch status."""
+        if (
+            current_status == MediaProgressStatus.WATCHED
+            or percentage >= cls.WATCHED_THRESHOLD
+        ):
             return MediaProgressStatus.WATCHED
         return MediaProgressStatus.WATCHING
 
     @classmethod
     async def dump_result(
         cls,
-        progress: UserMediaProgress,
+        progress: UserMediaProgress | None,
         parent_progress: UserMediaProgress | None,
     ) -> dict[str, dict | None]:
         """Dump a media progress together with its parent aggregate progress."""
         return {
-            "progress": await cls.dump(progress),
+            "progress": await cls.dump(progress) if progress else None,
             "parent_progress": (
                 await cls.dump(parent_progress) if parent_progress else None
             ),
@@ -401,13 +410,18 @@ class UserMediaProgressService(
         media = await cls._get_accessible_media(user, obj.media_id)
 
         percentage = max(0, min(obj.percentage, 100))
+        existing = await UserMediaProgress.get_or_none(
+            user_id=user.id, media_id=media.id
+        )
         progress, _ = await UserMediaProgress.update_or_create(
             user_id=user.id,
             media_id=media.id,
             defaults={
                 "position": obj.position,
                 "percentage": percentage,
-                "status": cls.status_from_percentage(percentage),
+                "status": cls.status_from_percentage(
+                    percentage, existing.status if existing else None
+                ),
                 "manual": False,
             },
         )
@@ -425,22 +439,46 @@ class UserMediaProgressService(
         return progress, parent_progress
 
     @classmethod
-    @atomic()
     async def mark_watched(
         cls, user: UserInfo, obj: MediaProgressMark
     ) -> tuple[UserMediaProgress, UserMediaProgress | None]:
         """Mark a media item as watched for the current user."""
+        progress, parent_progress = await cls.set_status(
+            user,
+            MediaProgressSet(
+                media_id=obj.media_id, status=MediaProgressAction.WATCHED
+            ),
+        )
+        if progress is None:
+            raise KaloscopeException(ErrorCode.INTERNAL_SERVER_ERROR)
+        return progress, parent_progress
+
+    @classmethod
+    @atomic()
+    async def set_status(
+        cls, user: UserInfo, obj: MediaProgressSet
+    ) -> tuple[UserMediaProgress | None, UserMediaProgress | None]:
+        """Set or clear an explicit watch status for the current user."""
         media = await cls._get_accessible_media(user, obj.media_id)
 
-        progress, _ = await UserMediaProgress.update_or_create(
-            user_id=user.id,
-            media_id=media.id,
-            defaults={
-                "percentage": 100,
-                "status": MediaProgressStatus.WATCHED,
-                "manual": True,
-            },
+        progress = await UserMediaProgress.get_or_none(
+            user_id=user.id, media_id=media.id
         )
+        status = MediaProgressStatus(obj.status.value)
+        if progress is None:
+            progress = await UserMediaProgress.create(
+                user_id=user.id,
+                media_id=media.id,
+                position=0,
+                percentage=0,
+                status=status,
+                manual=True,
+            )
+        else:
+            progress.status = status
+            progress.manual = True
+            await progress.save(update_fields=["status", "manual", "updated_at"])
+
         parent_progress = None
         if media.parent_id is not None:
             parent_progress = await cls._sync_parent(user.id, media)
@@ -464,7 +502,9 @@ class UserMediaProgressService(
 
         children = await MediaItem.filter(parent_id=media.parent_id, visible=True)
         if not children:
-            return
+            if parent_progress is not None:
+                await parent_progress.delete()
+            return None
 
         child_ids = [child.id for child in children]
         progresses = await UserMediaProgress.filter(
@@ -477,6 +517,15 @@ class UserMediaProgressService(
         ):
             status = MediaProgressStatus.WATCHED
             percentage = 100
+        elif progress_by_media and all(
+            progress.status == MediaProgressStatus.UNWATCHED
+            for progress in progress_by_media.values()
+        ):
+            status = MediaProgressStatus.UNWATCHED
+            percentage = round(
+                sum(progress.percentage for progress in progress_by_media.values())
+                / len(child_ids)
+            )
         elif progress_by_media:
             status = MediaProgressStatus.WATCHING
             percentage = min(
@@ -487,7 +536,9 @@ class UserMediaProgressService(
                 ),
             )
         else:
-            return
+            if parent_progress is not None:
+                await parent_progress.delete()
+            return None
 
         parent_progress, _ = await UserMediaProgress.update_or_create(
             user_id=user_id,

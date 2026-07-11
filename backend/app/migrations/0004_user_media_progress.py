@@ -61,7 +61,11 @@ class Migration(migrations.Migration):
                 (
                     "status",
                     fields.CharEnumField(
-                        description="WATCHING: watching\nWATCHED: watched",
+                        description=(
+                            "UNWATCHED: unwatched\n"
+                            "WATCHING: watching\n"
+                            "WATCHED: watched"
+                        ),
                         enum_type=MediaProgressStatus,
                         max_length=16,
                     ),

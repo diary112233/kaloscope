@@ -391,6 +391,8 @@
       "unwatched": "未看",
       "percentage": "看到 {0}%",
       "resume": "上次看到 {0}%",
+      "watched_resume_prompt": "已标记看过，是否跳转到上次观看位置（{0}%）？",
+      "jump_to_position": "跳转观看",
       "restart": "从头开始",
       "mark_watched": "标记看过"
     },

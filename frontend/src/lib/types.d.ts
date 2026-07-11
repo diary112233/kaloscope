@@ -263,12 +263,19 @@ export type MediaProgress = {
   media_id: number;
   position: number;
   percentage: number;
-  status: 'watching' | 'watched';
+  status: 'unwatched' | 'watching' | 'watched';
   manual: boolean;
 };
 
+export type MediaProgressAction = 'watching' | 'watched' | 'unwatched';
+
 export type MediaProgressResult = {
   progress: MediaProgress;
+  parent_progress: MediaProgress | null;
+};
+
+export type MediaProgressStatusResult = {
+  progress: MediaProgress | null;
   parent_progress: MediaProgress | null;
 };
 

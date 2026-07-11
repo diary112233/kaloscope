@@ -41,6 +41,7 @@ from app.models.user import (
     MediaProgressMark,
     MediaProgressQuery,
     MediaProgressRecord,
+    MediaProgressSet,
     UserInfo,
     UserRole,
 )
@@ -247,6 +248,20 @@ async def mark_media_progress(
     """Mark a media item as watched for the current user."""
     user: UserInfo = request.ctx.user
     progress, parent_progress = await UserMediaProgressService.mark_watched(user, body)
+    return json(
+        await UserMediaProgressService.dump_result(progress, parent_progress)
+    )
+
+
+@media.post("/progress/status")
+@authorize()
+@validate(json=MediaProgressSet)
+async def set_media_progress_status(
+    request: Request, body: MediaProgressSet
+) -> HTTPResponse:
+    """Set the current user's explicit watch status for a media item."""
+    user: UserInfo = request.ctx.user
+    progress, parent_progress = await UserMediaProgressService.set_status(user, body)
     return json(
         await UserMediaProgressService.dump_result(progress, parent_progress)
     )

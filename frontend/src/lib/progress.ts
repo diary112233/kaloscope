@@ -1,7 +1,5 @@
 import { api } from '$lib/api';
-import type { MediaItem, MediaProgress, Resp } from '$lib/types';
-
-export const WATCHED_THRESHOLD = 80;
+import type { MediaItem, MediaProgress, MediaProgressAction, MediaProgressStatusResult, Resp } from '$lib/types';
 
 export async function loadMediaProgress(ids: number[]): Promise<Map<number, MediaProgress>> {
   const uniqueIds = [...new Set(ids.filter((id) => Number.isFinite(id)))];
@@ -22,6 +20,18 @@ export async function loadMediaProgress(ids: number[]): Promise<Map<number, Medi
   return result;
 }
 
+export async function setMediaProgressStatus(
+  mediaId: number,
+  status: MediaProgressAction
+): Promise<MediaProgressStatusResult> {
+  const resp = await api
+    .post('media/progress/status', {
+      json: { media_id: mediaId, status }
+    })
+    .json<Resp<MediaProgressStatusResult>>();
+  return resp.data;
+}
+
 export function attachMediaProgress<T extends MediaItem>(items: T[], progresses: Map<number, MediaProgress>) {
   for (const item of items) {
     item.progress = progresses.get(item.id) ?? null;
@@ -29,7 +39,11 @@ export function attachMediaProgress<T extends MediaItem>(items: T[], progresses:
 }
 
 export function isWatched(progress: MediaProgress | null | undefined): boolean {
-  return progress?.status === 'watched' || (progress?.percentage ?? 0) >= WATCHED_THRESHOLD;
+  return progress?.status === 'watched';
+}
+
+export function mediaProgressAction(progress: MediaProgress | null | undefined): MediaProgressAction {
+  return progress?.status ?? 'unwatched';
 }
 
 export function hasProgress(progress: MediaProgress | null | undefined): boolean {

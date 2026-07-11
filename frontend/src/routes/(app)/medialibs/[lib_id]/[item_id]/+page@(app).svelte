@@ -5,9 +5,23 @@
   import { createLoading } from '$lib/helpers';
   import { _ } from '$lib/i18n';
   import { icons } from '$lib/icons';
-  import { attachMediaProgress, hasProgress, isWatched, loadMediaProgress } from '$lib/progress';
-  import { historyBack, user } from '$lib/stores';
-  import type { Chapter, MediaItem, MediaMeta, MediaProgress, MediaProgressResult, Resp } from '$lib/types';
+  import {
+    attachMediaProgress,
+    hasProgress,
+    isWatched,
+    loadMediaProgress,
+    setMediaProgressStatus
+  } from '$lib/progress';
+  import { historyBack } from '$lib/stores';
+  import type {
+    Chapter,
+    MediaItem,
+    MediaMeta,
+    MediaProgress,
+    MediaProgressResult,
+    MediaProgressStatusResult,
+    Resp
+  } from '$lib/types';
   import { buildStreamUrl } from '$lib/utils';
   import { onMount, tick } from 'svelte';
 
@@ -99,6 +113,30 @@
     }
   }
 
+  function applyProgressStatus(mediaId: number, result: MediaProgressStatusResult) {
+    if (result.progress) {
+      applyProgress(result.progress);
+    } else {
+      if (media?.id === mediaId) {
+        media.progress = null;
+      }
+      const part = media?.children?.find((item) => item.id === mediaId);
+      if (part) {
+        part.progress = null;
+      }
+      if (_media?.id === mediaId) {
+        _media.progress = null;
+      }
+    }
+
+    const isChild = media?.children?.some((item) => item.id === mediaId) ?? false;
+    if (result.parent_progress) {
+      applyProgress(result.parent_progress);
+    } else if (isChild && media) {
+      media.progress = null;
+    }
+  }
+
   /**
    * Start playing the selected media item.
    */
@@ -178,18 +216,21 @@
     if (!progress) {
       return $_('media.progress.unwatched');
     }
+    if (progress.status === 'unwatched') {
+      return $_('media.progress.unwatched');
+    }
     if (isWatched(progress)) {
       return $_('media.progress.watched');
+    }
+    if (progress.manual) {
+      return $_('media.progress.watching');
     }
     return short ? `${progress.percentage}%` : $_('media.progress.percentage', [progress.percentage]);
   }
 
   async function markWatched(item: MediaItem) {
     try {
-      const resp = await api
-        .post('media/progress/mark', { json: { media_id: item.id } })
-        .json<Resp<MediaProgressResult>>();
-      applyProgressResult(resp.data);
+      applyProgressStatus(item.id, await setMediaProgressStatus(item.id, 'watched'));
     } catch (error) {
       console.error(error);
     }
@@ -400,22 +441,22 @@
                 >
                   <iconify-icon icon={icons.play} width="1.25rem"></iconify-icon>
                 </div>
-                {#if $user?.role === 'admin'}
-                  <MediaActions
-                    item={part}
-                    class="dropdown-end ml-1"
-                    triggerClass="opacity-70"
-                    onclick={() => {
-                      selectMedia(part);
-                    }}
-                    ondelete={() => {
-                      // refresh the parent media details to update the parts list
-                      getDetails(media!.id).then((data) => {
-                        media = data;
-                      });
-                    }}
-                  />
-                {/if}
+                <MediaActions
+                  item={part}
+                  class="dropdown-end ml-1"
+                  triggerClass="opacity-70"
+                  progressStatuses={['watched', 'unwatched']}
+                  onprogress={(result) => applyProgressStatus(part.id, result)}
+                  onclick={() => {
+                    selectMedia(part);
+                  }}
+                  ondelete={() => {
+                    // refresh the parent media details to update the parts list
+                    getDetails(media!.id).then((data) => {
+                      media = data;
+                    });
+                  }}
+                />
               </button>
             {/each}
           </div>

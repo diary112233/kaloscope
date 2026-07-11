@@ -34,8 +34,15 @@ class HistoryType(StrEnum):
 
 
 class MediaProgressStatus(StrEnum):
+    UNWATCHED = auto()
     WATCHING = auto()
     WATCHED = auto()
+
+
+class MediaProgressAction(StrEnum):
+    WATCHING = auto()
+    WATCHED = auto()
+    UNWATCHED = auto()
 
 
 class PermType(StrEnum):
@@ -237,3 +244,8 @@ class MediaProgressRecord(BaseModel):
 
 class MediaProgressMark(BaseModel):
     media_id: PositiveInt
+
+
+class MediaProgressSet(BaseModel):
+    media_id: PositiveInt
+    status: MediaProgressAction

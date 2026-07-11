@@ -1,5 +1,5 @@
 <script lang="ts" module>
-  import type { MediaItem } from '$lib/types';
+  import type { MediaItem, MediaProgressAction, MediaProgressStatusResult } from '$lib/types';
   import type { IconifyIcon } from 'iconify-icon';
   import type { MouseEventHandler } from 'svelte/elements';
 
@@ -8,6 +8,8 @@
     class?: string;
     triggerClass?: string;
     onclick?: () => void;
+    progressStatuses?: MediaProgressAction[];
+    onprogress?: (result: MediaProgressStatusResult) => void;
     onscrape?: () => void;
     ondelete?: () => void;
   };
@@ -18,16 +20,49 @@
   import { closeDropdowns } from '$lib/components/common/interaction/Dropdown.svelte';
   import { _ } from '$lib/i18n';
   import { icons } from '$lib/icons';
+  import { mediaProgressAction, setMediaProgressStatus } from '$lib/progress';
+  import { user } from '$lib/stores';
 
-  let { item, class: _class, triggerClass, onclick, onscrape, ondelete }: MediaActionsProps = $props();
+  let {
+    item,
+    class: _class,
+    triggerClass,
+    onclick,
+    progressStatuses = [],
+    onprogress,
+    onscrape,
+    ondelete
+  }: MediaActionsProps = $props();
   let scraper: MetadataScraper | null = $state(null);
   let deleter: MediaDelConfirm | null = $state(null);
+  let changingProgress = $state(false);
+
+  const progressIcons = {
+    watching: icons.playCircle,
+    watched: icons.checkmarkCircle,
+    unwatched: icons.subtractCircle
+  };
+
+  async function changeProgress(status: MediaProgressAction) {
+    if (changingProgress || mediaProgressAction(item.progress) === status) {
+      return;
+    }
+    changingProgress = true;
+    try {
+      onprogress?.(await setMediaProgressStatus(item.id, status));
+    } catch (error) {
+      console.error(error);
+    } finally {
+      changingProgress = false;
+    }
+  }
 </script>
 
-{#snippet action(icon: IconifyIcon, text: string, onclick: MouseEventHandler<HTMLElement>)}
+{#snippet action(icon: IconifyIcon, text: string, onclick: MouseEventHandler<HTMLElement>, disabled: boolean = false)}
   <li>
     <button
       class="px-2"
+      {disabled}
       onclick={(event) => {
         event.stopPropagation();
         closeDropdowns();
@@ -56,13 +91,24 @@
     </div>
   {/snippet}
   <ul class="menu gap-1">
-    {#if onscrape}
+    {#each progressStatuses as status}
+      {@render action(
+        progressIcons[status],
+        $_(`media.progress.${status}`),
+        () => changeProgress(status),
+        changingProgress || mediaProgressAction(item.progress) === status
+      )}
+    {/each}
+    {#if progressStatuses.length && $user?.role === 'admin' && (onscrape || ondelete)}
+      <li class="my-0.5 border-t border-base-content/10"></li>
+    {/if}
+    {#if $user?.role === 'admin' && onscrape}
       {@render action(icons.boxMultipleSearch, $_('action.scrape'), () => {
         // scrape metadata for the media item
         scraper?.showModal();
       })}
     {/if}
-    {#if ondelete}
+    {#if $user?.role === 'admin' && ondelete}
       {@render action(icons.delete, $_('action.delete'), () => {
         // show delete confirm dialog
         deleter?.showModal(item);
@@ -71,10 +117,10 @@
   </ul>
 </Dropdown>
 
-{#if onscrape}
+{#if $user?.role === 'admin' && onscrape}
   <MetadataScraper bind:this={scraper} {item} {onscrape} />
 {/if}
 
-{#if ondelete}
+{#if $user?.role === 'admin' && ondelete}
   <MediaDelConfirm bind:this={deleter} onconfirm={ondelete} />
 {/if}
