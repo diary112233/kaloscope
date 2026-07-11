@@ -412,6 +412,8 @@ class UserMediaProgressService(
         existing = await UserMediaProgress.get_or_none(
             user_id=user.id, media_id=media.id
         )
+        # Completion is sticky: replaying from the beginning updates the position and
+        # percentage, but does not automatically turn a completed item back to watching.
         progress, _ = await UserMediaProgress.update_or_create(
             user_id=user.id,
             media_id=media.id,
@@ -462,7 +464,7 @@ class UserMediaProgressService(
     async def _set_status(
         cls, user: UserInfo, obj: MediaProgressSet
     ) -> tuple[UserMediaProgress, UserMediaProgress | None]:
-        """Set or clear an explicit watch status for the current user."""
+        """Set an explicit status without changing playback position or percentage."""
         media = await cls._get_accessible_media(user, obj.media_id)
 
         progress = await UserMediaProgress.get_or_none(
@@ -500,6 +502,8 @@ class UserMediaProgressService(
         parent_progress = await UserMediaProgress.get_or_none(
             user_id=user_id, media_id=media.parent_id
         )
+        # A user-selected parent status is authoritative. Child updates only maintain
+        # automatically aggregated parents and never override an explicit choice.
         if parent_progress and parent_progress.manual:
             return parent_progress
 
@@ -514,6 +518,8 @@ class UserMediaProgressService(
             user_id=user_id, media_id__in=child_ids
         )
         progress_by_media = {progress.media_id: progress for progress in progresses}
+        # Missing child records count as zero progress because the denominator is the
+        # complete visible episode list, not only the episodes that have been played.
         if len(progress_by_media) == len(child_ids) and all(
             progress.status == MediaProgressStatus.WATCHED
             for progress in progress_by_media.values()

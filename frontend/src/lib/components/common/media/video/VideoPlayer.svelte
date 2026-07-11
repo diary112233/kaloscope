@@ -312,6 +312,8 @@
     }
     const progress = options.progress;
     const resumableStatus = progress?.status === 'watching' || progress?.status === 'unwatched';
+    // Watching and explicitly unwatched items resume automatically when enabled.
+    // Watched items always start from the beginning and only offer an optional jump.
     const resumeTime =
       options.startTime ??
       (autoResumeEnabled() && resumableStatus && progress.position > 0 ? progress.position : undefined);
@@ -595,6 +597,8 @@
   }
 
   function recordActiveHistory(force: boolean = false) {
+    // Keep the saved position intact while the watched-item jump prompt is pending;
+    // otherwise the first timeupdate at 0s would overwrite the position being offered.
     if (!force && resumeNotice?.mode === 'watched_prompt') {
       return;
     }
