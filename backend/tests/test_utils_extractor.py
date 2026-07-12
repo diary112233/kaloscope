@@ -1,10 +1,16 @@
 """Unit tests for the media keyword extractor utility."""
 
+from decimal import Decimal
+
 from app.utils.extractor import (
+    EpisodeKind,
+    build_local_episode_keys,
     extract_episode,
     extract_season,
     extract_title,
     extract_year,
+    normalize_series_title,
+    parse_media_name,
 )
 
 
@@ -137,7 +143,7 @@ class TestExtractEpisode:
         assert extract_episode("Show [16v2][WebRip]") == 16
         assert extract_episode("Show [16v4][WebRip]") == 16
         assert extract_episode("Show [16v9][WebRip]") == 16
-        assert extract_episode("Show [16v10][WebRip]") is None
+        assert extract_episode("Show [16v10][WebRip]") == 16
 
     def test_chinese_episode_ji(self):
         assert extract_episode("庆余年 第3集") == 3
@@ -176,6 +182,9 @@ class TestExtractEpisode:
 
     def test_bracketed_year_not_episode(self):
         assert extract_episode("Movie.Title.[2023]") is None
+
+    def test_decimal_requires_structured_parser(self):
+        assert extract_episode("Show - 12.5 [1080p]") is None
 
 
 class TestExtractTitle:
@@ -527,3 +536,170 @@ class TestExtractTitle:
     def test_returns_string(self):
         assert extract_title("[Group] 2023 1080p S01E01")
         assert isinstance(extract_title(""), str)
+
+
+class TestParseMediaName:
+    @staticmethod
+    def refs(parsed):
+        return [
+            (ref.kind, ref.canonical_number, ref.absolute_number)
+            for ref in parsed.episodes
+        ]
+
+    def test_decimal_episode(self):
+        parsed = parse_media_name("Example Show - 12.50 [1080p]")
+        assert self.refs(parsed) == [(EpisodeKind.REGULAR, "12.5", None)]
+        assert parsed.title == "Example Show"
+
+    def test_season_episode_range_expands_all_episodes(self):
+        parsed = parse_media_name("Example.Show.S01E01-E03.1080p")
+        assert self.refs(parsed) == [
+            (EpisodeKind.REGULAR, "1", None),
+            (EpisodeKind.REGULAR, "2", None),
+            (EpisodeKind.REGULAR, "3", None),
+        ]
+        assert parsed.is_batch is True
+
+    def test_decimal_range_does_not_invent_intermediate_labels(self):
+        parsed = parse_media_name("Example Show E12.5-E13.5")
+        assert [ref.canonical_number for ref in parsed.episodes] == ["12.5", "13.5"]
+
+    def test_typed_range_expands_all_extras(self):
+        parsed = parse_media_name("Example Show SP01-SP03")
+        assert [(ref.kind, ref.number) for ref in parsed.episodes] == [
+            (EpisodeKind.SPECIAL, Decimal(1)),
+            (EpisodeKind.SPECIAL, Decimal(2)),
+            (EpisodeKind.SPECIAL, Decimal(3)),
+        ]
+
+    def test_consecutive_episode_tokens(self):
+        parsed = parse_media_name("Example Show S01E01E02")
+        assert [ref.number for ref in parsed.episodes] == [Decimal(1), Decimal(2)]
+
+    def test_bracketed_batch_range(self):
+        parsed = parse_media_name("Example Show [01-03 合集][1080p]")
+        assert [ref.number for ref in parsed.episodes] == [
+            Decimal(1),
+            Decimal(2),
+            Decimal(3),
+        ]
+        assert parsed.is_batch is True
+
+    def test_chinese_episode_range(self):
+        parsed = parse_media_name("示例动画 第01-03話 [1080p]")
+        assert [ref.number for ref in parsed.episodes] == [
+            Decimal(1),
+            Decimal(2),
+            Decimal(3),
+        ]
+
+    def test_absolute_episode_number(self):
+        parsed = parse_media_name("[Show][10 - 总第76][WEB-DL]")
+        regular = [ref for ref in parsed.episodes if ref.kind == EpisodeKind.REGULAR]
+        assert len(regular) == 1
+        assert regular[0].number == Decimal(10)
+        assert regular[0].absolute_number == Decimal(76)
+
+    def test_release_version_is_not_episode_identity(self):
+        parsed = parse_media_name("Example Show [16v12][WebRip]")
+        assert parsed.release_version == 12
+        assert self.refs(parsed) == [(EpisodeKind.REGULAR, "16", None)]
+
+    def test_context_overrides_release_title_and_season(self):
+        parsed = parse_media_name(
+            "Wrong.Release.Name.S09E02.1080p",
+            series_title="Example Show (2024)",
+            year=2024,
+            season=2,
+        )
+        assert parsed.title == "Example Show"
+        assert parsed.year == 2024
+        assert parsed.season == 2
+        assert parsed.context_source == "provided"
+        assert parsed.confidence == "high"
+
+    def test_filename_fallback_is_low_confidence(self):
+        parsed = parse_media_name("Example.Show.S01E02.1080p")
+        assert parsed.context_source == "inferred"
+        assert parsed.confidence == "low"
+
+    def test_year_resolution_checksum_and_codec_are_not_episodes(self):
+        for name in (
+            "Movie.Title.2023.1080p",
+            "Movie.Title.2160p.[A1B2C3D4]",
+            "Daily Show 2026.07.12 1080p",
+            "Example Show OPUS 1080p",
+            "Doraemon1979 HDTV",
+        ):
+            assert parse_media_name(name).episodes == ()
+
+    def test_episode_kinds_are_classified(self):
+        cases = {
+            "Show SP01": EpisodeKind.SPECIAL,
+            "Show 特别篇 01": EpisodeKind.SPECIAL,
+            "Show OVA01": EpisodeKind.OVA,
+            "Show OAD01": EpisodeKind.OAD,
+            "Show ONA01": EpisodeKind.ONA,
+            "Show NCOP": EpisodeKind.NCOP,
+            "Show NCED2": EpisodeKind.NCED,
+            "Show PV2": EpisodeKind.PV,
+            "Show Trailer": EpisodeKind.TRAILER,
+            "Show CM3": EpisodeKind.CM,
+        }
+        for name, kind in cases.items():
+            parsed = parse_media_name(name)
+            assert parsed.episodes[0].kind == kind
+
+    def test_typed_extra_without_number_defaults_to_one(self):
+        parsed = parse_media_name("Example Show OVA")
+        assert self.refs(parsed) == [(EpisodeKind.OVA, "1", None)]
+
+    def test_same_number_different_kinds_get_different_keys(self):
+        regular = parse_media_name("Show E01", series_title="Show", season=1)
+        special = parse_media_name("Show SP01", series_title="Show", season=1)
+        ova = parse_media_name("Show OVA01", series_title="Show", season=1)
+        keys = {
+            build_local_episode_keys(regular)[0],
+            build_local_episode_keys(special)[0],
+            build_local_episode_keys(ova)[0],
+        }
+        assert len(keys) == 3
+
+
+class TestLocalEpisodeIdentity:
+    def test_title_normalization(self):
+        assert normalize_series_title("  ＥＸＡＭＰＬＥ・Show！ ") == "example show"
+        assert normalize_series_title("繁體中文") == normalize_series_title("繁体中文")
+
+    def test_key_is_deterministic_across_title_formatting(self):
+        first = parse_media_name(
+            "Release E01", series_title="Example.Show", year=2024, season=1
+        )
+        second = parse_media_name(
+            "Other E01", series_title="Ｅｘａｍｐｌｅ Show", year=2024, season=1
+        )
+        assert build_local_episode_keys(first) == build_local_episode_keys(second)
+
+    def test_year_and_season_separate_identities(self):
+        base = parse_media_name("E01", series_title="Show", year=2024, season=1)
+        remake = parse_media_name("E01", series_title="Show", year=2025, season=1)
+        next_season = parse_media_name(
+            "E01", series_title="Show", year=2024, season=2
+        )
+        assert build_local_episode_keys(base) != build_local_episode_keys(remake)
+        assert build_local_episode_keys(base) != build_local_episode_keys(next_season)
+
+    def test_release_version_does_not_change_key(self):
+        original = parse_media_name(
+            "Show [01][1080p]", series_title="Show", year=2024, season=1
+        )
+        revision = parse_media_name(
+            "Show [01v10][1080p]", series_title="Show", year=2024, season=1
+        )
+        assert build_local_episode_keys(original) == build_local_episode_keys(revision)
+
+    def test_batch_builds_one_key_per_episode(self):
+        parsed = parse_media_name(
+            "Show [01-12 合集]", series_title="Show", year=2024, season=1
+        )
+        assert len(build_local_episode_keys(parsed)) == 12
